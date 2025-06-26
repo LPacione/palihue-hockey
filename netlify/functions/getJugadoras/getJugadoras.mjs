@@ -68,12 +68,12 @@ exports.handler = async (event, context) => {
 
     // --- CONSTRUIR EL NOMBRE DE LA COLECCIÓN DINÁMICAMENTE ---
     // Limpiamos la categoría y la convertimos a minúsculas para el nombre de la colección
-    const cleanCategoria = categoria.trim().toLowerCase();
-    const collectionName = `${collectionPrefix}${cleanCategoria}`;
+    // const cleanCategoria = categoria.trim().toLowerCase();
+    // const collectionName = `${collectionPrefix}${cleanCategoria}`;
     // --- FIN CONSTRUCCIÓN DINÁMICA ---
 
     console.log(`Received request for category: ${categoria}`);
-    console.log(`Attempting to access database: ${dbName}, collection: ${collectionName}`); // Log the DB and dynamic collection names
+    console.log(`Attempting to access database: ${dbName}, collection: ${categoria}`); // Log the DB and dynamic collection names
 
 
     try {
@@ -94,14 +94,14 @@ exports.handler = async (event, context) => {
         console.log(`Database selected: ${database.databaseName}`); // Log the actual database name
 
         // Seleccionar la colección de jugadoras (usando el nombre dinámico)
-        const collection = database.collection(collectionName);
-        console.log(`Collection selected: ${collection.collectionName}`); // Log the actual collection name
+        const collection = database.collection(categoria);
+        // console.log(`Collection selected: ${collection.categoria}`); // Log the actual collection name
 
         // --- EJECUTAR LA CONSULTA SIN FILTRO DE CATEGORÍA ---
         // Si la colección ya es específica de la categoría, no necesitas filtrar por un campo 'categoria'
         const findStartTime = Date.now();
         // Eliminamos el filtro { categoria: categoria.trim() }
-        const results = await collection.find({}).limit(10).toArray(); // Recupera todos los documentos de la colección
+        const results = await collection.find({}).toArray(); // Recupera todos los documentos de la colección
         const findEndTime = Date.now();
         console.log(`Find query executed in ${findEndTime - findStartTime} ms. Found ${results.length} results.`); // Log tiempo de consulta y resultados
 

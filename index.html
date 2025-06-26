@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Partido</title>
+    <title>Registro de Partido de Hockey</title>
 
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#4CAF50">
@@ -153,9 +153,9 @@
         /* Reducimos el margen para juntar los checkboxes */
         #titularesCheckboxes div,
         #suplentesCheckboxes div {
-             margin-bottom: 5px; /* Espacio reducido entre checkboxes */
              display: flex; /* Asegurar flex para alinear checkbox/label */
              align-items: center;
+             margin-bottom: 2px; /* Espacio reducido entre checkboxes */
         }
          #titularesCheckboxes div:last-child,
         #suplentesCheckboxes div:last-child {
@@ -180,6 +180,54 @@
             padding: 10px;
         }
 
+        .scoreboard {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            margin: 20px auto;
+            width: 300px;
+            height: 120px;
+            background: #2c2c2c;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            font-family: 'Arial Black', sans-serif;
+            }
+
+            .equipo {
+            flex: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            }
+
+            .equipo-local {
+            background-color: #196203; /* azul */
+            color: white;
+            }
+
+            .equipo-rival {
+            background-color: #FF4136; /* rojo */
+            color: white;
+            }
+
+            .nombre {
+            font-size: 16px;
+            padding: 4px;
+            }
+
+            .goles {
+            font-size: 48px;
+            font-weight: bold;
+            }
+
+        ul li.gol-rival {
+            background-color: #ffebee; /* Rojo muy claro */
+            border-left-color: #f44336; /* Borde izquierdo rojo */
+            color: #d32f2f; /* Texto rojo más oscuro */
+            font-weight: bold; /* Opcional: hacerlo negrita */
+        }
 
         /* Estilos para campos de sustitución */
         #camposSustitucion {
@@ -189,6 +237,25 @@
             margin-bottom: 20px;
             border-radius: 8px;
             background-color: #fff9c4; /* Amarillo claro */
+        }
+        #camposSustitucion label {
+            color: #555;
+        }
+        #camposSustitucion select, #camposSustitucion input {
+            margin-bottom: 10px;
+        }
+         #camposSustitucion select:last-child, #camposSustitucion input:last-child {
+             margin-bottom: 0;
+         }
+
+        /* Estilos para campos de gol rival */
+        #camposGolRival {
+            border: 1px dashed #999; /* Borde punteado */
+            padding: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background-color: hwb(12 77% 0%);
         }
         #camposSustitucion label {
             color: #555;
@@ -231,46 +298,60 @@
   <div class="container">
     <h1>Registro de Partido</h1>
 
-    <label for="categoria">Categoría:</label>
-    <select id="categoria">
-      <option value="">Seleccione una categoría</option>
-        <option value="7ma">7ma</option>
-      <option value="6ta">6ta</option>
-      <option value="5ta">5ta</option>
-          </select>
+    <div id="alineacionInicialFields">
+        <label for="categoria">Categoría:</label>
+        <select id="categoria">
+          <option value="">Seleccione una categoría</option>
+           <option value="7ma_fem">7ma</option>
+          <option value="6ta_fem">6ta</option>
+          <option value="5ta_fem">5ta</option>
+          <option value="1ra_fem">1ra Femenina</option>
+          <option value="1ra_masc">1ra Masculina</option>
+              </select>
 
-    <label for="fecha">Fecha:</label>
-    <input type="text" id="fecha">
+        <label for="fecha">Fecha:</label>
+        <input type="text" id="fecha">
 
-    <h2>Alineaciones</h2>
+        <h2>Alineaciones</h2>
 
-        <div class="alineaciones-row">
-        <div class="alineaciones-column">
-            <label>Jugadoras Titulares:</label>
-            <div id="titularesCheckboxes"> </div>
-        </div>
-        <div class="alineaciones-column">
-            <label>Jugadoras Suplentes:</label>
-            <div id="suplentesCheckboxes"> </div>
-        </div>
-    </div>
+            <div class="alineaciones-row">
+            <div class="alineaciones-column">
+                <label>Jugadoras Titulares:</label>
+                <div id="titularesCheckboxes"> </div>
+            </div>
+            <div class="alineaciones-column">
+                <label>Jugadoras Suplentes:</label>
+                <div id="suplentesCheckboxes"> </div>
+            </div>
+        </div>
+    </div>
+
         <div class="saved-info hidden">
           <p><strong class="font-bold">Fecha Guardada:</strong> <span id="fechaGuardada"></span></p>
           <p><strong class="font-bold">Titulares:</strong> <span id="titularesGuardados"></span></p>
           <p><strong class="font-bold">Suplentes:</strong> <span id="suplentesGuardados"></span></p>
       </div>
 
-    <button onclick="guardarAlineacion()"
+    <button id="guardarAlineacionBtn" onclick="guardarAlineacion()"
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full md:w-auto">
         Guardar Alineación
     </button>
 
+    <h2>Tablero</h2>
+    <div id="marcador" class="scoreboard">
+        <div class="equipo equipo-local">
+            <div class="nombre">Palihue</div>
+            <div id="golesPropios" class="goles">0</div>
+        </div>
+        <div class="equipo equipo-rival">
+            <div class="nombre">Rival</div>
+            <div id="golesRival" class="goles">0</div>
+        </div>
+    </div>
+    
+
 
     <h2>Registrar Acción</h2>
-    <label for="jugadora">Jugadora:</label>
-    <select id="jugadora" disabled>
-      <option value="">Seleccione una jugadora</option>
-    </select>
 
     <label for="accion">Acción:</label>
     <select id="accion" disabled>
@@ -281,8 +362,21 @@
       <option value="Gesto Salida Linea">Gesto Salida Linea</option>
       <option value="Gesto a Favor">Gesto a Favor</option>
       <option value="Gesto en Contra">Gesto en Contra</option>
+      <option value="Quite positivo">Quite positivo</option>
+      <option value="Quite negativo">Quite negativo</option>
+      <option value="Recuperación">Recuperación</option>
+      <option value="Tarjeta amarilla">Tarjeta amarilla</option>
+      <option value="Tarjeta verde">Tarjeta verde</option>
+      <option value="Tarjeta roja">Tarjeta roja</option>
       <option value="Salida">Sustitución (Salida)</option>
+      <option value="Gol Rival">Gol Rival</option>
     </select>
+
+    <label for="jugadora">Jugadora:</label>
+    <select id="jugadora" disabled>
+    <option value="">Seleccione una jugadora</option>
+    </select>
+
 
     <div id="camposSustitucion" class="hidden">
       <label for="quienEntra">Quién entra:</label>
@@ -293,6 +387,14 @@
       <label for="minuto">Minuto:</label>
       <input type="number" id="minuto" min="1" max="60" placeholder="Ej: 25">
     </div>
+
+    <div id="camposGolRival" class="hidden">
+    <label for="descripcionGolRival">Descripción Gol Rival:</label>
+    <input type="text" id="descripcionGolRival" placeholder="Ej: Corner corto, error en la salida, etc">
+
+    <label for="minutoGolRival">Minuto:</label>
+    <input type="number" id="minutoGolRival" min="1" max="60" placeholder="Ej: 25">
+    </div>
 
     <button onclick="registrarAccion()">Registrar Acción</button>
 
@@ -315,6 +417,10 @@
     let dataToSave = []; // Almacena arrays [jugadora, accion, valor] para enviar a la función de guardar
     let playerStatus = {}; // Objeto para rastrear el estado (In_Field, On_Bench) de cada jugadora
     let categoriaSeleccionada = ""; // Variable para almacenar la categoría seleccionada
+
+    let golesPropios = 0;
+    let golesRival = 0;
+
 
     // --- PWA: Registrar el Service Worker ---
     // Esto permite que tu app sea instalable y funcione offline (con la caché básica configurada en sw.js)
@@ -431,22 +537,42 @@
     }
 
     // Función que se llama cuando cambia la selección de acción
-    function accionSeleccionada() {
-        const accion = document.getElementById("accion").value;
-        const camposSustitucion = document.getElementById("camposSustitucion");
+   function accionSeleccionada() {
+    const accion = document.getElementById("accion").value;
+    const camposSustitucion = document.getElementById("camposSustitucion");
+    const camposGolRival = document.getElementById("camposGolRival");
+    const jugadora = document.getElementById("jugadora");
 
-        // Si la acción seleccionada es "Salida", mostrar los campos de sustitución
-        if (accion === "Salida") {
-            camposSustitucion.style.display = "block"; // Mostrar los campos
-            actualizarQuienEntra(); // Llenar las suplentes disponibles para entrar
+    // Resetear todo primero
+    jugadora.disabled = false;
+    jugadora.placeholder = "Selecciona una jugadora";
+
+    camposSustitucion.style.display = "none";
+    camposGolRival.style.display = "none";
+
+    document.getElementById("descripcionGolRival").value = "";
+    document.getElementById("minutoGolRival").value = "";
+    document.getElementById("minuto").value = "";
+    document.getElementById("quienEntra").value = "";
+
+    if (accion === "Gol Rival") {
+        // Mostrar campos de gol rival y deshabilitar select jugadora
+        camposGolRival.classList.remove('hidden');
+
+        // Verificá si realmente el elemento existe
+        if (jugadora) {
+            jugadora.disabled = true;
+            jugadora.placeholder = "No aplica";
+            jugadora.value = "";  // Limpiamos selección
         } else {
-            camposSustitucion.style.display = "none"; // Ocultar los campos
-            // Limpiar los campos de sustitución si se ocultan
-            document.getElementById("minuto").value = "";
-            document.getElementById("quienEntra").value = "";
+            console.warn("No se encontró el select 'jugadora'");
         }
-        // No limpiamos la jugadora seleccionada aquí para que se mantenga al cambiar la acción
+    } else if (accion === "Salida") {
+        camposSustitucion.style.display = "block";
+        actualizarQuienEntra();
     }
+}
+
 
     // Asociar la función accionSeleccionada al evento change del select de acción
     document.getElementById('accion').addEventListener('change', accionSeleccionada);
@@ -499,9 +625,22 @@
 
 
     function guardarAlineacion() {
+        // Obtener referencias a los elementos
+        const guardarBtn = document.getElementById('guardarAlineacionBtn');
+        const alineacionFieldsDiv = document.getElementById('alineacionInicialFields'); // Referencia al div que contiene los campos de alineación
+        const savedInfoDiv = document.querySelector('.saved-info'); // Referencia al div que muestra la info guardada
+
+        // Deshabilitar el botón inmediatamente
+        guardarBtn.disabled = true;
+        // Opcional: Cambiar texto o añadir clase para indicar estado
+        // guardarBtn.textContent = 'Guardando...'; // Puedes añadir esto si quieres
+
         const fecha = document.getElementById('fecha').value.trim();
         if (!fecha) {
             alert("Por favor, ingresa la fecha del partido.");
+            // Si hay un error de validación, re-habilitar el botón
+            guardarBtn.disabled = false;
+            // guardarBtn.textContent = 'Guardar Alineación'; // Resetear texto
             return;
         }
 
@@ -513,10 +652,16 @@
         let duplicados = titulares.filter(t => suplentes.includes(t));
         if (duplicados.length > 0) {
             alert("Error: La misma jugadora no puede ser titular y suplente. Duplicados: " + duplicados.join(", "));
+            // Si hay un error de validación, re-habilitar el botón
+            guardarBtn.disabled = false;
+            // guardarBtn.textContent = 'Guardar Alineación'; // Resetear texto
             return;
         }
         if (titulares.length === 0) {
             alert("Por favor, selecciona al menos una jugadora titular.");
+            // Si hay un error de validación, re-habilitar el botón
+            guardarBtn.disabled = false;
+            // guardarBtn.textContent = 'Guardar Alineación'; // Resetear texto
             return;
         }
 
@@ -527,20 +672,23 @@
         console.log("Estado inicial de jugadoras:", JSON.stringify(playerStatus));
         // --- Fin Inicialización ---
 
-        // Mostrar alineación guardada
+        // Mostrar alineación guardada en el div .saved-info
         document.getElementById('fechaGuardada').textContent = fecha;
         document.getElementById('titularesGuardados').textContent = titulares.join(", ") || "Ninguno";
-        document.getElementById('suplentesGuardados').textContent = suplentes.join(", ") || "Ninguno";
+        document.getElementById('suplentesGuardados').textContent = suplentes.join(", ") || "-"; // Usar "-" si no hay suplentes
 
-        // --- Hacer visible el div saved-info ---
-        document.querySelector('.saved-info').classList.remove('hidden');
+        // --- Ocultar los campos de alineación y mostrar la info guardada ---
+        alineacionFieldsDiv.classList.add('hidden'); // Ocultar el div que contiene los campos de alineación
+        savedInfoDiv.classList.remove('hidden'); // Mostrar el div que muestra la información guardada
 
-        // Deshabilitar campos de alineación y habilitar campos de acción
+        // Deshabilitar campos de alineación (aunque ya están ocultos, es buena práctica) y habilitar campos de acción
         document.getElementById('categoria').disabled = true;
         document.getElementById('fecha').disabled = true;
-        document.querySelectorAll('#titularesCheckboxes input, #suplentesCheckboxes input').forEach(chk => chk.disabled = true);
-        document.getElementById('jugadora').disabled = false;
-        document.getElementById('accion').disabled = false;
+        document.querySelectorAll('#titularesCheckboxes input').forEach(chk => chk.disabled = true); // Deshabilitar checkboxes de titulares
+        document.querySelectorAll('#suplentesCheckboxes input').forEach(chk => chk.disabled = true); // Deshabilitar checkboxes de suplentes
+        document.getElementById('jugadora').disabled = false; // Habilitar select de jugadora para acciones
+        document.getElementById('accion').disabled = false; // Habilitar select de acción
+
 
         // Limpiar lista de acciones registradas previas
         document.getElementById('accionesRegistradas').innerHTML = '';
@@ -552,6 +700,7 @@
 
         // Mostrar mensaje de éxito
         alert("Alineación guardada. Ahora puedes registrar acciones.");
+        // El botón Guardar ya está deshabilitado, no es necesario hacer nada más aquí para él.
     }
 
 
@@ -563,7 +712,7 @@
         const minuto = document.getElementById('minuto').value;
 
         // Validaciones básicas
-        if (!jugadora) {
+        if (accion !== "Gol Rival" && !jugadora) { // <--- ESTA ES LA LÍNEA MODIFICADA
             alert("Por favor, selecciona una jugadora.");
             return;
         }
@@ -613,9 +762,18 @@
         } else { // Otras acciones (Gol, Gesto, etc.)
             // No se necesita validar minuto o quienEntra para estas acciones
             if (accion === "Gol") {
-                // Puedes ajustar el valor si un gol vale más que 1 en tu lógica de resumen
-                valorAccion = 1; // O el valor que corresponda
+                valorAccion = 1;
+                golesPropios++;
+            } else if (accion === "Gol Rival") {
+                golesRival++;
             }
+
+            // Actualizar el tablero visual
+            const golesPropiosEl = document.getElementById('golesPropios');
+            const golesRivalEl = document.getElementById('golesRival');
+            if (golesPropiosEl) golesPropiosEl.textContent = golesPropios;
+            if (golesRivalEl) golesRivalEl.textContent = golesRival;
+
             dataRows.push([jugadora, accion, valorAccion]); // Guardar la acción y su valor
         }
 
@@ -624,10 +782,19 @@
 
         // Actualizar la lista visual de acciones registradas en el HTML
         let accionRegistradaVisual = `${jugadora} - ${accionTexto}`;
-        accionesRegistradas.push(accionRegistradaVisual);
-        let ul = document.getElementById('accionesRegistradas');
+
+        // Crear el <li> antes de verificar si es gol rival
         let li = document.createElement('li');
         li.textContent = accionRegistradaVisual;
+
+        // Si es gol rival, aplicar color rojo
+        if (accionTexto === "Gol Rival") {
+            li.style.color = 'red';  // O li.classList.add('gol-rival') si usás CSS
+        }
+
+        accionesRegistradas.push(accionRegistradaVisual);
+
+        let ul = document.getElementById('accionesRegistradas');
         ul.appendChild(li);
 
         // Limpiar campos del formulario de acción (excepto la jugadora)
@@ -635,6 +802,12 @@
         document.getElementById('minuto').value = "";
         document.getElementById('quienEntra').value = "";
         document.getElementById('camposSustitucion').style.display = 'none'; // Ocultar campos de sustitución
+        document.getElementById('camposGolRival').style.display = 'none'
+        document.getElementById('descripcionGolRival').value = "";
+        document.getElementById('minutoGolRival').value = "";
+        document.getElementById('jugadora').disabled = true;
+        document.getElementById('tablero').textContent = `Palihue ${golesPropios} - ${golesRival} Rival`;
+
         // document.getElementById('jugadora').value = ""; // Ya no limpiamos la jugadora aquí
     }
 
@@ -705,9 +878,14 @@
     }
 
     // Función que se ejecuta si la llamada a la Netlify Function es exitosa
-    function onFinalizarSuccess(message) {
+   function onFinalizarSuccess(message) {
         console.log("Éxito:", message);
         alert("¡Partido finalizado y datos guardados exitosamente!");
+
+        // Obtener referencias a los elementos
+        const alineacionFieldsDiv = document.getElementById('alineacionInicialFields'); // Referencia al div que contiene los campos de alineación
+        const savedInfoDiv = document.querySelector('.saved-info'); // Referencia al div que muestra la info guardada
+        const guardarBtn = document.getElementById('guardarAlineacionBtn'); // Referencia al botón Guardar Alineación
 
         // --- Reiniciar la interfaz para un nuevo partido ---
         document.getElementById('fecha').value = '';
@@ -715,24 +893,31 @@
         document.getElementById('categoria').value = '';
         document.getElementById('categoria').disabled = false;
 
-        // --- Ocultar nuevamente el div saved-info ---
-        document.querySelector('.saved-info').classList.add('hidden');
+        // --- Mostrar los campos de alineación y ocultar la info guardada ---
+        alineacionFieldsDiv.classList.remove('hidden'); // Mostrar el div que contiene los campos de alineación
+        savedInfoDiv.classList.add('hidden'); // Ocultar el div que muestra la información guardada
 
         document.getElementById('fechaGuardada').textContent = '';
         document.getElementById('titularesGuardados').textContent = '';
         document.getElementById('suplentesGuardados').textContent = '';
-        document.getElementById('titularesCheckboxes').innerHTML = '<p class="text-gray-600">Selecciona una categoría...</p>';
+        document.getElementById('titularesCheckboxes').innerHTML = '<p class="text-gray-600">Selecciona una categoría...</p>'; // Resetear mensaje inicial
         document.getElementById('suplentesCheckboxes').innerHTML = '';
         document.getElementById('jugadora').innerHTML = '<option value="">Seleccione una jugadora</option>';
         document.getElementById('accion').value = '';
         document.getElementById('accion').disabled = true;
         document.getElementById('jugadora').disabled = true;
-         document.getElementById('quienEntra').innerHTML = '<option value="">Seleccione una jugadora</option>'; // Limpiar también este select
-         document.getElementById('minuto').value = ''; // Limpiar el minuto
-         document.getElementById('camposSustitucion').style.display = 'none'; // Ocultar campos de sustitución
+        document.getElementById('quienEntra').innerHTML = '<option value="">Seleccione una jugadora</option>'; // Limpiar también este select
+        document.getElementById('minuto').value = ''; // Limpiar el minuto
+        document.getElementById('camposSustitucion').style.display = 'none'; // Ocultar campos de sustitución
         document.getElementById('accionesRegistradas').innerHTML = '';
         document.getElementById('finalizarPartido').disabled = false;
         document.getElementById('finalizarPartido').textContent = 'Finalizar Partido y Guardar';
+
+        // --- Re-habilitar el botón de Guardar Alineación ---
+        if (guardarBtn) {
+            guardarBtn.disabled = false;
+            guardarBtn.textContent = 'Guardar Alineación'; // Resetear texto si se cambió
+        }
 
         // Resetear variables globales
         titulares = [];
@@ -742,8 +927,8 @@
         playerStatus = {}; // Importante resetear playerStatus
         categoriaSeleccionada = "";
 
-         // Opcional: Mostrar un mensaje de confirmación en la UI en lugar de solo alert
-         // Por ejemplo, un div con un mensaje verde.
+        // Opcional: Mostrar un mensaje de confirmación en la UI en lugar de solo alert
+        // Por ejemplo, un div con un mensaje verde.
     }
 
 

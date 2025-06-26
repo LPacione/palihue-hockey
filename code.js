@@ -15,12 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
 async function cargarJugadorasPorCategoria() {
   const categoria = document.getElementById('categoria').value;
   if (!categoria) return;
-
+  
   try {
+    
     (async () => {
     // Realizamos la solicitud para obtener las jugadoras
     let response = await fetch(`/.netlify/functions/getJugadoras?categoria=${document.getElementById('categoria').value}`);
     
+    print(response)
+
     // Verificamos si la respuesta fue exitosa
     if (!response.ok) {
         console.error("Error en la respuesta:", response.statusText);

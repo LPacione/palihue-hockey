@@ -2,5 +2,16 @@
   "dependencies": {
     "dotenv": "^16.5.0",
     "mongodb": "^6.16.0"
-  }
+  },
+  "name": "palihue-hockey",
+  "version": "1.0.0",
+  "main": "code.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
