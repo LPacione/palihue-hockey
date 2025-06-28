@@ -8,86 +8,99 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#4CAF50">
 
+    <!-- Google Fonts: Inter para una tipografía moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
         /* Estilos Generales */
         body {
-            font-family: 'Arial', sans-serif;
-            background: #2d572c; /* Fondo verde oscuro */
+            font-family: 'Inter', sans-serif; /* Fuente moderna */
+            background: #e0e7e0; /* Fondo verde claro suave */
             margin: 0;
             padding: 20px;
             line-height: 1.6;
-            color: #333; /* Color de texto por defecto, ajustado en contenedor principal */
+            color: #333;
         }
 
         .container {
             max-width: 800px;
-            margin: 20px auto; /* Margen superior e inferior */
+            margin: 20px auto;
             background: #ffffff; /* Fondo blanco */
-            padding: 30px; /* Más padding interno */
-            border-radius: 10px; /* Bordes más redondeados */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+            padding: 30px;
+            border-radius: 12px; /* Bordes más redondeados */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada y suave */
         }
 
         h1 {
-            color: #1a361a; /* Un verde oscuro más profundo */
+            color: #1a361a; /* Verde oscuro profundo */
             text-align: center;
-            margin-bottom: 30px; /* Más espacio debajo */
-            font-size: 2.2em; /* Tamaño de fuente más grande */
+            margin-bottom: 30px;
+            font-size: 2.5em; /* Tamaño de fuente más grande */
+            font-weight: 700; /* Extra bold */
         }
 
         h2 {
             color: #2d572c; /* El color del fondo general */
-            margin-top: 25px; /* Espacio antes del subtítulo */
+            margin-top: 25px;
             margin-bottom: 15px;
-            border-bottom: 2px solid #4caf50; /* Línea verde sutil */
-            padding-bottom: 5px;
+            border-bottom: 2px solid #4CAF50; /* Línea verde sutil */
+            padding-bottom: 8px;
+            font-size: 1.8em; /* Tamaño de fuente más grande */
+            font-weight: 600; /* Semibold */
         }
 
         /* Estilos de Formularios */
         label {
             display: block;
-            margin: 15px 0 8px; /* Más espacio */
-            font-weight: bold;
+            margin: 15px 0 8px;
+            font-weight: 600; /* Semibold */
             color: #555;
         }
 
         select, input[type="text"], input[type="number"] {
             width: 100%;
-            padding: 10px; /* Más padding */
-            margin-bottom: 15px; /* Más espacio debajo */
-            border: 1px solid #ddd; /* Borde más claro */
-            border-radius: 5px; /* Bordes más redondeados */
-            box-sizing: border-box; /* Incluir padding en el ancho */
+            padding: 12px; /* Más padding */
+            margin-bottom: 15px;
+            border: 1px solid #ccc; /* Borde más claro */
+            border-radius: 8px; /* Bordes más redondeados */
+            box-sizing: border-box;
             font-size: 1em;
+            transition: all 0.3s ease; /* Transición suave */
         }
 
         select:focus, input[type="text"]:focus, input[type="number"]:focus {
             outline: none;
             border-color: #4CAF50; /* Borde verde al enfocar */
-            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Sombra verde al enfocar */
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.4); /* Sombra verde al enfocar */
         }
 
         /* Estilos de Botones */
         button {
             background-color: #4CAF50; /* Verde principal */
             color: white;
-            padding: 12px 20px; /* Más padding */
+            padding: 12px 25px; /* Más padding */
             border: none;
-            border-radius: 5px; /* Bordes más redondeados */
+            border-radius: 8px; /* Bordes más redondeados */
             cursor: pointer;
-            font-weight: bold;
-            font-size: 1em;
-            transition: background-color 0.3s ease, opacity 0.3s ease; /* Transición suave */
-            margin-top: 10px; /* Espacio superior */
+            font-weight: 600; /* Semibold */
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Transición suave */
+            margin-top: 15px; /* Espacio superior */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para botones */
         }
 
         button:hover:not(:disabled) {
             background-color: #388e3c; /* Verde más oscuro al pasar el mouse */
+            transform: translateY(-2px); /* Efecto de elevación */
         }
 
          #finalizarPartido {
              background-color: #f44336; /* Rojo */
-             margin-top: 20px; /* Más espacio arriba */
+             margin-top: 30px; /* Más espacio arriba */
          }
 
          #finalizarPartido:hover:not(:disabled) {
@@ -96,9 +109,11 @@
 
 
         button:disabled {
-            background-color: #cccccc; /* Gris */
+            background-color: #cccccc;
             cursor: not-allowed;
-            opacity: 0.8;
+            opacity: 0.7;
+            box-shadow: none; /* Sin sombra cuando está deshabilitado */
+            transform: translateY(0);
         }
 
         /* Estilos de Listas */
@@ -110,11 +125,24 @@
 
         ul li {
             background-color: #e8f5e9; /* Verde muy claro */
-            margin: 8px 0; /* Más espacio entre elementos */
-            padding: 10px; /* Más padding */
-            border-radius: 5px;
-            border-left: 5px solid #4CAF50; /* Borde izquierdo verde */
+            margin: 8px 0;
+            padding: 12px; /* Más padding */
+            border-radius: 8px;
+            border-left: 6px solid #4CAF50; /* Borde izquierdo verde más grueso */
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Espacio entre ícono y texto */
         }
+
+        /* Estilo específico para "Gol rival" */
+        ul li.gol-rival {
+            background-color: #ffebee; /* Rojo muy claro */
+            border-left-color: #f44336; /* Borde izquierdo rojo */
+            color: #d32f2f; /* Texto rojo más oscuro */
+            font-weight: 600;
+        }
+
 
         /* Ocultar elementos */
         .hidden {
@@ -124,19 +152,19 @@
         /* Layout de Columnas para Titulares y Suplentes */
         .alineaciones-row {
             display: flex;
-            gap: 20px; /* Espacio entre columnas */
+            gap: 20px;
             margin-bottom: 20px;
-            flex-wrap: wrap; /* Permite que las columnas se apilen en pantallas pequeñas */
+            flex-wrap: wrap;
         }
 
         .alineaciones-column {
-            flex: 1; /* Permite que las columnas crezcan */
-            min-width: 250px; /* Ancho mínimo antes de apilarse */
-            /* Añadimos padding y borde aquí para que se vean como bloques */
-             border: 1px solid #ddd;
-             border-radius: 5px;
+            flex: 1;
+            min-width: 280px; /* Ancho mínimo antes de apilarse */
+             border: 1px solid #e0e0e0;
+             border-radius: 8px;
              padding: 15px;
-             background-color: #f9f9f9; /* Fondo ligeramente gris */
+             background-color: #fcfcfc; /* Fondo ligeramente gris */
+             box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Sombra interna suave */
         }
 
         /* Estilos específicos para los contenedores de checkboxes */
@@ -144,31 +172,39 @@
         #suplentesCheckboxes {
              border: none;
              padding: 0;
-             max-height: 200px; /* Ajusta la altura máxima si es necesario */
-             overflow-y: auto; /* Scroll vertical */
-             margin-top: 10px; /* Espacio entre el label y la lista de checkboxes */
+             max-height: 220px; /* Ajusta la altura máxima si es necesario */
+             overflow-y: auto;
+             margin-top: 10px;
         }
 
         /* Estilo para cada item de checkbox (flex items) */
-        /* Reducimos el margen para juntar los checkboxes */
         #titularesCheckboxes div,
         #suplentesCheckboxes div {
-             display: flex; /* Asegurar flex para alinear checkbox/label */
+             display: flex;
              align-items: center;
-             margin-bottom: 2px; /* Espacio reducido entre checkboxes */
+             margin-bottom: 5px; /* Espacio reducido entre checkboxes */
+             padding: 5px 0;
         }
          #titularesCheckboxes div:last-child,
         #suplentesCheckboxes div:last-child {
-             margin-bottom: 0; /* No margen en el último item */
+             margin-bottom: 0;
         }
 
         /* Estilo para el checkbox input */
         #titularesCheckboxes input[type="checkbox"],
         #suplentesCheckboxes input[type="checkbox"] {
-             margin-right: 8px; /* Espacio entre checkbox y label */
-             margin-bottom: 0; /* Eliminar margen inferior del input */
-             width: auto; /* Ancho automático para el checkbox */
+             margin-right: 10px; /* Más espacio entre checkbox y label */
+             margin-bottom: 0;
+             width: auto;
+             transform: scale(1.2); /* Checkbox ligeramente más grande */
+             cursor: pointer;
         }
+         #titularesCheckboxes label,
+         #suplentesCheckboxes label {
+             font-weight: normal; /* Labels de checkbox normales */
+             margin: 0; /* Eliminar margen de label */
+             cursor: pointer;
+         }
 
 
         /* Estilos para el texto de "Cargando..." o "Selecciona una categoría..." */
@@ -191,7 +227,7 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            font-family: 'Arial Black', sans-serif;
+            font-family: 'Inter', sans-serif; /* Usar Inter para el marcador también */
             }
 
             .equipo {
@@ -203,40 +239,35 @@
             }
 
             .equipo-local {
-            background-color: #196203; /* azul */
+            background-color: #196203; /* Verde oscuro para Palihue */
             color: white;
             }
 
             .equipo-rival {
-            background-color: #FF4136; /* rojo */
+            background-color: #FF4136; /* Rojo vibrante para Rival */
             color: white;
             }
 
             .nombre {
-            font-size: 16px;
+            font-size: 18px; /* Tamaño de fuente ajustado */
             padding: 4px;
+            font-weight: 500; /* Medium */
             }
 
             .goles {
-            font-size: 48px;
-            font-weight: bold;
+            font-size: 52px; /* Tamaño de goles más grande */
+            font-weight: 700; /* Bold */
             }
-
-        ul li.gol-rival {
-            background-color: #ffebee; /* Rojo muy claro */
-            border-left-color: #f44336; /* Borde izquierdo rojo */
-            color: #d32f2f; /* Texto rojo más oscuro */
-            font-weight: bold; /* Opcional: hacerlo negrita */
-        }
 
         /* Estilos para campos de sustitución */
         #camposSustitucion {
-            border: 1px dashed #999; /* Borde punteado */
-            padding: 15px;
+            border: 1px dashed #999;
+            padding: 20px; /* Más padding */
             margin-top: 20px;
             margin-bottom: 20px;
-            border-radius: 8px;
+            border-radius: 10px; /* Más redondeado */
             background-color: #fff9c4; /* Amarillo claro */
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
         }
         #camposSustitucion label {
             color: #555;
@@ -248,167 +279,186 @@
              margin-bottom: 0;
          }
 
-        /* Estilos para campos de gol rival */
-        #camposGolRival {
-            border: 1px dashed #999; /* Borde punteado */
-            padding: 15px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            background-color: hwb(12 77% 0%);
-        }
-        #camposSustitucion label {
-            color: #555;
-        }
-        #camposSustitucion select, #camposSustitucion input {
-            margin-bottom: 10px;
-        }
-         #camposSustitucion select:last-child, #camposSustitucion input:last-child {
+         /* Estilos para campos de gol rival */
+         #camposGolRival {
+             border: 1px dashed #f44336; /* Borde punteado rojo */
+             padding: 20px;
+             margin-top: 20px;
+             margin-bottom: 20px;
+             border-radius: 10px;
+             background-color: #ffebee; /* Rojo muy claro para gol rival */
+             box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+         }
+         #camposGolRival label {
+             color: #555;
+         }
+         #camposGolRival input {
+             margin-bottom: 10px;
+         }
+         #camposGolRival input:last-child {
              margin-bottom: 0;
          }
+
 
          /* Estilo para el texto de error */
          .text-red-600 {
-             color: #f44336; /* Rojo */
+             color: #f44336;
          }
 
-         /* Estilo para la info guardada (si la añades de nuevo) */
+         /* Estilo para la info guardada */
          .saved-info {
              background-color: #e8f5e9; /* Verde muy claro */
              border: 1px solid #c8e6c9; /* Verde claro */
-             padding: 15px;
-             border-radius: 5px;
-             margin-top: 20px;
-             color: #388e3c; /* Verde oscuro */
-             font-size: 0.9em;
+             padding: 18px; /* Más padding */
+             border-radius: 8px;
+             margin-top: 25px;
+             color: #155724; /* Verde oscuro */
+             font-size: 1em;
+             font-weight: 500;
+             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
          }
          .saved-info p {
-             margin-bottom: 5px;
+             margin-bottom: 8px;
          }
          .saved-info p:last-child {
              margin-bottom: 0;
          }
          .saved-info strong {
-             font-weight: bold;
+             font-weight: 700; /* Bold */
          }
 
+         /* Estilo para las secciones agrupadas */
+         section {
+             background-color: #fdfdfd;
+             border: 1px solid #eee;
+             border-radius: 10px;
+             padding: 25px;
+             margin-bottom: 30px;
+             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+         }
     </style>
 </head>
 <body>
   <div class="container">
-    <h1>Registro de Partido</h1>
+    <h1 class="text-2xl font-bold mb-4 text-center">Registro de Partido</h1>
 
-    <div id="alineacionInicialFields">
-        <label for="categoria">Categoría:</label>
-        <select id="categoria">
-          <option value="">Seleccione una categoría</option>
-           <option value="7ma_fem">7ma</option>
-          <option value="6ta_fem">6ta</option>
-          <option value="5ta_fem">5ta</option>
-          <option value="1ra_fem">1ra Femenina</option>
-          <option value="1ra_masc">1ra Masculina</option>
-              </select>
+    <section id="alineacionInicialFields">
+      <h2>Alineación Inicial</h2>
 
-        <label for="fecha">Fecha:</label>
-        <input type="text" id="fecha">
+      <label for="categoria">Categoría:</label>
+      <select id="categoria">
+        <option value="">Seleccione una categoría</option>
+        <option value="7ma_fem">7ma Femenina</option>
+        <option value="6ta_fem">6ta Femenina</option>
+        <option value="5ta_fem">5ta Femenina</option>
+        <option value="1ra_fem">1ra Femenina</option>
+        <option value="1ra_masc">1ra Masculina</option>
+      </select>
 
-        <h2>Alineaciones</h2>
+      <label for="fecha">Fecha:</label>
+      <input type="text" id="fecha" placeholder="Ej: 4">
 
-            <div class="alineaciones-row">
-            <div class="alineaciones-column">
-                <label>Jugadoras Titulares:</label>
-                <div id="titularesCheckboxes"> </div>
-            </div>
-            <div class="alineaciones-column">
-                <label>Jugadoras Suplentes:</label>
-                <div id="suplentesCheckboxes"> </div>
-            </div>
-        </div>
-    </div>
-
-        <div class="saved-info hidden">
-          <p><strong class="font-bold">Fecha Guardada:</strong> <span id="fechaGuardada"></span></p>
-          <p><strong class="font-bold">Titulares:</strong> <span id="titularesGuardados"></span></p>
-          <p><strong class="font-bold">Suplentes:</strong> <span id="suplentesGuardados"></span></p>
+      <div class="alineaciones-row">
+        <div class="alineaciones-column">
+          <label>Jugadoras Titulares:</label>
+          <div id="titularesCheckboxes">
+            <p class="text-gray-600">Selecciona una categoría...</p>
+          </div>
+        </div>
+        <div class="alineaciones-column">
+          <label>Jugadoras Suplentes:</label>
+          <div id="suplentesCheckboxes">
+            <p class="text-gray-600">Selecciona una categoría...</p>
+          </div>
+        </div>
       </div>
 
-    <button id="guardarAlineacionBtn" onclick="guardarAlineacion()"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full md:w-auto">
-        Guardar Alineación
-    </button>
+      <button id="guardarAlineacionBtn" onclick="guardarAlineacion()" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        Guardar Alineación
+      </button>
 
-    <h2>Tablero</h2>
-    <div id="marcador" class="scoreboard">
-        <div class="equipo equipo-local">
-            <div class="nombre">Palihue</div>
-            <div id="golesPropios" class="goles">0</div>
+      <div class="saved-info hidden">
+        <p><strong>Fecha Guardada:</strong> <span id="fechaGuardada"></span></p>
+        <p><strong>Titulares:</strong> <span id="titularesGuardados"></span></p>
+        <p><strong>Suplentes:</strong> <span id="suplentesGuardados"></span></p>
+      </div>
+    </section>
+
+    <section>
+    <h2 class="text-2xl font-bold mb-4 text-center">Marcador</h2>
+    <div id="marcador" class="scoreboard flex justify-center items-center gap-8 p-6 rounded-lg shadow-lg bg-gray-800 text-white max-w-md mx-auto">
+        <div class="equipo equipo-local flex flex-col items-center">
+        <div class="nombre text-lg font-semibold mb-2">Palihue</div>
+        <div id="golesPropios" class="goles text-6xl font-bold text-green-400">0</div>
         </div>
-        <div class="equipo equipo-rival">
-            <div class="nombre">Rival</div>
-            <div id="golesRival" class="goles">0</div>
+        <div class="equipo equipo-rival flex flex-col items-center">
+        <div class="nombre text-lg font-semibold mb-2">Rival</div>
+        <div id="golesRival" class="goles text-6xl font-bold text-red-400">0</div>
         </div>
     </div>
-    
+    </section>
 
 
-    <h2>Registrar Acción</h2>
+    <section>
+      <h2>Registrar Acción</h2>
 
-    <label for="accion">Acción:</label>
-    <select id="accion" disabled>
-      <option value="">Seleccione una acción</option>
-      <option value="Gol">Gol</option>
-      <option value="Gesto Bloqueo">Gesto Bloqueo</option>
-      <option value="Gesto Flick">Gesto Flick</option>
-      <option value="Gesto Salida Linea">Gesto Salida Linea</option>
-      <option value="Gesto a Favor">Gesto a Favor</option>
-      <option value="Gesto en Contra">Gesto en Contra</option>
-      <option value="Quite positivo">Quite positivo</option>
-      <option value="Quite negativo">Quite negativo</option>
-      <option value="Recuperación">Recuperación</option>
-      <option value="Tarjeta amarilla">Tarjeta amarilla</option>
-      <option value="Tarjeta verde">Tarjeta verde</option>
-      <option value="Tarjeta roja">Tarjeta roja</option>
-      <option value="Salida">Sustitución (Salida)</option>
-      <option value="Gol Rival">Gol Rival</option>
-    </select>
+      <label for="tipoAccion">Tipo de Acción:</label>
+      <select id="tipoAccion">
+        <option value="">Seleccione un tipo de acción</option>
+        <option value="Gol">Gol</option>
+        <option value="Gol Rival">Gol Rival</option>
+        <option value="Gestos">Gestos</option>
+        <option value="Quites">Quites</option>
+        <option value="Recuperacion">Recuperación</option>
+        <option value="Tarjetas">Tarjetas</option>
+        <option value="Faltas">Faltas</option>
+        <option value="Perdidas">Perdidas</option>
+        <option value="Salida">Sustitución (Salida)</option>
+        <option value="Cortos">Cortos</option>
+        <option value="TiroAlArco">Tiro al arco</option>
+      </select>
 
-    <label for="jugadora">Jugadora:</label>
-    <select id="jugadora" disabled>
-    <option value="">Seleccione una jugadora</option>
-    </select>
+      <label for="accion">Acción:</label>
+      <select id="accion" disabled>
+        <option value="">Seleccione una acción</option>
+      </select>
 
-
-    <div id="camposSustitucion" class="hidden">
-      <label for="quienEntra">Quién entra:</label>
-      <select id="quienEntra">
+      <label for="jugadora">Jugadora:</label>
+      <select id="jugadora" disabled>
         <option value="">Seleccione una jugadora</option>
       </select>
 
-      <label for="minuto">Minuto:</label>
-      <input type="number" id="minuto" min="1" max="60" placeholder="Ej: 25">
-    </div>
+      <div id="camposSustitucion" style="display: none;">
+        <label for="quienEntra">Quién entra:</label>
+        <select id="quienEntra">
+          <option value="">Seleccione una jugadora</option>
+        </select>
 
-    <div id="camposGolRival" class="hidden">
-    <label for="descripcionGolRival">Descripción Gol Rival:</label>
-    <input type="text" id="descripcionGolRival" placeholder="Ej: Corner corto, error en la salida, etc">
+        <label for="minuto">Minuto:</label>
+        <input type="number" id="minuto" min="1" max="60" placeholder="Ej: 25">
+      </div>
 
-    <label for="minutoGolRival">Minuto:</label>
-    <input type="number" id="minutoGolRival" min="1" max="60" placeholder="Ej: 25">
-    </div>
+      <div id="camposGolRival" style="display: none;">
+        <!-- Se han eliminado los campos de descripción y minuto para Gol Rival -->
+      </div>
 
-    <button onclick="registrarAccion()">Registrar Acción</button>
+      <button onclick="registrarAccion()" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        Registrar Acción
+      </button>
 
-    <h2>Acciones Registradas</h2>
-    <ul id="accionesRegistradas"></ul>
+      <h2>Acciones Registradas</h2>
+      <ul id="accionesRegistradas"></ul>
 
-    <button id="finalizarPartido" onclick="finalizarPartido()">Finalizar Partido y Guardar</button>
+      <button id="finalizarPartido" onclick="finalizarPartido()" class="w-full">
+        Finalizar Partido y Guardar
+      </button>
+    </section>
   </div>
 
 <script>
     // Las URLs de tus Netlify Functions
-    // Netlify expone las funciones en una ruta '/.netlify/functions/' seguida del nombre del archivo
     const GET_JUGADORAS_FUNCTION_URL = '/.netlify/functions/getJugadoras';
-    const SAVE_ACTIONS_FUNCTION_URL = '/.netlify/functions/saveActions'; // Asegúrate de que esta función exista
+    const SAVE_ACTIONS_FUNCTION_URL = '/.netlify/functions/saveActions';
 
     // Variables para manejar el estado del partido y las jugadoras
     let titulares = [];
@@ -421,22 +471,58 @@
     let golesPropios = 0;
     let golesRival = 0;
 
+    const accionesPorTipo = {
+        "Gestos": [
+            { value: "Gesto Bloqueo", text: "Gesto Bloqueo", icon: "fas fa-shield-alt" },
+            { value: "Gesto Flick", text: "Gesto Flick", icon: "fas fa-hand-point-up" },
+            { value: "Gesto Salida Linea", text: "Gesto Salida Línea", icon: "fas fa-ruler-horizontal" },
+            { value: "Gesto Salida X", text: "Gesto Salida X", icon: "fas fa-times-circle" },
+            { value: "Gesto Salida al medio", text: "Gesto Salida al medio", icon: "fas fa-arrows-alt-h" }
+        ],
+        "Quites": [
+            { value: "Quite positivo", text: "Quite positivo", icon: "fas fa-hand-rock" },
+            { value: "Quite negativo", text: "Quite negativo", icon: "fas fa-hand-paper" }
+        ],
+        "Tarjetas": [
+            { value: "Tarjeta amarilla", text: "Tarjeta amarilla", icon: "fas fa-square", color: "yellow" },
+            { value: "Tarjeta verde", text: "Tarjeta verde", icon: "fas fa-square", color: "limegreen" },
+            { value: "Tarjeta roja", text: "Tarjeta roja", icon: "fas fa-square", color: "red" }
+        ],
+        "Faltas": [
+            { value: "Falta dentro del area", text: "Falta dentro del área", icon: "fas fa-exclamation-triangle" },
+            { value: "Falta fuera del area", text: "Falta fuera del área", icon: "fas fa-exclamation-circle" },
+            { value: "Falta recibida", text: "Falta recibida", icon: "fas fa-handshake" }
+        ],
+        "Perdidas": [
+            { value: "Perdida antes de mitad de cancha", text: "Pérdida antes de mitad de cancha", icon: "fas fa-arrow-left" },
+            { value: "Perdida antes de 23", text: "Pérdida antes de 23", icon: "fas fa-arrow-down" },
+            { value: "Perdida despues de 23", text: "Pérdida después de 23", icon: "fas fa-arrow-right" }
+        ],
+        "Cortos": [
+            { value: "Corto a Favor", text: "Corto a Favor", icon: "fas fa-plus-circle" },
+            { value: "Corto en Contra", text: "Corto en Contra", icon: "fas fa-minus-circle" }
+        ]
+    };
+
+    // Tipos que son acciones directas (no necesitan elegir acción extra)
+    const tiposDirectos = {
+        "Gol": { value: "Gol", text: "Gol", icon: "fas fa-futbol" },
+        "Gol Rival": { value: "Gol Rival", text: "Gol Rival", icon: "fas fa-flag" },
+        "Recuperacion": { value: "Recuperación", text: "Recuperación", icon: "fas fa-redo-alt" },
+        "Salida": { value: "Salida", text: "Sustitución (Salida)", icon: "fas fa-exchange-alt" },
+        "TiroAlArco": { value: "Tiro al arco", text: "Tiro al arco", icon: "fas fa-bullseye" }
+    };
+
+    const tipoAccionSelect = document.getElementById("tipoAccion");
+    const accionSelect = document.getElementById("accion");
+    const jugadoraSelect = document.getElementById("jugadora");
+    const camposSustitucion = document.getElementById("camposSustitucion");
+    const camposGolRival = document.getElementById("camposGolRival");
+
 
     // --- PWA: Registrar el Service Worker ---
-    // Esto permite que tu app sea instalable y funcione offline (con la caché básica configurada en sw.js)
-    // Asegúrate de crear el archivo sw.js en la raíz de tu proyecto Netlify
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            // Asegúrate de que sw.js esté en la raíz para que el scope sea correcto
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('Service Worker registrado con éxito:', registration);
-                })
-                .catch(error => {
-                    console.error('Fallo el registro del Service Worker:', error);
-                });
-        });
-    }
+    // Se ha eliminado el código de registro del Service Worker para evitar errores en entornos sandboxed.
+    // Si necesitas funcionalidades PWA (offline, etc.), considera desplegar la aplicación en un servidor web completo.
     // --- FIN PWA: Registrar Service Worker ---
 
 
@@ -450,12 +536,12 @@
 
         if (!categoria) {
             titularesCheckboxesDiv.innerHTML = '<p class="text-gray-600">Selecciona una categoría...</p>';
-            suplentesCheckboxesDiv.innerHTML = '';
+            suplentesCheckboxesDiv.innerHTML = '<p class="text-gray-600">Selecciona una categoría...</p>';
             return;
         }
 
         titularesCheckboxesDiv.innerHTML = '<p class="text-gray-600">Cargando...</p>';
-        suplentesCheckboxesDiv.innerHTML = '';
+        suplentesCheckboxesDiv.innerHTML = '<p class="text-gray-600">Cargando...</p>';
 
         try {
             const url = `${GET_JUGADORAS_FUNCTION_URL}?categoria=${encodeURIComponent(categoria)}`;
@@ -475,6 +561,7 @@
 
                 if (!jugadoras || jugadoras.length === 0) {
                     titularesCheckboxesDiv.innerHTML = '<p class="text-gray-600">No hay jugadoras registradas para esta categoría.</p>';
+                    suplentesCheckboxesDiv.innerHTML = '<p class="text-gray-600">No hay jugadoras registradas para esta categoría.</p>';
                     return;
                 }
 
@@ -526,56 +613,156 @@
             } else {
                 onFailure(new Error(responseJson.message)); // Manejar error del backend
                 titularesCheckboxesDiv.innerHTML = '<p class="text-red-600">Error al cargar jugadoras.</p>';
-                suplentesCheckboxesDiv.innerHTML = '';
+                suplentesCheckboxesDiv.innerHTML = '<p class="text-red-600">Error al cargar jugadoras.</p>';
             }
         } catch (error) {
             console.error('Error al obtener jugadoras:', error);
             onFailure(error); // Manejar errores de red o fetch
             titularesCheckboxesDiv.innerHTML = '<p class="text-red-600">Error al cargar jugadoras.</p>';
-            suplentesCheckboxesDiv.innerHTML = '';
+            suplentesCheckboxesDiv.innerHTML = '<p class="text-red-600">Error al cargar jugadoras.</p>';
         }
     }
 
-    // Función que se llama cuando cambia la selección de acción
-   function accionSeleccionada() {
-    const accion = document.getElementById("accion").value;
-    const camposSustitucion = document.getElementById("camposSustitucion");
-    const camposGolRival = document.getElementById("camposGolRival");
-    const jugadora = document.getElementById("jugadora");
+    // Función para guardar la alineación inicial y configurar el estado
+    function guardarAlineacion() {
+        const guardarBtn = document.getElementById('guardarAlineacionBtn');
+        const alineacionFieldsDiv = document.getElementById('alineacionInicialFields');
+        const savedInfoDiv = document.querySelector('.saved-info');
 
-    // Resetear todo primero
-    jugadora.disabled = false;
-    jugadora.placeholder = "Selecciona una jugadora";
+        guardarBtn.disabled = true;
 
-    camposSustitucion.style.display = "none";
-    camposGolRival.style.display = "none";
+        const fecha = document.getElementById('fecha').value.trim();
+        if (!fecha) {
+            alert("Por favor, ingresa la fecha del partido.");
+            guardarBtn.disabled = false;
+            return;
+        }
 
-    document.getElementById("descripcionGolRival").value = "";
-    document.getElementById("minutoGolRival").value = "";
-    document.getElementById("minuto").value = "";
-    document.getElementById("quienEntra").value = "";
+        titulares = Array.from(document.querySelectorAll('#titularesCheckboxes input:checked')).map(cb => cb.value);
+        suplentes = Array.from(document.querySelectorAll('#suplentesCheckboxes input:checked')).map(cb => cb.value);
 
-    if (accion === "Gol Rival") {
-        // Mostrar campos de gol rival y deshabilitar select jugadora
-        camposGolRival.classList.remove('hidden');
+        let duplicados = titulares.filter(t => suplentes.includes(t));
+        if (duplicados.length > 0) {
+            alert("Error: La misma jugadora no puede ser titular y suplente. Duplicados: " + duplicados.join(", "));
+            guardarBtn.disabled = false;
+            return;
+        }
+        if (titulares.length === 0) {
+            alert("Por favor, selecciona al menos una jugadora titular.");
+            guardarBtn.disabled = false;
+            return;
+        }
 
-        // Verificá si realmente el elemento existe
-        if (jugadora) {
-            jugadora.disabled = true;
-            jugadora.placeholder = "No aplica";
-            jugadora.value = "";  // Limpiamos selección
+        playerStatus = {};
+        titulares.forEach(j => { if (j) playerStatus[j] = { role: "Titular", status: "In_Field" }; });
+        suplentes.forEach(j => { if (j) playerStatus[j] = { role: "Suplente", status: "On_Bench" }; });
+        console.log("Estado inicial de jugadoras:", JSON.stringify(playerStatus));
+
+        document.getElementById('fechaGuardada').textContent = fecha;
+        document.getElementById('titularesGuardados').textContent = titulares.join(", ") || "Ninguno";
+        document.getElementById('suplentesGuardados').textContent = suplentes.join(", ") || "-";
+
+        alineacionFieldsDiv.classList.add('hidden');
+        savedInfoDiv.classList.remove('hidden');
+
+        document.getElementById('categoria').disabled = true;
+        document.getElementById('fecha').disabled = true;
+        document.querySelectorAll('#titularesCheckboxes input').forEach(chk => chk.disabled = true);
+        document.querySelectorAll('#suplentesCheckboxes input').forEach(chk => chk.disabled = true);
+        
+        // Resetear y deshabilitar los selects de acción y jugadora al guardar alineación
+        tipoAccionSelect.value = "";
+        accionSelect.innerHTML = '<option value="">Seleccione una acción</option>';
+        accionSelect.disabled = true;
+        jugadoraSelect.value = "";
+        jugadoraSelect.disabled = true;
+
+
+        document.getElementById('accionesRegistradas').innerHTML = '';
+        accionesRegistradas = [];
+        dataToSave = [];
+
+        actualizarSelectsJugadorasAccion(); // Populate jugadoraSelect with In_Field players
+
+        alert("Alineación guardada. Ahora puedes registrar acciones.");
+    }
+
+    // Función que se llama cuando cambia la selección de tipo de acción
+    tipoAccionSelect.addEventListener("change", function() {
+        const tipo = this.value;
+
+        // Resetear selects y ocultar campos especiales
+        accionSelect.innerHTML = '<option value="">Seleccione una acción</option>';
+        accionSelect.disabled = true;
+        jugadoraSelect.value = "";
+        jugadoraSelect.disabled = true;
+        camposSustitucion.style.display = "none";
+        camposGolRival.style.display = "none"; // Ocultar siempre camposGolRival
+
+        // Limpiar campos de entrada de acciones especiales
+        // document.getElementById("descripcionGolRival").value = ""; // Eliminado
+        // document.getElementById("minutoGolRival").value = ""; // Eliminado
+        document.getElementById("minuto").value = "";
+        document.getElementById("quienEntra").value = "";
+
+        if (!tipo) return; // Si no se seleccionó nada, no hacer nada más
+
+        if (tiposDirectos[tipo]) {
+            // Si es un tipo de acción directo (Gol, Gol Rival, Recuperacion, Salida, TiroAlArco)
+            const accionDirecta = tiposDirectos[tipo];
+            
+            // Añadir la opción directa al select de acción
+            const option = document.createElement("option");
+            option.value = accionDirecta.value;
+            option.textContent = accionDirecta.text;
+            accionSelect.appendChild(option);
+            accionSelect.value = accionDirecta.value; // Seleccionar automáticamente la acción directa
+            accionSelect.disabled = true; // Deshabilitar el select de acción si es un tipo directo
+
+            // Manejar visibilidad de campos y habilitación de jugadora según el tipo directo
+            if (tipo === "Gol Rival") {
+                jugadoraSelect.disabled = true; // Jugadora no aplica para Gol Rival
+            } else if (tipo === "Salida") {
+                camposSustitucion.style.display = "block";
+                actualizarQuienEntra();
+                jugadoraSelect.disabled = false; // Jugadora que sale
+            } else {
+                jugadoraSelect.disabled = false; // Jugadora que realiza la acción
+            }
+
+        } else if (accionesPorTipo[tipo]) {
+            // Si es un tipo de acción que agrupa otras (Gestos, Quites, Tarjetas, Faltas, Perdidas, Cortos)
+            accionesPorTipo[tipo].forEach(accion => {
+                const option = document.createElement("option");
+                option.value = accion.value;
+                // Crear un span para el texto y el ícono
+                const span = document.createElement('span');
+                if (accion.icon) {
+                    const icon = document.createElement('i');
+                    icon.className = accion.icon;
+                    if (accion.color) icon.style.color = accion.color;
+                    span.appendChild(icon);
+                    span.appendChild(document.createTextNode(' ')); // Espacio entre ícono y texto
+                }
+                span.appendChild(document.createTextNode(accion.text));
+                option.appendChild(span);
+                accionSelect.appendChild(option);
+            });
+            accionSelect.disabled = false; // Habilitar el select de acción para elegir la sub-acción
+            jugadoraSelect.disabled = true; // Deshabilitar jugadora hasta que se elija una sub-acción
+        }
+    });
+
+    // Cuando se selecciona una acción (sub-acción), habilitar jugadora
+    accionSelect.addEventListener("change", function() {
+        // Solo habilitar jugadora si la acción seleccionada no es vacía
+        // y si el tipo de acción no es "Gol Rival" (ya que esa no lleva jugadora)
+        if (this.value && tipoAccionSelect.value !== "Gol Rival") {
+            jugadoraSelect.disabled = false;
         } else {
-            console.warn("No se encontró el select 'jugadora'");
+            jugadoraSelect.disabled = true;
         }
-    } else if (accion === "Salida") {
-        camposSustitucion.style.display = "block";
-        actualizarQuienEntra();
-    }
-}
-
-
-    // Asociar la función accionSeleccionada al evento change del select de acción
-    document.getElementById('accion').addEventListener('change', accionSeleccionada);
+    });
 
 
     // Función para actualizar el select de 'quienEntra' (jugadoras en el banco)
@@ -624,109 +811,40 @@
     }
 
 
-    function guardarAlineacion() {
-        // Obtener referencias a los elementos
-        const guardarBtn = document.getElementById('guardarAlineacionBtn');
-        const alineacionFieldsDiv = document.getElementById('alineacionInicialFields'); // Referencia al div que contiene los campos de alineación
-        const savedInfoDiv = document.querySelector('.saved-info'); // Referencia al div que muestra la info guardada
-
-        // Deshabilitar el botón inmediatamente
-        guardarBtn.disabled = true;
-        // Opcional: Cambiar texto o añadir clase para indicar estado
-        // guardarBtn.textContent = 'Guardando...'; // Puedes añadir esto si quieres
-
-        const fecha = document.getElementById('fecha').value.trim();
-        if (!fecha) {
-            alert("Por favor, ingresa la fecha del partido.");
-            // Si hay un error de validación, re-habilitar el botón
-            guardarBtn.disabled = false;
-            // guardarBtn.textContent = 'Guardar Alineación'; // Resetear texto
-            return;
-        }
-
-        // Obtener jugadoras seleccionadas
-        titulares = Array.from(document.querySelectorAll('#titularesCheckboxes input:checked')).map(cb => cb.value);
-        suplentes = Array.from(document.querySelectorAll('#suplentesCheckboxes input:checked')).map(cb => cb.value);
-
-        // Validaciones
-        let duplicados = titulares.filter(t => suplentes.includes(t));
-        if (duplicados.length > 0) {
-            alert("Error: La misma jugadora no puede ser titular y suplente. Duplicados: " + duplicados.join(", "));
-            // Si hay un error de validación, re-habilitar el botón
-            guardarBtn.disabled = false;
-            // guardarBtn.textContent = 'Guardar Alineación'; // Resetear texto
-            return;
-        }
-        if (titulares.length === 0) {
-            alert("Por favor, selecciona al menos una jugadora titular.");
-            // Si hay un error de validación, re-habilitar el botón
-            guardarBtn.disabled = false;
-            // guardarBtn.textContent = 'Guardar Alineación'; // Resetear texto
-            return;
-        }
-
-        // --- Inicializar playerStatus ---
-        playerStatus = {}; // Resetear estado
-        titulares.forEach(j => { if (j) playerStatus[j] = { role: "Titular", status: "In_Field" }; });
-        suplentes.forEach(j => { if (j) playerStatus[j] = { role: "Suplente", status: "On_Bench" }; });
-        console.log("Estado inicial de jugadoras:", JSON.stringify(playerStatus));
-        // --- Fin Inicialización ---
-
-        // Mostrar alineación guardada en el div .saved-info
-        document.getElementById('fechaGuardada').textContent = fecha;
-        document.getElementById('titularesGuardados').textContent = titulares.join(", ") || "Ninguno";
-        document.getElementById('suplentesGuardados').textContent = suplentes.join(", ") || "-"; // Usar "-" si no hay suplentes
-
-        // --- Ocultar los campos de alineación y mostrar la info guardada ---
-        alineacionFieldsDiv.classList.add('hidden'); // Ocultar el div que contiene los campos de alineación
-        savedInfoDiv.classList.remove('hidden'); // Mostrar el div que muestra la información guardada
-
-        // Deshabilitar campos de alineación (aunque ya están ocultos, es buena práctica) y habilitar campos de acción
-        document.getElementById('categoria').disabled = true;
-        document.getElementById('fecha').disabled = true;
-        document.querySelectorAll('#titularesCheckboxes input').forEach(chk => chk.disabled = true); // Deshabilitar checkboxes de titulares
-        document.querySelectorAll('#suplentesCheckboxes input').forEach(chk => chk.disabled = true); // Deshabilitar checkboxes de suplentes
-        document.getElementById('jugadora').disabled = false; // Habilitar select de jugadora para acciones
-        document.getElementById('accion').disabled = false; // Habilitar select de acción
-
-
-        // Limpiar lista de acciones registradas previas
-        document.getElementById('accionesRegistradas').innerHTML = '';
-        accionesRegistradas = [];
-        dataToSave = []; // Limpiar datos a guardar
-
-        // Actualizar dropdowns de jugadoras disponibles para acciones
-        actualizarSelectsJugadorasAccion();
-
-        // Mostrar mensaje de éxito
-        alert("Alineación guardada. Ahora puedes registrar acciones.");
-        // El botón Guardar ya está deshabilitado, no es necesario hacer nada más aquí para él.
-    }
-
-
     // Función para registrar una acción individual (gol, gesto, sustitución)
     function registrarAccion() {
-        const jugadora = document.getElementById('jugadora').value;
-        const accion = document.getElementById('accion').value;
+        let jugadora = jugadoraSelect.value;
+        const tipoAccion = tipoAccionSelect.value;
+        const accion = accionSelect.value;
         const quienEntra = document.getElementById('quienEntra').value;
         const minuto = document.getElementById('minuto').value;
+        // const descripcionGolRival = document.getElementById("descripcionGolRival").value.trim(); // Eliminado
+        // const minutoGolRival = parseFloat(document.getElementById("minutoGolRival").value.trim()); // Eliminado
 
-        // Validaciones básicas
-        if (accion !== "Gol Rival" && !jugadora) { // <--- ESTA ES LA LÍNEA MODIFICADA
+        // Validaciones básicas: Si es un tipo directo, la acción es el tipo. Si no, la acción es el valor del segundo select.
+        let accionFinal = "";
+        if (tiposDirectos[tipoAccion]) {
+            accionFinal = tiposDirectos[tipoAccion].value;
+        } else if (accionesPorTipo[tipoAccion]) {
+            accionFinal = accion;
+        }
+
+        // Validación de jugadora (solo si no es Gol Rival)
+        if (accionFinal !== "Gol Rival" && !jugadora) {
             alert("Por favor, selecciona una jugadora.");
             return;
         }
-        if (!accion) {
+        // Validación de acción (si aplica)
+        if (!accionFinal || (accionesPorTipo[tipoAccion] && !accion)) {
             alert("Por favor, selecciona una acción.");
             return;
         }
 
-        let accionTexto = accion; // Texto a mostrar en la lista visual
+        let accionTextoVisual = ""; // Texto a mostrar en la lista visual
         let valorAccion = 1; // Valor por defecto para la mayoría de acciones
         let dataRows = []; // Datos a añadir a dataToSave
 
-        if (accion === "Salida") {
-            // Validaciones específicas para sustitución
+        if (accionFinal === "Salida") {
             if (!minuto || parseFloat(minuto) <= 0 || parseFloat(minuto) > 60) {
                 alert("Por favor, ingresa un minuto válido para la sustitución (1-60).");
                 return;
@@ -736,7 +854,6 @@
                 return;
             }
 
-            // Validar estados de las jugadoras involucradas usando playerStatus
             if (!playerStatus[jugadora] || playerStatus[jugadora].status !== "In_Field") {
                 alert(`Error: ${jugadora} no parece estar 'En Campo'. No se puede registrar la salida.`);
                 return;
@@ -746,226 +863,218 @@
                 return;
             }
 
-            // Formato para la lista visual y los datos a guardar
-            accionTexto = `Sale (${minuto}') / Entra ${quienEntra}`;
-            dataRows.push([jugadora, `Sale minuto ${minuto}`, parseFloat(minuto)]); // Guardar minuto de salida
-            dataRows.push([quienEntra, `Entra minuto ${minuto}`, parseFloat(minuto)]); // Guardar minuto de entrada
+            accionTextoVisual = `${jugadora} - Sale (${minuto}') / Entra ${quienEntra}`;
+            dataRows.push([jugadora, `Sale minuto ${minuto}`, parseFloat(minuto)]);
+            dataRows.push([quienEntra, `Entra minuto ${minuto}`, parseFloat(minuto)]);
 
-            // --- Actualizar Estado LOCAL en playerStatus ---
-            playerStatus[jugadora].status = "On_Bench"; // La jugadora que sale va al banco
-            playerStatus[quienEntra].status = "In_Field"; // La jugadora que entra va al campo
+            playerStatus[jugadora].status = "On_Bench";
+            playerStatus[quienEntra].status = "In_Field";
             console.log(`Estado actualizado: ${jugadora}->On_Bench, ${quienEntra}->In_Field`);
 
-            // Re-poblar los dropdowns después del cambio de estado
             actualizarSelectsJugadorasAccion();
 
-        } else { // Otras acciones (Gol, Gesto, etc.)
-            // No se necesita validar minuto o quienEntra para estas acciones
-            if (accion === "Gol") {
-                valorAccion = 1;
+        } else if (accionFinal === "Gol Rival") {
+            jugadora = "Equipo Rival"; // Asignar para la visualización
+            accionTextoVisual = `Gol Rival`; // Texto simplificado
+            golesRival++;
+            document.getElementById('golesRival').textContent = golesRival;
+            // IMPORTANTE: No se añade a dataToSave para Gol Rival, solo se actualiza el marcador
+        } else { // Otras acciones (Gol, Gestos, Tarjetas, Quites, Recuperacion, etc.)
+            if (accionFinal === "Gol") {
                 golesPropios++;
-            } else if (accion === "Gol Rival") {
-                golesRival++;
+                document.getElementById('golesPropios').textContent = golesPropios;
             }
-
-            // Actualizar el tablero visual
-            const golesPropiosEl = document.getElementById('golesPropios');
-            const golesRivalEl = document.getElementById('golesRival');
-            if (golesPropiosEl) golesPropiosEl.textContent = golesPropios;
-            if (golesRivalEl) golesRivalEl.textContent = golesRival;
-
-            dataRows.push([jugadora, accion, valorAccion]); // Guardar la acción y su valor
+            // Buscar el texto visual de la acción para la lista
+            let foundAction = null;
+            if (tiposDirectos[tipoAccion]) {
+                foundAction = tiposDirectos[tipoAccion];
+            } else if (accionesPorTipo[tipoAccion]) {
+                foundAction = accionesPorTipo[tipoAccion].find(a => a.value === accion);
+            }
+            accionTextoVisual = `${jugadora} - ${foundAction ? foundAction.text : accionFinal}`;
+            dataRows.push([jugadora, accionFinal, valorAccion]);
         }
 
-        // Añadir los datos generados a la lista global para guardar
-        dataToSave.push(...dataRows);
+        // Añadir los datos generados a la lista global para guardar, SOLO SI NO ES GOL RIVAL
+        if (accionFinal !== "Gol Rival") {
+            dataToSave.push(...dataRows);
+        }
 
         // Actualizar la lista visual de acciones registradas en el HTML
-        let accionRegistradaVisual = `${jugadora} - ${accionTexto}`;
-
-        // Crear el <li> antes de verificar si es gol rival
         let li = document.createElement('li');
-        li.textContent = accionRegistradaVisual;
+        li.textContent = accionTextoVisual;
 
-        // Si es gol rival, aplicar color rojo
-        if (accionTexto === "Gol Rival") {
-            li.style.color = 'red';  // O li.classList.add('gol-rival') si usás CSS
+        // Añadir ícono a la lista de acciones registradas
+        let iconInfo = null;
+        if (tiposDirectos[tipoAccion] && tiposDirectos[tipoAccion].value === accionFinal) {
+            iconInfo = tiposDirectos[tipoAccion];
+        } else if (accionesPorTipo[tipoAccion]) {
+            iconInfo = accionesPorTipo[tipoAccion].find(a => a.value === accionFinal);
         }
 
-        accionesRegistradas.push(accionRegistradaVisual);
+        if (iconInfo && iconInfo.icon) {
+            const icon = document.createElement('i');
+            icon.className = iconInfo.icon;
+            if (iconInfo.color) icon.style.color = iconInfo.color;
+            li.prepend(icon);
+        }
 
-        let ul = document.getElementById('accionesRegistradas');
-        ul.appendChild(li);
+        if (accionFinal === "Gol Rival") {
+            li.classList.add('gol-rival');
+        }
 
-        // Limpiar campos del formulario de acción (excepto la jugadora)
-        document.getElementById('accion').value = "";
+        document.getElementById('accionesRegistradas').appendChild(li);
+
+        // Limpiar campos del formulario de acción y ocultar campos especiales
+        tipoAccionSelect.value = "";
+        accionSelect.innerHTML = '<option value="">Seleccione una acción</option>';
+        accionSelect.disabled = true;
+        jugadoraSelect.value = "";
+        jugadoraSelect.disabled = true;
+        camposSustitucion.style.display = 'none';
+        camposGolRival.style.display = 'none';
+        // document.getElementById('descripcionGolRival').value = ""; // Eliminado
+        // document.getElementById('minutoGolRival').value = ""; // Eliminado
         document.getElementById('minuto').value = "";
         document.getElementById('quienEntra').value = "";
-        document.getElementById('camposSustitucion').style.display = 'none'; // Ocultar campos de sustitución
-        document.getElementById('camposGolRival').style.display = 'none'
-        document.getElementById('descripcionGolRival').value = "";
-        document.getElementById('minutoGolRival').value = "";
-        document.getElementById('jugadora').disabled = true;
-        document.getElementById('tablero').textContent = `Palihue ${golesPropios} - ${golesRival} Rival`;
-
-        // document.getElementById('jugadora').value = ""; // Ya no limpiamos la jugadora aquí
     }
 
 
     // Función para finalizar el partido y enviar todos los datos a la Netlify Function (POST)
     async function finalizarPartido() {
-        let fecha = document.getElementById('fechaGuardada').textContent; // Tomar la fecha ya guardada
-        let categoria = categoriaSeleccionada; // Usar la categoría seleccionada al inicio
+        let fecha = document.getElementById('fechaGuardada').textContent;
+        let categoria = categoriaSeleccionada;
 
         if (!fecha) {
             alert("Primero debe guardar la alineación inicial.");
             return;
         }
-         if (!categoria) {
+        if (!categoria) {
             alert("No se ha seleccionado una categoría.");
             return;
         }
 
-
         console.log("Finalizando partido. Datos a guardar:", dataToSave);
 
-        // Deshabilitar botón para evitar doble envío
         document.getElementById('finalizarPartido').disabled = true;
         document.getElementById('finalizarPartido').textContent = 'Guardando...';
 
-        // Preparar los datos para enviar en el cuerpo de la petición POST
         const postData = {
             fecha: fecha,
-            accionesData: dataToSave, // Enviar todos los datos acumulados
-            titulares: titulares, // Enviar la lista de titulares inicial (opcional, si la función lo necesita)
-            suplentes: suplentes, // Enviar la lista de suplentes inicial (opcional)
-            categoria: categoria // Enviar la categoría
+            accionesData: dataToSave,
+            titulares: titulares,
+            suplentes: suplentes,
+            categoria: categoria,
+            golesPropios: golesPropios,
+            golesRival: golesRival
         };
 
-        // --- Usar fetch para llamar a la Netlify Function saveActions ---
         try {
             const response = await fetch(SAVE_ACTIONS_FUNCTION_URL, {
-                method: 'POST', // Especifica el método POST
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json', // Indica que el cuerpo es JSON
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(postData), // Convierte el objeto JS a una cadena JSON para el cuerpo
+                body: JSON.stringify(postData),
             });
 
-            // Verificar si la respuesta HTTP es exitosa (códigos 2xx)
             if (!response.ok) {
-                 // Si la respuesta no es OK, lanzar un error con el estado HTTP
                 throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
             }
-            // Parsear la respuesta como JSON
             const responseJson = await response.json();
 
-            // Aquí manejas la respuesta JSON de tu Netlify Function
             console.log('Respuesta de Netlify Function (saveActions):', responseJson);
             if (responseJson.status === 'success') {
-                // Si el backend reportó éxito
-                onFinalizarSuccess(responseJson.message); // Llama a tu manejador de éxito con el mensaje del backend
+                onFinalizarSuccess(responseJson.message);
             } else {
-                // Si el backend reportó un error lógico (status: 'error')
-                onFailure(new Error(responseJson.message)); // Llama a tu manejador de errores con el mensaje del backend
+                onFailure(new Error(responseJson.message));
             }
         } catch (error) {
-            // Capturar errores de red o errores durante el fetch/parseo
             console.error('Error al guardar acciones:', error);
-            onFailure(error); // Llama a tu manejador de errores
+            onFailure(error);
         }
-        // --- FIN fetch ---
     }
 
     // Función que se ejecuta si la llamada a la Netlify Function es exitosa
-   function onFinalizarSuccess(message) {
+    function onFinalizarSuccess(message) {
         console.log("Éxito:", message);
         alert("¡Partido finalizado y datos guardados exitosamente!");
 
-        // Obtener referencias a los elementos
-        const alineacionFieldsDiv = document.getElementById('alineacionInicialFields'); // Referencia al div que contiene los campos de alineación
-        const savedInfoDiv = document.querySelector('.saved-info'); // Referencia al div que muestra la info guardada
-        const guardarBtn = document.getElementById('guardarAlineacionBtn'); // Referencia al botón Guardar Alineación
+        const alineacionFieldsDiv = document.getElementById('alineacionInicialFields');
+        const savedInfoDiv = document.querySelector('.saved-info');
+        const guardarBtn = document.getElementById('guardarAlineacionBtn');
 
-        // --- Reiniciar la interfaz para un nuevo partido ---
         document.getElementById('fecha').value = '';
         document.getElementById('fecha').disabled = false;
         document.getElementById('categoria').value = '';
         document.getElementById('categoria').disabled = false;
 
-        // --- Mostrar los campos de alineación y ocultar la info guardada ---
-        alineacionFieldsDiv.classList.remove('hidden'); // Mostrar el div que contiene los campos de alineación
-        savedInfoDiv.classList.add('hidden'); // Ocultar el div que muestra la información guardada
+        alineacionFieldsDiv.classList.remove('hidden');
+        savedInfoDiv.classList.add('hidden');
 
         document.getElementById('fechaGuardada').textContent = '';
         document.getElementById('titularesGuardados').textContent = '';
         document.getElementById('suplentesGuardados').textContent = '';
-        document.getElementById('titularesCheckboxes').innerHTML = '<p class="text-gray-600">Selecciona una categoría...</p>'; // Resetear mensaje inicial
-        document.getElementById('suplentesCheckboxes').innerHTML = '';
-        document.getElementById('jugadora').innerHTML = '<option value="">Seleccione una jugadora</option>';
-        document.getElementById('accion').value = '';
-        document.getElementById('accion').disabled = true;
-        document.getElementById('jugadora').disabled = true;
-        document.getElementById('quienEntra').innerHTML = '<option value="">Seleccione una jugadora</option>'; // Limpiar también este select
-        document.getElementById('minuto').value = ''; // Limpiar el minuto
-        document.getElementById('camposSustitucion').style.display = 'none'; // Ocultar campos de sustitución
+        document.getElementById('titularesCheckboxes').innerHTML = '<p class="text-gray-600">Selecciona una categoría...</p>';
+        document.getElementById('suplentesCheckboxes').innerHTML = '<p class="text-gray-600">Selecciona una categoría...</p>';
+        
+        // Resetear y deshabilitar los selects de acción y jugadora al reiniciar
+        tipoAccionSelect.value = "";
+        accionSelect.innerHTML = '<option value="">Seleccione una acción</option>';
+        accionSelect.disabled = true;
+        jugadoraSelect.value = "";
+        jugadoraSelect.disabled = true;
+        
+        document.getElementById('quienEntra').innerHTML = '<option value="">Seleccione una jugadora</option>';
+        document.getElementById('minuto').value = '';
+        camposSustitucion.style.display = 'none';
+        camposGolRival.style.display = 'none'; // Asegurarse de ocultar también al reiniciar
+
         document.getElementById('accionesRegistradas').innerHTML = '';
         document.getElementById('finalizarPartido').disabled = false;
         document.getElementById('finalizarPartido').textContent = 'Finalizar Partido y Guardar';
 
-        // --- Re-habilitar el botón de Guardar Alineación ---
         if (guardarBtn) {
             guardarBtn.disabled = false;
-            guardarBtn.textContent = 'Guardar Alineación'; // Resetear texto si se cambió
+            guardarBtn.textContent = 'Guardar Alineación';
         }
 
-        // Resetear variables globales
         titulares = [];
         suplentes = [];
         accionesRegistradas = [];
         dataToSave = [];
-        playerStatus = {}; // Importante resetear playerStatus
+        playerStatus = {};
         categoriaSeleccionada = "";
-
-        // Opcional: Mostrar un mensaje de confirmación en la UI en lugar de solo alert
-        // Por ejemplo, un div con un mensaje verde.
+        golesPropios = 0;
+        golesRival = 0;
+        document.getElementById('golesPropios').textContent = golesPropios;
+        document.getElementById('golesRival').textContent = golesRival;
     }
-
 
     // Función que se ejecuta si hay un error en la llamada a la Netlify Function
     function onFailure(error) {
         console.error('Error al llamar a Netlify Function:', error);
-        // Mostrar un mensaje de error más amigable al usuario
         const errorMessage = (error instanceof Error && error.message) ? error.message : 'Error desconocido al comunicarse con el backend.';
         alert('Ocurrió un error: ' + errorMessage);
 
-
-        // Asegurarse de rehabilitar el botón de finalizar partido si estaba deshabilitado
         const finalizarButton = document.getElementById('finalizarPartido');
         if (finalizarButton) {
             finalizarButton.disabled = false;
             finalizarButton.textContent = 'Finalizar Partido y Guardar';
         }
-         // También podrías querer rehabilitar otros botones o campos si el error ocurrió antes.
+
+        const guardarBtn = document.getElementById('guardarAlineacionBtn');
+        if (guardarBtn) {
+            guardarBtn.disabled = false;
+            guardarBtn.textContent = 'Guardar Alineación';
+        }
+
+        // Asegurarse de que los campos especiales se oculten en caso de error
+        camposSustitucion.style.display = 'none';
+        camposGolRival.style.display = 'none';
     }
 
-    // La función table_to_resumen ya no es necesaria en el frontend, ni en el backend de Apps Script
-    // function table_to_resumen() { ... } // Esta función puede ser eliminada de code.js
-
-    // Event listener para cargar jugadoras al cambiar la categoría
     document.getElementById('categoria').addEventListener('change', cargarJugadorasPorCategoria);
-
-    // Event listener para el botón Guardar Alineación
-    // Asegúrate de que tu HTML tenga un botón con onclick="guardarAlineacion()"
-    // El código HTML proporcionado ya tiene este onclick en el botón "Guardar Alineación"
-
-    // Event listener para el botón Registrar Acción
-    // Asegúrate de que tu HTML tenga un botón con onclick="registrarAccion()"
-    // El código HTML proporcionado ya tiene este onclick en el botón "Registrar Acción"
-
-    // Event listener para el botón Finalizar Partido
-    // Asegúrate de que tu HTML tenga un botón con onclick="finalizarPartido()" y el id="finalizarPartido"
-    // El código HTML proporcionado ya tiene este onclick y id
 </script>
 </body>
 </html>
