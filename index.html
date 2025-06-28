@@ -336,6 +336,72 @@
              margin-bottom: 30px;
              box-shadow: 0 4px 10px rgba(0,0,0,0.05);
          }
+
+         /* Estilos para el cronómetro */
+         .stopwatch-container {
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             margin-top: 20px;
+             padding: 15px;
+             border-radius: 10px;
+             background-color: #f0f4f8; /* Un gris azulado claro */
+             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+         }
+
+         .stopwatch-display {
+             font-size: 3em;
+             font-weight: 700;
+             color: #333;
+             margin-bottom: 15px;
+             font-family: 'Inter', monospace; /* Fuente monoespaciada para el cronómetro */
+         }
+
+         .stopwatch-buttons {
+             display: flex;
+             gap: 15px;
+         }
+
+         .stopwatch-buttons button {
+             padding: 10px 20px;
+             border-radius: 8px;
+             font-size: 1em;
+             font-weight: 600;
+             cursor: pointer;
+             transition: background-color 0.3s ease, transform 0.2s ease;
+             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+         }
+
+         .stopwatch-buttons button:hover:not(:disabled) {
+             transform: translateY(-1px);
+         }
+
+         .stopwatch-buttons .btn-start {
+             background-color: #28a745; /* Verde */
+             color: white;
+         }
+
+         .stopwatch-buttons .btn-start:hover {
+             background-color: #218838;
+         }
+
+         .stopwatch-buttons .btn-pause {
+             background-color: #dc3545; /* Rojo */
+             color: white;
+         }
+
+         .stopwatch-buttons .btn-pause:hover {
+             background-color: #c82333; /* Rojo más oscuro */
+         }
+
+         .stopwatch-buttons .btn-reset {
+             background-color: #007bff; /* Azul */
+             color: white;
+         }
+
+         .stopwatch-buttons .btn-reset:hover {
+             background-color: #0056b3;
+         }
     </style>
 </head>
 <body>
@@ -399,11 +465,22 @@
     </section>
 
 
+    <div class="stopwatch-container">
+        <div id="stopwatchDisplay" class="stopwatch-display">00:00</div>
+        <div class="stopwatch-buttons">
+            <button id="startStopBtn" class="btn-start">Iniciar</button>
+            <button id="resetBtn" class="btn-reset">Reiniciar</button>
+        </div>
+    </div>
+
+    </section>
+
+
     <section>
       <h2>Registrar Acción</h2>
 
       <label for="tipoAccion">Tipo de Acción:</label>
-      <select id="tipoAccion">
+      <select id="tipoAccion" disabled> <!-- Añadido disabled aquí -->
         <option value="">Seleccione un tipo de acción</option>
         <option value="Gol">Gol</option>
         <option value="Gol Rival">Gol Rival</option>
@@ -442,7 +519,7 @@
         <!-- Se han eliminado los campos de descripción y minuto para Gol Rival -->
       </div>
 
-      <button onclick="registrarAccion()" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+      <button onclick="registrarAccion()" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
         Registrar Acción
       </button>
 
@@ -470,6 +547,16 @@
 
     let golesPropios = 0;
     let golesRival = 0;
+
+    // Variables del cronómetro
+    let timerInterval;
+    let startTime = 0;
+    let elapsedTime = 0;
+    let isRunning = false;
+    const stopwatchDisplay = document.getElementById('stopwatchDisplay');
+    const startStopBtn = document.getElementById('startStopBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
 
     const accionesPorTipo = {
         "Gestos": [
@@ -524,6 +611,49 @@
     // Se ha eliminado el código de registro del Service Worker para evitar errores en entornos sandboxed.
     // Si necesitas funcionalidades PWA (offline, etc.), considera desplegar la aplicación en un servidor web completo.
     // --- FIN PWA: Registrar Service Worker ---
+
+    // Funciones del cronómetro
+    function updateStopwatchDisplay() {
+        const now = Date.now();
+        const currentElapsedTime = isRunning ? elapsedTime + (now - startTime) : elapsedTime;
+        const minutes = Math.floor(currentElapsedTime / 60000);
+        const seconds = Math.floor((currentElapsedTime % 60000) / 1000);
+        stopwatchDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function startStopwatch() {
+        if (isRunning) {
+            // Si está corriendo, pausar
+            clearInterval(timerInterval);
+            elapsedTime += Date.now() - startTime;
+            startStopBtn.textContent = 'Iniciar';
+            startStopBtn.classList.remove('btn-pause'); // Quitar estilo de pausa (rojo)
+            startStopBtn.classList.add('btn-start'); // Añadir estilo de inicio (verde)
+        } else {
+            // Si está pausado o detenido, iniciar
+            startTime = Date.now();
+            timerInterval = setInterval(updateStopwatchDisplay, 1000);
+            startStopBtn.textContent = 'Pausar';
+            startStopBtn.classList.remove('btn-start'); // Quitar estilo de inicio (verde)
+            startStopBtn.classList.add('btn-pause'); // Añadir estilo de pausa (rojo)
+        }
+        isRunning = !isRunning;
+    }
+
+    function resetStopwatch() {
+        clearInterval(timerInterval);
+        isRunning = false;
+        elapsedTime = 0;
+        startTime = 0;
+        updateStopwatchDisplay();
+        startStopBtn.textContent = 'Iniciar';
+        startStopBtn.classList.remove('btn-pause'); // Asegurarse de que sea verde al reiniciar
+        startStopBtn.classList.add('btn-start');
+    }
+
+    // Event Listeners para el cronómetro
+    startStopBtn.addEventListener('click', startStopwatch);
+    resetBtn.addEventListener('click', resetStopwatch);
 
 
     // Función para cargar la lista de jugadoras desde la Netlify Function (GET)
@@ -677,6 +807,9 @@
         jugadoraSelect.value = "";
         jugadoraSelect.disabled = true;
 
+        // Habilitar el select de Tipo de Acción después de guardar la alineación
+        tipoAccionSelect.disabled = false;
+
 
         document.getElementById('accionesRegistradas').innerHTML = '';
         accionesRegistradas = [];
@@ -700,8 +833,6 @@
         camposGolRival.style.display = "none"; // Ocultar siempre camposGolRival
 
         // Limpiar campos de entrada de acciones especiales
-        // document.getElementById("descripcionGolRival").value = ""; // Eliminado
-        // document.getElementById("minutoGolRival").value = ""; // Eliminado
         document.getElementById("minuto").value = "";
         document.getElementById("quienEntra").value = "";
 
@@ -818,8 +949,6 @@
         const accion = accionSelect.value;
         const quienEntra = document.getElementById('quienEntra').value;
         const minuto = document.getElementById('minuto').value;
-        // const descripcionGolRival = document.getElementById("descripcionGolRival").value.trim(); // Eliminado
-        // const minutoGolRival = parseFloat(document.getElementById("minutoGolRival").value.trim()); // Eliminado
 
         // Validaciones básicas: Si es un tipo directo, la acción es el tipo. Si no, la acción es el valor del segundo select.
         let accionFinal = "";
@@ -933,8 +1062,6 @@
         jugadoraSelect.disabled = true;
         camposSustitucion.style.display = 'none';
         camposGolRival.style.display = 'none';
-        // document.getElementById('descripcionGolRival').value = ""; // Eliminado
-        // document.getElementById('minutoGolRival').value = ""; // Eliminado
         document.getElementById('minuto').value = "";
         document.getElementById('quienEntra').value = "";
     }
@@ -1049,6 +1176,9 @@
         golesRival = 0;
         document.getElementById('golesPropios').textContent = golesPropios;
         document.getElementById('golesRival').textContent = golesRival;
+
+        // Resetear el cronómetro al finalizar el partido
+        resetStopwatch();
     }
 
     // Función que se ejecuta si hay un error en la llamada a la Netlify Function
