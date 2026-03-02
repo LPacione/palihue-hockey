@@ -6,8 +6,15 @@
   "name": "palihue-hockey",
   "version": "1.0.0",
   "main": "code.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "serve": "^14.2.5",
+    "vite": "^7.3.1"
+  },
   "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
