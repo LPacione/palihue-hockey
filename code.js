@@ -1,5 +1,4 @@
 // code.js - Lógica Principal e Integración con Supabase
-
 // --- VARIABLES GLOBALES ---
 let supabaseClient = null;
 let categoriaActual = "";
