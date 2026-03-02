@@ -247,20 +247,7 @@
 
 <body class="p-4 md:p-8">
 
-    <!-- Supabase Setup Warning (will be hidden if configured) -->
-    <div id="setup-warning"
-        class="max-w-md mx-auto mb-6 glass-panel border-red-500/50 rounded-2xl p-6 text-center hidden">
-        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-500/20 text-red-400 mb-4">
-            <i class="fas fa-exclamation-triangle text-xl"></i>
-        </div>
-        <h2 class="text-xl font-bold text-white mb-2">Faltan Credenciales</h2>
-        <p class="text-sm text-gray-300 mb-4">Por favor, configura tu URL y Anon Key de Supabase en settings (ícono de
-            engranaje arriba a la derecha).</p>
-        <button onclick="document.getElementById('settings-modal').classList.remove('hidden')"
-            class="w-full py-2 bg-red-500 hover:bg-red-600 rounded-lg font-medium transition-colors">
-            Configurar Ahora
-        </button>
-    </div>
+
 
     <!-- Top Bar -->
     <header class="max-w-4xl mx-auto flex justify-between items-center mb-8">
@@ -275,10 +262,7 @@
                     Configuración Inicial</p>
             </div>
         </div>
-        <button onclick="document.getElementById('settings-modal').classList.remove('hidden')"
-            class="w-10 h-10 rounded-full glass-panel flex items-center justify-center hover:bg-white/10 transition-colors">
-            <i class="fas fa-cog text-gray-300"></i>
-        </button>
+
     </header>
 
     <main class="max-w-4xl mx-auto">
@@ -595,42 +579,7 @@
         </section>
     </main>
 
-    <!-- Modal Settings Supabase -->
-    <div id="settings-modal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center p-4">
-        <div
-            class="bg-[#1E293B] border border-white/10 rounded-3xl w-full max-w-md p-6 shadow-2xl transform transition-all relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-400 to-blue-500"></div>
 
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-white"><i class="fas fa-database text-brand-400 mr-2"></i> Supabase
-                    Config</h3>
-                <button onclick="cerrarSettings()" class="text-gray-400 hover:text-white"><i
-                        class="fas fa-times text-lg"></i></button>
-            </div>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">Project URL</label>
-                    <input type="text" id="supa-url"
-                        class="w-full bg-black/30 border border-white/10 rounded-lg py-2 px-3 text-white focus:border-brand-500 focus:outline-none placeholder-gray-600"
-                        placeholder="https://xyz.supabase.co">
-                </div>
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">Anon Key</label>
-                    <input type="password" id="supa-key"
-                        class="w-full bg-black/30 border border-white/10 rounded-lg py-2 px-3 text-white focus:border-brand-500 focus:outline-none placeholder-gray-600"
-                        placeholder="eyJhbGciOiJIUzI1NiIsInR5c...">
-                </div>
-            </div>
-
-            <div class="mt-8 flex gap-3">
-                <button onclick="cerrarSettings()"
-                    class="flex-1 py-2 bg-white/5 hover:bg-white/10 rounded-lg font-medium transition-colors">Cancelar</button>
-                <button onclick="guardarSettings()"
-                    class="flex-1 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg font-bold transition-colors shadow-lg shadow-brand-500/20">Guardar</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Pass Vite ENV to Global Scope safely for deferred usage -->
     <script type="module">

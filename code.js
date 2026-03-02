@@ -85,48 +85,23 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function checkSupabaseConfig() {
-  const envUrl = window.ENV?.SUPABASE_URL;
-  const envKey = window.ENV?.SUPABASE_ANON_KEY;
+  const url = window.ENV?.SUPABASE_URL;
+  const key = window.ENV?.SUPABASE_ANON_KEY;
 
-  const url = envUrl || localStorage.getItem('supa_url');
-  const key = envKey || localStorage.getItem('supa_key');
-
-  if (!url || !key) {
-    document.getElementById('setup-warning').classList.remove('hidden');
-  } else {
-    document.getElementById('setup-warning').classList.add('hidden');
-    supabaseClient = window.supabase.createClient(url, key);
-
-    // Populate inputs in settings modal just in case
-    const inputUrl = document.getElementById('supa-url');
-    const inputKey = document.getElementById('supa-key');
-    if (inputUrl) inputUrl.value = url;
-    if (inputKey) inputKey.value = key;
-  }
-}
-
-function guardarSettings() {
-  const url = document.getElementById('supa-url').value.trim();
-  const key = document.getElementById('supa-key').value.trim();
   if (url && key) {
-    localStorage.setItem('supa_url', url);
-    localStorage.setItem('supa_key', key);
-    checkSupabaseConfig();
-    cerrarSettings();
+    supabaseClient = window.supabase.createClient(url, key);
   } else {
-    alert("Ambos campos son obligatorios");
+    console.error("Faltan variables de entorno para Supabase (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).");
   }
 }
 
-function cerrarSettings() {
-  document.getElementById('settings-modal').classList.add('hidden');
-}
+
 
 
 // --- FASE 1: CONFIGURACIÓN INICIAL ---
 async function cargarJugadoras() {
   if (!supabaseClient) {
-    alert("Configura Supabase primero (engranaje arriba a la derecha).");
+    console.error("Supabase no ha sido inicializado.");
     return;
   }
 
@@ -684,8 +659,6 @@ window.cambiarGol = cambiarGol;
 window.selectAction = selectAction;
 window.guardarAccionActual = guardarAccionActual;
 window.finalizarPartido = finalizarPartido;
-window.cerrarSettings = cerrarSettings;
-window.guardarSettings = guardarSettings;
 window.renderActionCategories = renderActionCategories;
 window.renderActionsGrid = renderActionsGrid;
 window.actualizarContadoresSeleccion = actualizarContadoresSeleccion;
