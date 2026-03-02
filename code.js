@@ -675,3 +675,17 @@ async function finalizarPartido() {
     alert("Hubo un error al guardar en la Base de Datos. Detalles en la consola F12.");
   }
 }
+
+// --- EXPORTAR A WINDOW (Para Vite Modules) ---
+window.cargarJugadoras = cargarJugadoras;
+window.validateRosterSelection = validateRosterSelection;
+window.iniciarPartido = iniciarPartido;
+window.cambiarGol = cambiarGol;
+window.selectAction = selectAction;
+window.guardarAccionActual = guardarAccionActual;
+window.finalizarPartido = finalizarPartido;
+window.cerrarSettings = cerrarSettings;
+window.guardarSettings = guardarSettings;
+window.renderActionCategories = renderActionCategories;
+window.renderActionsGrid = renderActionsGrid;
+window.actualizarContadoresSeleccion = actualizarContadoresSeleccion;
