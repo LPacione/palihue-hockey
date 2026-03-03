@@ -618,7 +618,141 @@ function guardarAccionActual() {
   actualizarGrillaJugadoras();
   const minInp = document.getElementById('action-minuto');
   if (minInp) minInp.value = '';
+
+  // Real-time Insights update
+  actualizarInsights();
+
   document.getElementById('action-overlay').classList.remove('hidden');
+}
+
+function switchTab(tab) {
+  const btnFeed = document.getElementById('tab-btn-feed');
+  const btnInsights = document.getElementById('tab-btn-insights');
+  const contentFeed = document.getElementById('tab-content-feed');
+  const contentInsights = document.getElementById('tab-content-insights');
+
+  if (tab === 'feed') {
+    btnFeed.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all bg-brand-500 text-white shadow-lg";
+    btnInsights.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all text-gray-400 hover:text-white";
+    contentFeed.classList.remove('hidden');
+    contentInsights.classList.add('hidden');
+  } else {
+    btnInsights.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all bg-brand-500 text-white shadow-lg";
+    btnFeed.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all text-gray-400 hover:text-white";
+    contentInsights.classList.remove('hidden');
+    contentFeed.classList.add('hidden');
+    actualizarInsights();
+  }
+}
+
+function actualizarInsights() {
+  // 1. Efficiency / Ratios
+  let recuperaciones = 0;
+  let perdidas = 0;
+
+  // 2. Exits Distribution
+  const salidas = { linea: 0, x: 0, medio: 0 };
+
+  // 3. Zones
+  const perdidasZona = { "Defensa": 0, "Medio": 0, "Ataque": 0 };
+  const robosZona = { "Defensa": 0, "Medio": 0, "Ataque": 0 };
+
+  // 4. Quarters
+  const qStats = {
+    Q1: { goles: 0, cortos: 0, perdidas: 0 },
+    Q2: { goles: 0, cortos: 0, perdidas: 0 },
+    Q3: { goles: 0, cortos: 0, perdidas: 0 },
+    Q4: { goles: 0, cortos: 0, perdidas: 0 }
+  };
+
+  accionesRegistradas.forEach(a => {
+    // Exit Tracking
+    if (a.accion === "Gesto Salida Linea") salidas.linea++;
+    if (a.accion === "Gesto Salida X") salidas.x++;
+    if (a.accion === "Gesto Salida al medio") salidas.medio++;
+
+    // Robo / Recup Logic
+    if (a.accion === "Quite positivo" || a.accion === "Recuperación") {
+      recuperaciones++;
+      if (a.zona) robosZona[a.zona]++;
+    }
+
+    // Loss Logic
+    if (a.accion === "Pérdida") {
+      perdidas++;
+      if (a.zona) perdidasZona[a.zona]++;
+    }
+
+    // Quarter mapping
+    if (a.cuarto && qStats[a.cuarto]) {
+      if (a.accion === "Gol") qStats[a.cuarto].goles++;
+      if (a.accion.includes("Corto a Favor")) qStats[a.cuarto].cortos++;
+      if (a.accion === "Pérdida") qStats[a.cuarto].perdidas++;
+    }
+  });
+
+  // Update UI - Ratio R/P
+  const ratio = perdidas > 0 ? (recuperaciones / perdidas).toFixed(1) : recuperaciones.toFixed(1);
+  document.getElementById('stat-ratio-rp').innerText = ratio;
+  const totalRP = recuperaciones + perdidas;
+  if (totalRP > 0) {
+    const pctR = Math.round((recuperaciones / totalRP) * 100);
+    const pctP = 100 - pctR;
+    document.getElementById('bar-ratio-recup').style.width = `${pctR}%`;
+    document.getElementById('bar-ratio-perd').style.width = `${pctP}%`;
+  }
+
+  // Update UI - Exits Distribution
+  const totalSalidas = salidas.linea + salidas.x + salidas.medio;
+  const sTypes = ["linea", "x", "medio"];
+  document.getElementById('val-salida-linea').innerText = salidas.linea;
+  document.getElementById('val-salida-x').innerText = salidas.x;
+  document.getElementById('val-salida-medio').innerText = salidas.medio;
+
+  if (totalSalidas > 0) {
+    sTypes.forEach(t => {
+      const pct = Math.round((salidas[t] / totalSalidas) * 100);
+      document.getElementById(`bar-salida-${t}`).style.width = `${pct}%`;
+    });
+  } else {
+    sTypes.forEach(t => document.getElementById(`bar-salida-${t}`).style.width = `33%`);
+  }
+
+  // Update UI - Zones (Pérdidas)
+  const maxP = Math.max(1, perdidas);
+  ["Defensa", "Medio", "Ataque"].forEach(z => {
+    const val = perdidasZona[z];
+    const pct = Math.round((val / maxP) * 100);
+    document.getElementById(`bar-zona-${z.toLowerCase()}`).style.width = `${pct}%`;
+    document.getElementById(`val-zona-${z.toLowerCase()}`).innerText = val;
+  });
+
+  // Update UI - Zones (Robos)
+  const maxR = Math.max(1, recuperaciones);
+  ["Defensa", "Medio", "Ataque"].forEach(z => {
+    const val = robosZona[z];
+    const pct = Math.round((val / maxR) * 100);
+    const bar = document.getElementById(`bar-robo-${z.toLowerCase()}`);
+    if (bar) bar.style.width = `${pct}%`;
+    const span = document.getElementById(`val-robo-${z.toLowerCase()}`);
+    if (span) span.innerText = val;
+  });
+
+  // Update UI - Quarters
+  const qRows = document.getElementById('q-stats-rows');
+  qRows.innerHTML = '';
+  ["Q1", "Q2", "Q3", "Q4"].forEach(q => {
+    const s = qStats[q];
+    const isCurrent = cuartoActual === q;
+    qRows.innerHTML += `
+      <div class="grid grid-cols-4 gap-1 py-1 border-b border-white/5 items-center ${isCurrent ? 'bg-white/5 rounded-lg -mx-1 px-1' : ''}">
+        <span class="text-[10px] font-bold ${isCurrent ? 'text-brand-400' : 'text-gray-500'}">${q}</span>
+        <span class="text-center text-xs font-mono text-white">${s.goles}</span>
+        <span class="text-center text-xs font-mono text-white">${s.cortos}</span>
+        <span class="text-center text-xs font-mono text-white">${s.perdidas}</span>
+      </div>
+    `;
+  });
 }
 
 function determineColorForFeed(act) {
@@ -630,7 +764,7 @@ function determineColorForFeed(act) {
 }
 
 function agregarLogUI(nombre, accionTexto, colorTheme, minuto = null) {
-  const feed = document.getElementById('actions-feed');
+  const feed = document.getElementById('tab-content-feed');
   // Remove "empty" message if exists
   if (feed.children.length === 1 && feed.children[0].tagName === 'P') {
     feed.innerHTML = '';
@@ -794,3 +928,5 @@ window.setQuarter = setQuarter;
 window.selectPlayer = selectPlayer;
 window.selectSubstitute = selectSubstitute;
 window.selectZone = selectZone;
+window.switchTab = switchTab;
+window.actualizarInsights = actualizarInsights;
