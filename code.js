@@ -222,6 +222,13 @@ function iniciarPartido() {
   titulares = Array.from(document.querySelectorAll('.j-titular:checked')).map(cb => cb.value);
   suplentes = Array.from(document.querySelectorAll('.j-suplente:checked')).map(cb => cb.value);
 
+  // Safety Check: Roster size
+  if (titulares.length < 11) {
+    if (!confirm(`Has seleccionado solo ${titulares.length} titulares (menos de 11). ¿Estás seguro que deseas continuar?`)) {
+      return;
+    }
+  }
+
   // Init statuses
   playerStatus = {};
   titulares.forEach(j => {
@@ -574,7 +581,13 @@ function guardarAccionActual() {
     actualizarGrillaJugadoras();
 
   } else {
-    // 2. Normal Actions Engine
+    // 2. Normal Actions Engine (Check Zone)
+    const actionConfig = ACCIONES_CONFIG.flatMap(c => c.items).find(i => i.id === currentActionId);
+    if (actionConfig && actionConfig.zone && !selectedZone) {
+      alert("Esta acción requiere seleccionar una ZONA (Defensa, Medio o Ataque).");
+      return;
+    }
+
     if (currentActionId === 'Gol') {
       cambiarGol('propios', 1);
     }
