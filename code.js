@@ -3,6 +3,7 @@
 let supabaseClient = null;
 let categoriaActual = "";
 let fechaActual = "";
+let cuartoActual = "Q1"; // Q1, Q2, Q3, Q4
 
 let jugadorasData = []; // Todas las jugadoras de la DB p/ la categoria
 let titulares = []; // Nombres
@@ -13,6 +14,8 @@ let timerInterval;
 let startTime = 0;
 let elapsedTime = 0;
 let isRunning = false;
+let countdownMode = true;
+const QUARTER_TIME = 15 * 60 * 1000; // 15 minutes in ms
 
 let golesPropios = 0;
 let golesRival = 0;
@@ -21,6 +24,10 @@ let accionesRegistradas = []; // Row history objects
 let estadisticasJuego = {}; // Acumulador p/ el final del partido
 let tiempoJugado = {};
 let tiempoEntrada = {};
+
+let selectedPlayer = null;
+let selectedSubstitute = null;
+let selectedZone = null;
 
 // Configuración de Acciones (Botones rápidos)
 const ACCIONES_CONFIG = [
@@ -42,20 +49,22 @@ const ACCIONES_CONFIG = [
   },
   {
     cat: "Defensiva", items: [
-      { id: "Quite positivo", icon: "fa-hand-rock", color: "teal" },
-      { id: "Quite negativo", icon: "fa-hand-paper", color: "red" },
-      { id: "Recuperación", icon: "fa-redo-alt", color: "teal" },
+      { id: "Quite positivo", icon: "fa-hand-rock", color: "teal", zone: true },
+      { id: "Quite negativo", icon: "fa-hand-paper", color: "red", zone: true },
+      { id: "Recuperación", icon: "fa-redo-alt", color: "teal", zone: true },
       { id: "Corto en Contra", icon: "fa-minus-circle", color: "red" }
     ]
   },
   {
+    cat: "Pérdidas", items: [
+      { id: "Pérdida", icon: "fa-arrow-down", color: "red", zone: true }
+    ]
+  },
+  {
     cat: "Infracciones", items: [
-      { id: "Falta recibida", icon: "fa-handshake", color: "orange" },
-      { id: "Falta dentro del area", icon: "fa-exclamation-triangle", color: "red" },
-      { id: "Falta fuera del area", icon: "fa-exclamation-circle", color: "orange" },
-      { id: "Perdida antes de mitad de cancha", icon: "fa-arrow-left", color: "red" },
-      { id: "Perdida antes de 23", icon: "fa-arrow-down", color: "red" },
-      { id: "Perdida despues de 23", icon: "fa-arrow-right", color: "red" }
+      { id: "Falta recibida", icon: "fa-handshake", color: "orange", zone: true },
+      { id: "Falta cometida", icon: "fa-exclamation-triangle", color: "red", zone: true },
+      { id: "Pie", icon: "fa-shoe-prints", color: "orange", zone: true }
     ]
   },
   {
@@ -213,6 +222,13 @@ function iniciarPartido() {
   titulares = Array.from(document.querySelectorAll('.j-titular:checked')).map(cb => cb.value);
   suplentes = Array.from(document.querySelectorAll('.j-suplente:checked')).map(cb => cb.value);
 
+  // Safety Check: Roster size
+  if (titulares.length < 11) {
+    if (!confirm(`Has seleccionado solo ${titulares.length} titulares (menos de 11). ¿Estás seguro que deseas continuar?`)) {
+      return;
+    }
+  }
+
   // Init statuses
   playerStatus = {};
   titulares.forEach(j => {
@@ -225,14 +241,85 @@ function iniciarPartido() {
     tiempoJugado[j] = 0;
   });
 
-  // Populate "Who" dropdown
-  actualizarDropdownJugadorasCampo();
+  // Populate Grids
+  actualizarGrillaJugadoras();
 
   // Hide Setup, Show Match
   document.getElementById('section-setup').classList.remove('active');
   document.getElementById('section-match').classList.add('active');
   document.getElementById('current-stage-label').innerText = "Partido en Curso";
   document.getElementById('current-stage-label').classList.replace('text-brand-400', 'text-yellow-400');
+}
+
+function actualizarGrillaJugadoras() {
+  const inFieldGrid = document.getElementById('players-in-field-grid');
+  const benchGrid = document.getElementById('players-on-bench-grid');
+
+  if (inFieldGrid) {
+    inFieldGrid.innerHTML = '';
+    Object.keys(playerStatus).forEach(j => {
+      if (playerStatus[j] === "In_Field") {
+        const btn = document.createElement('button');
+        btn.className = "px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-medium hover:bg-white/10 transition-all text-gray-300";
+        if (j === selectedPlayer) {
+          btn.className = "px-3 py-2 bg-brand-500 border border-brand-400 rounded-xl text-sm font-medium text-white shadow-lg shadow-brand-500/20";
+        }
+        btn.innerText = j;
+        btn.onclick = () => selectPlayer(btn, j);
+        inFieldGrid.appendChild(btn);
+      }
+    });
+  }
+
+  if (benchGrid) {
+    benchGrid.innerHTML = '';
+    Object.keys(playerStatus).forEach(j => {
+      if (playerStatus[j] === "On_Bench") {
+        const btn = document.createElement('button');
+        btn.className = "px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-medium hover:bg-white/10 transition-all text-gray-400";
+        if (j === selectedSubstitute) {
+          btn.className = "px-3 py-2 bg-purple-600 border border-purple-400 rounded-xl text-xs font-medium text-white shadow-lg shadow-purple-500/20";
+        }
+        btn.innerText = j;
+        btn.onclick = () => selectSubstitute(btn, j);
+        benchGrid.appendChild(btn);
+      }
+    });
+  }
+}
+
+function selectPlayer(btnElement, nombre) {
+  selectedPlayer = nombre;
+  const badge = document.getElementById('quien-selected-badge');
+  if (badge) {
+    badge.innerText = nombre;
+    badge.classList.remove('hidden');
+  }
+  document.getElementById('action-overlay').classList.add('hidden');
+  actualizarGrillaJugadoras();
+}
+
+function selectSubstitute(btnElement, nombre) {
+  selectedSubstitute = nombre;
+  actualizarGrillaJugadoras();
+}
+
+function selectZone(zona) {
+  selectedZone = zona;
+
+  // UI Update
+  document.querySelectorAll('#zone-selector button').forEach(b => {
+    b.classList.remove('bg-brand-500', 'text-white', 'border-brand-400');
+    b.classList.add('bg-black/30', 'text-gray-400', 'border-white/10');
+  });
+
+  const btnId = `zone-${zona.toLowerCase()}`;
+  const btn = document.getElementById(btnId);
+  if (btn) {
+    btn.classList.replace('bg-black/30', 'bg-brand-500');
+    btn.classList.replace('text-gray-400', 'text-white');
+    btn.classList.replace('border-white/10', 'border-brand-400');
+  }
 }
 
 // --- FASE 2: TABLERO Y ACCIONES ---
@@ -245,14 +332,64 @@ const resetBtn = document.getElementById('resetBtn');
 function updateStopwatchDisplay() {
   const now = Date.now();
   const currentElapsedTime = isRunning ? elapsedTime + (now - startTime) : elapsedTime;
-  const minutes = Math.floor(currentElapsedTime / 60000);
-  const seconds = Math.floor((currentElapsedTime % 60000) / 1000);
+
+  let minutes, seconds;
+
+  if (countdownMode) {
+    const remainingTime = Math.max(0, QUARTER_TIME - currentElapsedTime);
+    minutes = Math.floor(remainingTime / 60000);
+    seconds = Math.floor((remainingTime % 60000) / 1000);
+
+    if (remainingTime === 0 && isRunning) {
+      pauseTimer();
+      alert("¡Fin del cuarto!");
+    }
+  } else {
+    minutes = Math.floor(currentElapsedTime / 60000);
+    seconds = Math.floor((currentElapsedTime % 60000) / 1000);
+  }
+
   stopwatchDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
   // Auto-update action minute input
   if (!document.getElementById('action-minuto').value) {
     document.getElementById('action-minuto').placeholder = minutes;
   }
+}
+
+function pauseTimer() {
+  if (isRunning) {
+    clearInterval(timerInterval);
+    elapsedTime += Date.now() - startTime;
+    document.getElementById('icon-play-pause').className = "fas fa-play text-brand-400";
+    document.getElementById('text-play-pause').innerText = "Reanudar";
+    isRunning = false;
+  }
+}
+
+function setQuarter(q) {
+  if (isRunning) {
+    alert("Pausa el cronómetro antes de cambiar de cuarto.");
+    return;
+  }
+
+  if (!confirm(`¿Cambiar al cuarto ${q}? Esto reiniciará el cronómetro de este cuarto.`)) {
+    return;
+  }
+
+  cuartoActual = q;
+  elapsedTime = 0;
+  startTime = 0;
+  updateStopwatchDisplay();
+
+  // Actualizar UI botones
+  document.querySelectorAll('#quarter-selector button').forEach(btn => {
+    if (btn.getAttribute('data-q') === q) {
+      btn.className = "px-2 py-0.5 rounded text-[10px] font-bold transition-all bg-brand-500 text-white";
+    } else {
+      btn.className = "px-2 py-0.5 rounded text-[10px] font-bold transition-all text-gray-500 hover:text-white";
+    }
+  });
 }
 
 startStopBtn.addEventListener('click', () => {
@@ -316,37 +453,7 @@ function animarScore(element) {
 // > Interfaz de Registro Rápido
 let currentActionId = null;
 
-function actualizarDropdownJugadorasCampo() {
-  const sel = document.getElementById('action-jugadora');
-  sel.innerHTML = '<option value="" disabled selected>Seleccionar jugadora en campo...</option>';
 
-  // Update badge 
-  const badge = document.getElementById('quien-selected-badge');
-  badge.classList.add('hidden');
-
-  Object.keys(playerStatus).forEach(j => {
-    if (playerStatus[j] === "In_Field") {
-      sel.innerHTML += `<option value="${j}">${j}</option>`;
-    }
-  });
-
-  sel.addEventListener('change', (e) => {
-    if (e.target.value) {
-      badge.innerText = e.target.value;
-      badge.classList.remove('hidden');
-      document.getElementById('action-overlay').classList.add('hidden');
-    }
-  });
-
-  // Populate Subs
-  const selEntra = document.getElementById('action-quien-entra');
-  selEntra.innerHTML = '<option value="" disabled selected>Seleccionar suplente en banco...</option>';
-  Object.keys(playerStatus).forEach(j => {
-    if (playerStatus[j] === "On_Bench") {
-      selEntra.innerHTML += `<option value="${j}">${j}</option>`;
-    }
-  });
-}
 
 function renderActionCategories() {
   const catContainer = document.getElementById('action-categories');
@@ -377,6 +484,14 @@ function renderActionsGrid(catIndex) {
 
   const items = ACCIONES_CONFIG[catIndex].items;
 
+  // UX Shortcut: if only one item, select it automatically
+  if (items.length === 1) {
+    grid.innerHTML = `<p class="col-span-full text-center text-gray-400 text-xs py-10 italic">Acción "${items[0].id}" seleccionada automáticamente.</p>`;
+    // We call selectAction but with a dummy element or we refactor selectAction to accept null for element
+    selectAction(null, items[0]);
+    return;
+  }
+
   items.forEach(item => {
     const btn = document.createElement('div');
     // Handle Tailwind dynamic colors properly via safe classes
@@ -389,42 +504,49 @@ function renderActionsGrid(catIndex) {
     if (item.color === 'yellow') colorClass = 'text-yellow-400';
     if (item.color === 'purple') colorClass = 'text-purple-400';
 
-    let iconType = item.solid ? 'fas' : 'fas'; // Or 'far' for outlined usually, keeping fas
-
     btn.className = `action-btn items-center text-center group ${colorClass}`;
     btn.innerHTML = `
-            <i class="${iconType} ${item.icon} text-2xl mb-1 opacity-70 group-hover:opacity-100 transition-opacity"></i>
+            <i class="fas ${item.icon} text-2xl mb-1 opacity-70 group-hover:opacity-100 transition-opacity"></i>
             <span class="text-xs font-medium text-gray-300 leading-tight">${item.id}</span>
         `;
 
-    btn.onclick = () => selectAction(btn, item.id);
+    btn.onclick = () => selectAction(btn, item);
     grid.appendChild(btn);
   });
 }
 
-function selectAction(btnElement, actionId) {
-  // UI Reset
+function selectAction(btnElement, action) {
   document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
-  btnElement.classList.add('active');
+  if (btnElement) btnElement.classList.add('active');
+  currentActionId = action.id;
 
-  currentActionId = actionId;
-
-  // Enable Save logic
   const saveBtn = document.getElementById('btn-save-action');
   saveBtn.classList.remove('opacity-50', 'pointer-events-none');
 
-  // Show extra fields if Substitution
   const extraFields = document.getElementById('extra-sub-fields');
-  if (actionId === 'Salida') {
+  if (action.id === 'Salida') {
     extraFields.classList.remove('hidden');
+    selectedSubstitute = null;
+    actualizarGrillaJugadoras();
   } else {
     extraFields.classList.add('hidden');
+  }
+
+  const zoneSel = document.getElementById('zone-selector');
+  if (action.zone) {
+    zoneSel.classList.remove('hidden');
+  } else {
+    zoneSel.classList.add('hidden');
+    selectedZone = null;
+    document.querySelectorAll('#zone-selector button').forEach(b => {
+      b.classList.remove('bg-brand-500', 'text-white', 'border-brand-400', 'shadow-lg', 'shadow-brand-500/20');
+      b.classList.add('bg-black/40', 'text-gray-400', 'border-white/10');
+    });
   }
 }
 
 function guardarAccionActual() {
-  const jugadoraList = document.getElementById('action-jugadora');
-  const jugadora = jugadoraList.value;
+  const jugadora = selectedPlayer;
 
   if (!jugadora) {
     alert("Selecciona la jugadora primero.");
@@ -441,40 +563,43 @@ function guardarAccionActual() {
 
   // 1. Process Substitution Engine specially
   if (currentActionId === 'Salida') {
-    const suplente = document.getElementById('action-quien-entra').value;
-    if (!suplente) {
-      alert("Para una sustitución debes seleccionar quién entra desde la banca.");
-      return;
-    }
+    const suplente = selectedSubstitute;
+    if (!suplente) { alert("Selecciona quién entra desde el banco."); return; }
 
-    // Logic
     playerStatus[jugadora] = "On_Bench";
     playerStatus[suplente] = "In_Field";
-
-    // Tiempos
     const tiempoJugadoraQueEstuvo = Math.max(0, minutoFormateado - (tiempoEntrada[jugadora] || 0));
     tiempoJugado[jugadora] = (tiempoJugado[jugadora] || 0) + tiempoJugadoraQueEstuvo;
-
     tiempoEntrada[suplente] = minutoFormateado;
 
-    // Register action records for history
-    accionesRegistradas.push({ jugadora, accion: "Sale minuto", minuto: minutoFormateado });
-    accionesRegistradas.push({ jugadora: suplente, accion: "Entra minuto", minuto: minutoFormateado });
-
-    // Visual Feed
+    accionesRegistradas.push({ jugadora, accion: "Sale", minuto: minutoFormateado, cuarto: cuartoActual });
+    accionesRegistradas.push({ jugadora: suplente, accion: "Entra", minuto: minutoFormateado, cuarto: cuartoActual });
     agregarLogUI(jugadora, `Sale ⬇️ (por ${suplente})`, "purple", minutoFormateado);
     agregarLogUI(suplente, `Entra ⬆️ (por ${jugadora})`, "green", minutoFormateado);
 
-    // Update dropdowns
-    actualizarDropdownJugadorasCampo();
+    selectedSubstitute = null;
+    actualizarGrillaJugadoras();
 
   } else {
-    // 2. Normal Actions Engine
+    // 2. Normal Actions Engine (Check Zone)
+    const actionConfig = ACCIONES_CONFIG.flatMap(c => c.items).find(i => i.id === currentActionId);
+    if (actionConfig && actionConfig.zone && !selectedZone) {
+      alert("Esta acción requiere seleccionar una ZONA (Defensa, Medio o Ataque).");
+      return;
+    }
+
     if (currentActionId === 'Gol') {
       cambiarGol('propios', 1);
     }
 
-    accionesRegistradas.push({ jugadora, accion: currentActionId, valor: 1, minuto: minutoFormateado });
+    accionesRegistradas.push({
+      jugadora,
+      accion: currentActionId,
+      valor: 1,
+      minuto: minutoFormateado,
+      cuarto: cuartoActual,
+      zona: selectedZone
+    });
 
     // Add to statistics aggregator map
     const key = jugadora + "_" + currentActionId;
@@ -484,28 +609,175 @@ function guardarAccionActual() {
     agregarLogUI(jugadora, currentActionId, determineColorForFeed(currentActionId), minutoFormateado);
   }
 
-  // Reset Forms
+  // Reset state
   document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
   currentActionId = null;
+  selectedZone = null;
+  selectedPlayer = null;
+  selectedSubstitute = null;
+
+  // Hide UI blocks
   document.getElementById('btn-save-action').classList.add('opacity-50', 'pointer-events-none');
   document.getElementById('extra-sub-fields').classList.add('hidden');
+  document.getElementById('zone-selector').classList.add('hidden');
+  document.getElementById('quien-selected-badge').classList.add('hidden');
 
-  const badge = document.getElementById('quien-selected-badge');
-  badge.classList.add('hidden');
-  jugadoraList.value = "";
+  // UI Zone Reset
+  document.querySelectorAll('#zone-selector button').forEach(b => {
+    b.classList.remove('bg-brand-500', 'text-white', 'border-brand-400', 'shadow-lg', 'shadow-brand-500/20');
+    b.classList.add('bg-black/40', 'text-gray-400', 'border-white/10');
+  });
+
+  actualizarGrillaJugadoras();
+  const minInp = document.getElementById('action-minuto');
+  if (minInp) minInp.value = '';
+
+  // Real-time Insights update
+  actualizarInsights();
+
   document.getElementById('action-overlay').classList.remove('hidden');
+}
+
+function switchTab(tab) {
+  const btnFeed = document.getElementById('tab-btn-feed');
+  const btnInsights = document.getElementById('tab-btn-insights');
+  const contentFeed = document.getElementById('tab-content-feed');
+  const contentInsights = document.getElementById('tab-content-insights');
+
+  if (tab === 'feed') {
+    btnFeed.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all bg-brand-500 text-white shadow-lg";
+    btnInsights.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all text-gray-400 hover:text-white";
+    contentFeed.classList.remove('hidden');
+    contentInsights.classList.add('hidden');
+  } else {
+    btnInsights.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all bg-brand-500 text-white shadow-lg";
+    btnFeed.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all text-gray-400 hover:text-white";
+    contentInsights.classList.remove('hidden');
+    contentFeed.classList.add('hidden');
+    actualizarInsights();
+  }
+}
+
+function actualizarInsights() {
+  // 1. Efficiency / Ratios
+  let recuperaciones = 0;
+  let perdidas = 0;
+
+  // 2. Exits Distribution
+  const salidas = { linea: 0, x: 0, medio: 0 };
+
+  // 3. Zones
+  const perdidasZona = { "Defensa": 0, "Medio": 0, "Ataque": 0 };
+  const robosZona = { "Defensa": 0, "Medio": 0, "Ataque": 0 };
+
+  // 4. Quarters
+  const qStats = {
+    Q1: { goles: 0, cortos: 0, perdidas: 0 },
+    Q2: { goles: 0, cortos: 0, perdidas: 0 },
+    Q3: { goles: 0, cortos: 0, perdidas: 0 },
+    Q4: { goles: 0, cortos: 0, perdidas: 0 }
+  };
+
+  accionesRegistradas.forEach(a => {
+    // Exit Tracking
+    if (a.accion === "Gesto Salida Linea") salidas.linea++;
+    if (a.accion === "Gesto Salida X") salidas.x++;
+    if (a.accion === "Gesto Salida al medio") salidas.medio++;
+
+    // Robo / Recup Logic
+    if (a.accion === "Quite positivo" || a.accion === "Recuperación") {
+      recuperaciones++;
+      if (a.zona) robosZona[a.zona]++;
+    }
+
+    // Loss Logic
+    if (a.accion === "Pérdida") {
+      perdidas++;
+      if (a.zona) perdidasZona[a.zona]++;
+    }
+
+    // Quarter mapping
+    if (a.cuarto && qStats[a.cuarto]) {
+      if (a.accion === "Gol") qStats[a.cuarto].goles++;
+      if (a.accion.includes("Corto a Favor")) qStats[a.cuarto].cortos++;
+      if (a.accion === "Pérdida") qStats[a.cuarto].perdidas++;
+    }
+  });
+
+  // Update UI - Ratio R/P
+  const ratio = perdidas > 0 ? (recuperaciones / perdidas).toFixed(1) : recuperaciones.toFixed(1);
+  document.getElementById('stat-ratio-rp').innerText = ratio;
+  const totalRP = recuperaciones + perdidas;
+  if (totalRP > 0) {
+    const pctR = Math.round((recuperaciones / totalRP) * 100);
+    const pctP = 100 - pctR;
+    document.getElementById('bar-ratio-recup').style.width = `${pctR}%`;
+    document.getElementById('bar-ratio-perd').style.width = `${pctP}%`;
+  }
+
+  // Update UI - Exits Distribution
+  const totalSalidas = salidas.linea + salidas.x + salidas.medio;
+  const sTypes = ["linea", "x", "medio"];
+  document.getElementById('val-salida-linea').innerText = salidas.linea;
+  document.getElementById('val-salida-x').innerText = salidas.x;
+  document.getElementById('val-salida-medio').innerText = salidas.medio;
+
+  if (totalSalidas > 0) {
+    sTypes.forEach(t => {
+      const pct = Math.round((salidas[t] / totalSalidas) * 100);
+      document.getElementById(`bar-salida-${t}`).style.width = `${pct}%`;
+    });
+  } else {
+    sTypes.forEach(t => document.getElementById(`bar-salida-${t}`).style.width = `33%`);
+  }
+
+  // Update UI - Zones (Pérdidas)
+  const maxP = Math.max(1, perdidas);
+  ["Defensa", "Medio", "Ataque"].forEach(z => {
+    const val = perdidasZona[z];
+    const pct = Math.round((val / maxP) * 100);
+    document.getElementById(`bar-zona-${z.toLowerCase()}`).style.width = `${pct}%`;
+    document.getElementById(`val-zona-${z.toLowerCase()}`).innerText = val;
+  });
+
+  // Update UI - Zones (Robos)
+  const maxR = Math.max(1, recuperaciones);
+  ["Defensa", "Medio", "Ataque"].forEach(z => {
+    const val = robosZona[z];
+    const pct = Math.round((val / maxR) * 100);
+    const bar = document.getElementById(`bar-robo-${z.toLowerCase()}`);
+    if (bar) bar.style.width = `${pct}%`;
+    const span = document.getElementById(`val-robo-${z.toLowerCase()}`);
+    if (span) span.innerText = val;
+  });
+
+  // Update UI - Quarters
+  const qRows = document.getElementById('q-stats-rows');
+  qRows.innerHTML = '';
+  ["Q1", "Q2", "Q3", "Q4"].forEach(q => {
+    const s = qStats[q];
+    const isCurrent = cuartoActual === q;
+    qRows.innerHTML += `
+      <div class="grid grid-cols-4 gap-1 py-1 border-b border-white/5 items-center ${isCurrent ? 'bg-white/5 rounded-lg -mx-1 px-1' : ''}">
+        <span class="text-[10px] font-bold ${isCurrent ? 'text-brand-400' : 'text-gray-500'}">${q}</span>
+        <span class="text-center text-xs font-mono text-white">${s.goles}</span>
+        <span class="text-center text-xs font-mono text-white">${s.cortos}</span>
+        <span class="text-center text-xs font-mono text-white">${s.perdidas}</span>
+      </div>
+    `;
+  });
 }
 
 function determineColorForFeed(act) {
   if (act.includes('Gol')) return 'brand';
   if (act.includes('Gesto')) return 'blue';
-  if (act.includes('Tarjeta roja') || act.includes('negativo') || act.includes('Perdida')) return 'red';
-  if (act.includes('positiv') || act.includes('verde')) return 'green';
+  if (act.includes('Tarjeta roja') || act.includes('negativo') || act.includes('Perdida') || act.includes('Contra')) return 'red';
+  if (act.includes('positiv') || act.includes('verde') || act.includes('Favor') || act.includes('Recuperación')) return 'green';
   return 'gray';
 }
 
 function agregarLogUI(nombre, accionTexto, colorTheme, minuto = null) {
-  const feed = document.getElementById('actions-feed');
+  const feed = document.getElementById('tab-content-feed');
   // Remove "empty" message if exists
   if (feed.children.length === 1 && feed.children[0].tagName === 'P') {
     feed.innerHTML = '';
@@ -521,12 +793,16 @@ function agregarLogUI(nombre, accionTexto, colorTheme, minuto = null) {
   if (colorTheme === 'purple') { tailwindBorderColor = 'border-purple-500'; tailwindTextColor = 'text-purple-400'; }
 
   const timeStr = minuto ? `${minuto}'` : obtenerMinutoActual() + "'";
+  const quarterStr = cuartoActual;
 
   const logHTML = `
         <div class="bg-black/20 p-3 rounded-xl border-l-4 ${tailwindBorderColor} shadow-sm animate-[fadeIn_0.3s_ease]">
             <div class="flex justify-between items-start mb-1">
                 <span class="font-bold text-white text-sm">${nombre}</span>
-                <span class="text-xs bg-white/10 px-2 rounded font-mono text-gray-300"><i class="far fa-clock mr-1"></i>${timeStr}</span>
+                <div class="flex gap-2">
+                    <span class="text-[10px] bg-brand-500/20 text-brand-300 px-1.5 rounded font-bold">${quarterStr}</span>
+                    <span class="text-xs bg-white/10 px-2 rounded font-mono text-gray-300"><i class="far fa-clock mr-1"></i>${timeStr}</span>
+                </div>
             </div>
             <span class="text-xs font-semibold uppercase tracking-wider ${tailwindTextColor}">${accionTexto}</span>
         </div>
@@ -591,6 +867,7 @@ async function finalizarPartido() {
       if (errAct) console.warn("Error insertando acciones crudas. Omitido.", errAct);
     }
 
+
     // 4. Transform individual stats to Supabase schema 'resumen_jugadoras'
     const allPlayersInvolved = Object.keys(playerStatus); // Anyone who was Tit or Sub
 
@@ -614,19 +891,17 @@ async function finalizarPartido() {
         quite_positivo: getA("Quite positivo"),
         quite_negativo: getA("Quite negativo"),
         recuperacion: getA("Recuperación"),
-        falta_dentro_area: getA("Falta dentro del area"),
-        falta_fuera_area: getA("Falta fuera del area"),
+        falta_cometida: getA("Falta cometida"),
         falta_recibida: getA("Falta recibida"),
-        perdida_antes_mitad_cancha: getA("Perdida antes de mitad de cancha"),
-        perdida_antes_23: getA("Perdida antes de 23"),
-        perdida_despues_23: getA("Perdida despues de 23"),
+        pie: getA("Pie"),
+        perdida: getA("Pérdida"),
+        error_manejo: getA("Error de manejo"),
         corto_a_favor: getA("Corto a Favor"),
         corto_en_contra: getA("Corto en Contra"),
         tiro_al_arco: getA("Tiro al arco")
       }
     });
 
-    // Insert / Upsert Individual Batch
     const { error: errPData } = await supabaseClient
       .from('resumen_jugadoras')
       .upsert(individualStatsBatch, { onConflict: 'partido_fecha,categoria,jugadora_nombre' });
@@ -662,3 +937,9 @@ window.finalizarPartido = finalizarPartido;
 window.renderActionCategories = renderActionCategories;
 window.renderActionsGrid = renderActionsGrid;
 window.actualizarContadoresSeleccion = actualizarContadoresSeleccion;
+window.setQuarter = setQuarter;
+window.selectPlayer = selectPlayer;
+window.selectSubstitute = selectSubstitute;
+window.selectZone = selectZone;
+window.switchTab = switchTab;
+window.actualizarInsights = actualizarInsights;

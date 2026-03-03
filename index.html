@@ -386,10 +386,26 @@
                     <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10">
                     </div>
 
-                    <p class="text-sm text-gray-400 mb-1 uppercase tracking-widest font-semibold z-10">Tiempo</p>
+                    <div class="flex items-center gap-4 mb-2 z-10 w-full justify-between">
+                        <p class="text-xs text-gray-400 uppercase tracking-widest font-semibold">Tiempos</p>
+                        <div class="flex bg-black/40 rounded-lg p-1 border border-white/5" id="quarter-selector">
+                            <button onclick="setQuarter('Q1')"
+                                class="px-2 py-0.5 rounded text-[10px] font-bold transition-all bg-brand-500 text-white"
+                                data-q="Q1">Q1</button>
+                            <button onclick="setQuarter('Q2')"
+                                class="px-2 py-0.5 rounded text-[10px] font-bold transition-all text-gray-500 hover:text-white"
+                                data-q="Q2">Q2</button>
+                            <button onclick="setQuarter('Q3')"
+                                class="px-2 py-0.5 rounded text-[10px] font-bold transition-all text-gray-500 hover:text-white"
+                                data-q="Q3">Q3</button>
+                            <button onclick="setQuarter('Q4')"
+                                class="px-2 py-0.5 rounded text-[10px] font-bold transition-all text-gray-500 hover:text-white"
+                                data-q="Q4">Q4</button>
+                        </div>
+                    </div>
                     <div id="stopwatchDisplay"
                         class="text-5xl md:text-6xl font-mono font-bold tracking-tighter mb-4 z-10 text-white drop-shadow-md">
-                        00:00</div>
+                        15:00</div>
 
                     <div class="flex gap-3 w-full z-10">
                         <button id="startStopBtn"
@@ -459,7 +475,7 @@
                 <!-- Left/Main Col: Actions Input -->
                 <div class="lg:col-span-2 space-y-6">
 
-                    <!-- Who Menu -->
+                    <!-- Who Menu (Dynamic Grid) -->
                     <div class="glass-panel rounded-3xl p-5 border-t border-b-0 border-r-0 border-l border-white/10">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="font-semibold text-lg flex items-center gap-2"><i
@@ -467,15 +483,9 @@
                             <span id="quien-selected-badge"
                                 class="hidden px-3 py-1 bg-brand-500 text-white text-xs font-bold rounded-full"></span>
                         </div>
-                        <div class="relative">
-                            <select id="action-jugadora"
-                                class="glass-input w-full rounded-xl py-3 px-4 appearance-none text-lg font-medium">
-                                <option value="" disabled selected>Seleccionar jugadora en campo...</option>
-                                <!-- JS Fills this with ONLY players In_Field -->
-                            </select>
-                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                <i class="fas fa-chevron-down text-gray-400"></i>
-                            </div>
+                        <div id="players-in-field-grid" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-2">
+                            <!-- JS Fills this with ONLY players In_Field as buttons -->
+                            <p class="text-gray-500 text-xs italic">Cargando jugadoras...</p>
                         </div>
                     </div>
 
@@ -492,41 +502,56 @@
                         </div>
 
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-semibold text-lg flex items-center gap-2"><i
-                                    class="fas fa-bolt text-yellow-400"></i> ¿Qué Acción?</h3>
+                            <h3 class="font-semibold text-lg flex items-center gap-2">
+                                <i class="fas fa-bolt text-yellow-400"></i> ¿Qué Acción?
+                            </h3>
                         </div>
 
-                        <!-- Categories Horizontal Scroll -->
-                        <div class="flex overflow-x-auto pb-4 mb-4 gap-2 scrollbar-hide border-b border-white/10"
-                            id="action-categories">
+
+
+                        <!-- Categories Wrap (No Scroll) -->
+                        <div class="flex flex-wrap gap-2 mb-6 border-b border-white/10 pb-4" id="action-categories">
                             <!-- Filled by JS -->
                         </div>
 
-                        <!-- Specific Actions for Category -->
-                        <div id="action-buttons-grid" class="action-grid min-h-[140px]">
+                        <!-- Specific Actions Grid -->
+                        <div id="action-buttons-grid" class="action-grid min-h-[140px] mb-6">
                             <!-- Filled by JS -->
                         </div>
 
-                        <!-- Extra fields for Subs -->
+                        <!-- Zone Selector (Dynamic - Moved Below) -->
+                        <div id="zone-selector"
+                            class="hidden mb-6 p-4 bg-white/5 rounded-2xl border border-white/10 animate-[fadeIn_0.3s_ease]">
+                            <p class="text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-widest text-center">
+                                Zona de la Acción</p>
+                            <div class="flex gap-2">
+                                <button onclick="selectZone('Defensa')" id="zone-defensa"
+                                    class="flex-1 py-3 bg-black/40 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-brand-500/50">Defensa</button>
+                                <button onclick="selectZone('Medio')" id="zone-medio"
+                                    class="flex-1 py-3 bg-black/40 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-brand-500/50">Medio</button>
+                                <button onclick="selectZone('Ataque')" id="zone-ataque"
+                                    class="flex-1 py-3 bg-black/40 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-brand-500/50">Ataque</button>
+                            </div>
+                        </div>
+
+                        <!-- Extra fields for Subs (Bench Grid) -->
                         <div id="extra-sub-fields"
-                            class="hidden mt-6 pt-4 border-t border-white/10 bg-blue-500/5 rounded-xl p-4 border border-blue-500/20">
-                            <h4 class="text-sm font-semibold text-blue-400 mb-3"><i
-                                    class="fas fa-exchange-alt mr-2"></i>Detalles de Sustitución</h4>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs text-gray-400 mb-1">Entra:</label>
-                                    <select id="action-quien-entra"
-                                        class="glass-input w-full rounded-lg py-2 px-3 text-sm">
-                                        <option value="" disabled selected>Seleccionar suplente...</option>
-                                        <!-- JS fills -->
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs text-gray-400 mb-1">Minuto:</label>
-                                    <input type="number" id="action-minuto"
-                                        class="glass-input w-full rounded-lg py-2 px-3 text-sm"
-                                        placeholder="Autocompleta...">
-                                </div>
+                            class="hidden mt-6 pt-6 border-t border-white/10 animate-[fadeIn_0.3s_ease]">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="text-sm font-semibold text-purple-400 italic">¿Quién entra desde el Banco?
+                                </h4>
+                                <span
+                                    class="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full font-bold">SUSTIDUCIÓN</span>
+                            </div>
+                            <div id="players-on-bench-grid" class="flex flex-wrap gap-2 mb-4">
+                                <!-- JS Fills this with ONLY players On_Bench as buttons -->
+                            </div>
+
+                            <div class="flex items-center gap-3 bg-black/20 p-3 rounded-xl border border-white/5">
+                                <label class="text-xs text-gray-500 uppercase font-bold">Min:</label>
+                                <input type="number" id="action-minuto"
+                                    class="bg-transparent text-white w-full focus:outline-none font-mono"
+                                    placeholder="Minuto actual...">
                             </div>
                         </div>
 
@@ -544,22 +569,190 @@
                 <!-- Right Col: Feed & Finalize -->
                 <div class="space-y-6">
 
-                    <!-- Feed -->
-                    <div class="glass-panel rounded-3xl p-5 flex flex-col h-[400px]">
-                        <h3 class="font-semibold text-lg flex items-center gap-2 mb-4"><i
-                                class="fas fa-history text-gray-400"></i> Registro Reciente</h3>
-                        <div class="flex-1 overflow-y-auto pr-2 space-y-3" id="actions-feed">
-                            <p class="text-sm text-gray-500 italic text-center py-10">No hay acciones registradas aún
-                            </p>
-                            <!-- Items look like: 
-                            <div class="bg-black/20 p-3 rounded-xl border-l-4 border-brand-500">
-                                <div class="flex justify-between items-start">
-                                    <span class="font-semibold text-white">Ana Perez</span>
-                                    <span class="text-xs text-gray-400">12:45</span>
-                                </div>
-                                <span class="text-sm text-brand-300">Gesto Flick</span>
+                    <!-- Right Column: Tabs (Feed / Insights) -->
+                    <div class="glass-panel rounded-3xl p-5 flex flex-col h-[500px]">
+
+                        <!-- Tab Header -->
+                        <div class="flex p-1 bg-black/40 rounded-2xl mb-4 border border-white/5">
+                            <button onclick="switchTab('feed')" id="tab-btn-feed"
+                                class="flex-1 py-2 text-xs font-bold rounded-xl transition-all bg-brand-500 text-white shadow-lg">HISTORIAL</button>
+                            <button onclick="switchTab('insights')" id="tab-btn-insights"
+                                class="flex-1 py-2 text-xs font-bold rounded-xl transition-all text-gray-400 hover:text-white">INSIGHTS</button>
+                        </div>
+
+                        <!-- Content Area -->
+                        <div class="flex-1 overflow-y-auto pr-1">
+
+                            <!-- TAB 1: FEED -->
+                            <div id="tab-content-feed" class="space-y-3">
+                                <p class="text-sm text-gray-500 italic text-center py-10">No hay acciones registradas
+                                    aún</p>
                             </div>
-                            -->
+
+                            <!-- TAB 2: INSIGHTS -->
+                            <div id="tab-content-insights" class="hidden space-y-6">
+
+                                <!-- Quick Stats Cards -->
+                                <div class="grid grid-cols-2 gap-3">
+                                    <!-- Ratio Card (Full Row for clarity or sharing with another stat) -->
+                                    <div class="bg-white/5 p-3 rounded-2xl border border-white/10 col-span-2">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <p class="text-[10px] text-gray-500 uppercase font-black">Ratio Recup. /
+                                                Pérdidas</p>
+                                            <i class="fas fa-balance-scale text-[10px] text-brand-500/50"></i>
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span id="stat-ratio-rp" class="text-2xl font-black text-white">0.0</span>
+                                            <div
+                                                class="flex-1 h-3 bg-white/5 rounded-full overflow-hidden flex border border-white/5">
+                                                <div id="bar-ratio-recup"
+                                                    class="h-full bg-teal-500 transition-all duration-1000"
+                                                    style="width: 50%"></div>
+                                                <div id="bar-ratio-perd"
+                                                    class="h-full bg-red-500 transition-all duration-1000"
+                                                    style="width: 50%"></div>
+                                            </div>
+                                        </div>
+                                        <p id="stat-ratio-desc" class="text-[9px] text-gray-500 mt-2 italic">Calculado
+                                            como Robos totales vs Pérdidas totales</p>
+                                    </div>
+                                </div>
+
+                                <!-- Exit Distribution Section -->
+                                <div>
+                                    <h4
+                                        class="text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                                        <i class="fas fa-exchange-alt text-blue-400"></i> Distribución de Salidas
+                                    </h4>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div class="bg-white/5 p-2 rounded-xl border border-white/5 text-center">
+                                            <p class="text-[9px] text-gray-500 font-bold mb-1">LINEA</p>
+                                            <p id="val-salida-linea" class="text-base font-black text-white">0</p>
+                                        </div>
+                                        <div class="bg-white/5 p-2 rounded-xl border border-white/5 text-center">
+                                            <p class="text-[9px] text-gray-500 font-bold mb-1">X</p>
+                                            <p id="val-salida-x" class="text-base font-black text-white">0</p>
+                                        </div>
+                                        <div class="bg-white/5 p-2 rounded-xl border border-white/5 text-center">
+                                            <p class="text-[9px] text-gray-500 font-bold mb-1">MEDIO</p>
+                                            <p id="val-salida-medio" class="text-base font-black text-white">0</p>
+                                        </div>
+                                    </div>
+                                    <!-- Progress multi-bar for exits -->
+                                    <div class="mt-3 h-2 bg-white/10 rounded-full overflow-hidden flex">
+                                        <div id="bar-salida-linea" class="h-full bg-blue-500 transition-all"
+                                            style="width: 33%"></div>
+                                        <div id="bar-salida-x" class="h-full bg-purple-500 transition-all"
+                                            style="width: 33%"></div>
+                                        <div id="bar-salida-medio" class="h-full bg-indigo-500 transition-all"
+                                            style="width: 34%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Zones Breakdown (Pérdidas) -->
+                                <div>
+                                    <h4
+                                        class="text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                                        <i class="fas fa-minus-circle text-red-400"></i> Pérdidas por Zona
+                                    </h4>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="text-[10px] w-12 text-gray-500 font-bold uppercase">Defensa</span>
+                                            <div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div id="bar-zona-defensa"
+                                                    class="h-full bg-red-500 transition-all duration-1000"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                            <span id="val-zona-defensa"
+                                                class="text-[10px] text-white font-mono">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="text-[10px] w-12 text-gray-500 font-bold uppercase">Medio</span>
+                                            <div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div id="bar-zona-medio"
+                                                    class="h-full bg-yellow-500 transition-all duration-1000"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                            <span id="val-zona-medio" class="text-[10px] text-white font-mono">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="text-[10px] w-12 text-gray-500 font-bold uppercase">Ataque</span>
+                                            <div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div id="bar-zona-ataque"
+                                                    class="h-full bg-red-400 transition-all duration-1000"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                            <span id="val-zona-ataque" class="text-[10px] text-white font-mono">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Zones Breakdown (Robos) -->
+                                <div>
+                                    <h4
+                                        class="text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                                        <i class="fas fa-plus-circle text-teal-400"></i> Robos por Zona
+                                    </h4>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="text-[10px] w-12 text-gray-500 font-bold uppercase">Defensa</span>
+                                            <div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div id="bar-robo-defensa"
+                                                    class="h-full bg-teal-600 transition-all duration-1000"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                            <span id="val-robo-defensa"
+                                                class="text-[10px] text-white font-mono">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="text-[10px] w-12 text-gray-500 font-bold uppercase">Medio</span>
+                                            <div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div id="bar-robo-medio"
+                                                    class="h-full bg-teal-500 transition-all duration-1000"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                            <span id="val-robo-medio" class="text-[10px] text-white font-mono">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="text-[10px] w-12 text-gray-500 font-bold uppercase">Ataque</span>
+                                            <div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div id="bar-robo-ataque"
+                                                    class="h-full bg-brand-400 transition-all duration-1000"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                            <span id="val-robo-ataque" class="text-[10px] text-white font-mono">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quarter Comparison -->
+                                <div>
+                                    <h4
+                                        class="text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                                        <i class="fas fa-columns text-blue-400"></i> Comparativa Cuartos
+                                    </h4>
+                                    <div id="quarter-comparison-list" class="space-y-2">
+                                        <!-- JS Fills -->
+                                        <div
+                                            class="grid grid-cols-4 gap-1 text-[9px] font-black text-gray-600 uppercase pb-1 border-b border-white/5">
+                                            <span></span>
+                                            <span class="text-center">GOLES</span>
+                                            <span class="text-center">CORTOS</span>
+                                            <span class="text-center">PÉRD.</span>
+                                        </div>
+                                        <div id="q-stats-rows">
+                                            <!-- Q1 row example -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
 
