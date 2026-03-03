@@ -386,10 +386,26 @@
                     <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10">
                     </div>
 
-                    <p class="text-sm text-gray-400 mb-1 uppercase tracking-widest font-semibold z-10">Tiempo</p>
+                    <div class="flex items-center gap-4 mb-2 z-10 w-full justify-between">
+                        <p class="text-xs text-gray-400 uppercase tracking-widest font-semibold">Tiempos</p>
+                        <div class="flex bg-black/40 rounded-lg p-1 border border-white/5" id="quarter-selector">
+                            <button onclick="setQuarter('Q1')"
+                                class="px-2 py-0.5 rounded text-[10px] font-bold transition-all bg-brand-500 text-white"
+                                data-q="Q1">Q1</button>
+                            <button onclick="setQuarter('Q2')"
+                                class="px-2 py-0.5 rounded text-[10px] font-bold transition-all text-gray-500 hover:text-white"
+                                data-q="Q2">Q2</button>
+                            <button onclick="setQuarter('Q3')"
+                                class="px-2 py-0.5 rounded text-[10px] font-bold transition-all text-gray-500 hover:text-white"
+                                data-q="Q3">Q3</button>
+                            <button onclick="setQuarter('Q4')"
+                                class="px-2 py-0.5 rounded text-[10px] font-bold transition-all text-gray-500 hover:text-white"
+                                data-q="Q4">Q4</button>
+                        </div>
+                    </div>
                     <div id="stopwatchDisplay"
                         class="text-5xl md:text-6xl font-mono font-bold tracking-tighter mb-4 z-10 text-white drop-shadow-md">
-                        00:00</div>
+                        15:00</div>
 
                     <div class="flex gap-3 w-full z-10">
                         <button id="startStopBtn"
@@ -459,7 +475,7 @@
                 <!-- Left/Main Col: Actions Input -->
                 <div class="lg:col-span-2 space-y-6">
 
-                    <!-- Who Menu -->
+                    <!-- Who Menu (Dynamic Grid) -->
                     <div class="glass-panel rounded-3xl p-5 border-t border-b-0 border-r-0 border-l border-white/10">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="font-semibold text-lg flex items-center gap-2"><i
@@ -467,15 +483,9 @@
                             <span id="quien-selected-badge"
                                 class="hidden px-3 py-1 bg-brand-500 text-white text-xs font-bold rounded-full"></span>
                         </div>
-                        <div class="relative">
-                            <select id="action-jugadora"
-                                class="glass-input w-full rounded-xl py-3 px-4 appearance-none text-lg font-medium">
-                                <option value="" disabled selected>Seleccionar jugadora en campo...</option>
-                                <!-- JS Fills this with ONLY players In_Field -->
-                            </select>
-                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                <i class="fas fa-chevron-down text-gray-400"></i>
-                            </div>
+                        <div id="players-in-field-grid" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-2">
+                            <!-- JS Fills this with ONLY players In_Field as buttons -->
+                            <p class="text-gray-500 text-xs italic">Cargando jugadoras...</p>
                         </div>
                     </div>
 
@@ -492,41 +502,56 @@
                         </div>
 
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-semibold text-lg flex items-center gap-2"><i
-                                    class="fas fa-bolt text-yellow-400"></i> ¿Qué Acción?</h3>
+                            <h3 class="font-semibold text-lg flex items-center gap-2">
+                                <i class="fas fa-bolt text-yellow-400"></i> ¿Qué Acción?
+                            </h3>
                         </div>
 
-                        <!-- Categories Horizontal Scroll -->
-                        <div class="flex overflow-x-auto pb-4 mb-4 gap-2 scrollbar-hide border-b border-white/10"
-                            id="action-categories">
+
+
+                        <!-- Categories Wrap (No Scroll) -->
+                        <div class="flex flex-wrap gap-2 mb-6 border-b border-white/10 pb-4" id="action-categories">
                             <!-- Filled by JS -->
                         </div>
 
-                        <!-- Specific Actions for Category -->
-                        <div id="action-buttons-grid" class="action-grid min-h-[140px]">
+                        <!-- Specific Actions Grid -->
+                        <div id="action-buttons-grid" class="action-grid min-h-[140px] mb-6">
                             <!-- Filled by JS -->
                         </div>
 
-                        <!-- Extra fields for Subs -->
+                        <!-- Zone Selector (Dynamic - Moved Below) -->
+                        <div id="zone-selector"
+                            class="hidden mb-6 p-4 bg-white/5 rounded-2xl border border-white/10 animate-[fadeIn_0.3s_ease]">
+                            <p class="text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-widest text-center">
+                                Zona de la Acción</p>
+                            <div class="flex gap-2">
+                                <button onclick="selectZone('Defensa')" id="zone-defensa"
+                                    class="flex-1 py-3 bg-black/40 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-brand-500/50">Defensa</button>
+                                <button onclick="selectZone('Medio')" id="zone-medio"
+                                    class="flex-1 py-3 bg-black/40 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-brand-500/50">Medio</button>
+                                <button onclick="selectZone('Ataque')" id="zone-ataque"
+                                    class="flex-1 py-3 bg-black/40 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-brand-500/50">Ataque</button>
+                            </div>
+                        </div>
+
+                        <!-- Extra fields for Subs (Bench Grid) -->
                         <div id="extra-sub-fields"
-                            class="hidden mt-6 pt-4 border-t border-white/10 bg-blue-500/5 rounded-xl p-4 border border-blue-500/20">
-                            <h4 class="text-sm font-semibold text-blue-400 mb-3"><i
-                                    class="fas fa-exchange-alt mr-2"></i>Detalles de Sustitución</h4>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs text-gray-400 mb-1">Entra:</label>
-                                    <select id="action-quien-entra"
-                                        class="glass-input w-full rounded-lg py-2 px-3 text-sm">
-                                        <option value="" disabled selected>Seleccionar suplente...</option>
-                                        <!-- JS fills -->
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs text-gray-400 mb-1">Minuto:</label>
-                                    <input type="number" id="action-minuto"
-                                        class="glass-input w-full rounded-lg py-2 px-3 text-sm"
-                                        placeholder="Autocompleta...">
-                                </div>
+                            class="hidden mt-6 pt-6 border-t border-white/10 animate-[fadeIn_0.3s_ease]">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="text-sm font-semibold text-purple-400 italic">¿Quién entra desde el Banco?
+                                </h4>
+                                <span
+                                    class="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full font-bold">SUSTIDUCIÓN</span>
+                            </div>
+                            <div id="players-on-bench-grid" class="flex flex-wrap gap-2 mb-4">
+                                <!-- JS Fills this with ONLY players On_Bench as buttons -->
+                            </div>
+
+                            <div class="flex items-center gap-3 bg-black/20 p-3 rounded-xl border border-white/5">
+                                <label class="text-xs text-gray-500 uppercase font-bold">Min:</label>
+                                <input type="number" id="action-minuto"
+                                    class="bg-transparent text-white w-full focus:outline-none font-mono"
+                                    placeholder="Minuto actual...">
                             </div>
                         </div>
 
