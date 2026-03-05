@@ -223,6 +223,11 @@ function iniciarPartido() {
   suplentes = Array.from(document.querySelectorAll('.j-suplente:checked')).map(cb => cb.value);
 
   // Safety Check: Roster size
+  if (titulares.length > 11) {
+    alert(`Has seleccionado ${titulares.length} titulares. El máximo permitido para iniciar es 11.`);
+    return;
+  }
+
   if (titulares.length < 11) {
     if (!confirm(`Has seleccionado solo ${titulares.length} titulares (menos de 11). ¿Estás seguro que deseas continuar?`)) {
       return;
