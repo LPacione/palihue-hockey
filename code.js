@@ -637,8 +637,8 @@ function guardarAccionActual() {
   const minInp = document.getElementById('action-minuto');
   if (minInp) minInp.value = '';
 
-  // Real-time Insights update
-  actualizarInsights();
+  // Actualizar estadísticas en tiempo real
+  actualizarEstadisticas();
 
   document.getElementById('action-overlay').classList.remove('hidden');
 }
@@ -659,11 +659,11 @@ function switchTab(tab) {
     btnFeed.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all text-gray-400 hover:text-white";
     contentInsights.classList.remove('hidden');
     contentFeed.classList.add('hidden');
-    actualizarInsights();
+    actualizarEstadisticas();
   }
 }
 
-function actualizarInsights() {
+function actualizarEstadisticas() {
   // 1. Efficiency / Ratios
   let recuperaciones = 0;
   let perdidas = 0;
