@@ -14,7 +14,7 @@ let timerInterval;
 let startTime = 0;
 let elapsedTime = 0;
 let isRunning = false;
-let countdownMode = true;
+let countdownMode = false; // We keep false to count UP from 0 to 15
 const QUARTER_TIME = 15 * 60 * 1000; // 15 minutes in ms
 
 let golesPropios = 0;
@@ -254,6 +254,98 @@ function iniciarPartido() {
   document.getElementById('section-match').classList.add('active');
   document.getElementById('current-stage-label').innerText = "Partido en Curso";
   document.getElementById('current-stage-label').classList.replace('text-brand-400', 'text-yellow-400');
+
+  // Revert button just in case we were editing
+  const btn = document.getElementById('btn-iniciar-partido');
+  btn.innerText = "Iniciar Partido";
+  btn.onclick = iniciarPartido;
+
+  // Show header edit button
+  const headerEditBtn = document.getElementById('btn-header-editar');
+  if (headerEditBtn) headerEditBtn.classList.remove('hidden');
+}
+
+function editarAlineacion() {
+  document.getElementById('section-match').classList.remove('active');
+  document.getElementById('section-setup').classList.add('active');
+  document.getElementById('current-stage-label').innerText = "Editando Alineación...";
+
+  const btn = document.getElementById('btn-iniciar-partido');
+  btn.innerText = "Guardar Cambios";
+  btn.onclick = guardarEdicionAlineacion;
+
+  // Hide header edit button
+  const headerEditBtn = document.getElementById('btn-header-editar');
+  if (headerEditBtn) headerEditBtn.classList.add('hidden');
+}
+
+function guardarEdicionAlineacion() {
+  const nuevosTitulares = Array.from(document.querySelectorAll('.j-titular:checked')).map(cb => cb.value);
+  const nuevosSuplentes = Array.from(document.querySelectorAll('.j-suplente:checked')).map(cb => cb.value);
+
+  if (nuevosTitulares.length > 11) {
+    alert(`Has seleccionado ${nuevosTitulares.length} titulares. El máximo es 11.`);
+    return;
+  }
+
+  // Update logic: preserve existing times if they were already in that state
+  const minActual = obtenerMinutoActual();
+
+  // Handle Titulares
+  nuevosTitulares.forEach(j => {
+    if (playerStatus[j] !== "In_Field") {
+      // Changed from Bench to Field, or new player entirely
+      playerStatus[j] = "In_Field";
+      tiempoEntrada[j] = minActual;
+      if (tiempoJugado[j] === undefined) tiempoJugado[j] = 0;
+    }
+  });
+
+  // Handle Suplentes
+  nuevosSuplentes.forEach(j => {
+    if (playerStatus[j] === "In_Field") {
+      // Changed from Field to Bench -> close their time
+      const minEntró = tiempoEntrada[j] || 0;
+      const dif = Math.max(0, minActual - minEntró);
+      tiempoJugado[j] = (tiempoJugado[j] || 0) + dif;
+      playerStatus[j] = "On_Bench";
+      delete tiempoEntrada[j];
+    } else {
+      // Was already on bench, or new bench player
+      playerStatus[j] = "On_Bench";
+      if (tiempoJugado[j] === undefined) tiempoJugado[j] = 0;
+    }
+  });
+
+  // Clean up anyone completely unchecked
+  const todosSeleccionados = new Set([...nuevosTitulares, ...nuevosSuplentes]);
+  Object.keys(playerStatus).forEach(j => {
+    if (!todosSeleccionados.has(j)) {
+      if (playerStatus[j] === "In_Field") {
+        const minEntró = tiempoEntrada[j] || 0;
+        const dif = Math.max(0, minActual - minEntró);
+        tiempoJugado[j] = (tiempoJugado[j] || 0) + dif;
+        delete tiempoEntrada[j];
+      }
+      playerStatus[j] = "Removed";
+    }
+  });
+
+  actualizarGrillaJugadoras();
+
+  document.getElementById('section-setup').classList.remove('active');
+  document.getElementById('section-match').classList.add('active');
+  document.getElementById('current-stage-label').innerText = "Partido en Curso";
+
+  // Clean up
+  selectedPlayer = null;
+  selectedSubstitute = null;
+  document.getElementById('quien-selected-badge').classList.add('hidden');
+  document.getElementById('btn-save-action').classList.add('opacity-50', 'pointer-events-none');
+
+  // Re-show header edit button
+  const headerEditBtn = document.getElementById('btn-header-editar');
+  if (headerEditBtn) headerEditBtn.classList.remove('hidden');
 }
 
 function actualizarGrillaJugadoras() {
@@ -261,7 +353,12 @@ function actualizarGrillaJugadoras() {
   const benchGrid = document.getElementById('players-on-bench-grid');
 
   if (inFieldGrid) {
-    inFieldGrid.innerHTML = '';
+    inFieldGrid.innerHTML = `
+        <button onclick="selectPlayer(this, 'No identificada')" 
+            class="px-4 py-2 rounded-xl text-sm font-semibold transition-all border border-dashed border-gray-500 bg-transparent text-gray-400 hover:text-white hover:border-gray-300">
+            <i class="fas fa-question-circle mr-1"></i> No id
+        </button>
+    `;
     Object.keys(playerStatus).forEach(j => {
       if (playerStatus[j] === "In_Field") {
         const btn = document.createElement('button');
@@ -300,8 +397,15 @@ function selectPlayer(btnElement, nombre) {
     badge.innerText = nombre;
     badge.classList.remove('hidden');
   }
-  document.getElementById('action-overlay').classList.add('hidden');
+
+  // Update styling visually
   actualizarGrillaJugadoras();
+
+  // Once both Action AND Player are selected, enable save btn
+  if (currentActionId && selectedPlayer) {
+    const saveBtn = document.getElementById('btn-save-action');
+    saveBtn.classList.remove('opacity-50', 'pointer-events-none');
+  }
 }
 
 function selectSubstitute(btnElement, nombre) {
@@ -378,9 +482,21 @@ function setQuarter(q) {
     return;
   }
 
-  if (!confirm(`¿Cambiar al cuarto ${q}? Esto reiniciará el cronómetro de este cuarto.`)) {
+  if (!confirm(`¿Cambiar al cuarto ${q}? Esto guardará los tiempos jugados de este cuarto y reiniciará el cronómetro a 00:00.`)) {
     return;
   }
+
+  // Cerrar el tiempo jugado de este cuarto para todas las que están en cancha
+  const minCierreCuarto = obtenerMinutoActual();
+  Object.keys(playerStatus).forEach(j => {
+    if (playerStatus[j] === "In_Field") {
+      const minEntró = tiempoEntrada[j] || 0;
+      const dif = Math.max(0, minCierreCuarto - minEntró);
+      tiempoJugado[j] = (tiempoJugado[j] || 0) + dif;
+      // Su nuevo tiempo de entrada para el próximo cuarto es el minuto 0
+      tiempoEntrada[j] = 0;
+    }
+  });
 
   cuartoActual = q;
   elapsedTime = 0;
@@ -525,8 +641,22 @@ function selectAction(btnElement, action) {
   if (btnElement) btnElement.classList.add('active');
   currentActionId = action.id;
 
+  // Removing action-overlay was here, it's now deleted from HTML.
+  // Instead, unlock the player-overlay
+  const overlay = document.getElementById('player-overlay');
+  if (overlay) {
+    overlay.classList.add('opacity-0');
+    setTimeout(() => overlay.classList.add('pointer-events-none', 'hidden'), 300);
+  }
+
+  // Disable save button to re-evaluate after choosing player
   const saveBtn = document.getElementById('btn-save-action');
-  saveBtn.classList.remove('opacity-50', 'pointer-events-none');
+  saveBtn.classList.add('opacity-50', 'pointer-events-none');
+
+  // If player was already selected, re-enable it
+  if (selectedPlayer) {
+    saveBtn.classList.remove('opacity-50', 'pointer-events-none');
+  }
 
   const extraFields = document.getElementById('extra-sub-fields');
   if (action.id === 'Salida') {
@@ -568,6 +698,9 @@ function guardarAccionActual() {
 
   // 1. Process Substitution Engine specially
   if (currentActionId === 'Salida') {
+    if (jugadora === 'No identificada') {
+      alert('No se puede sustituir a "No identificada".'); return;
+    }
     const suplente = selectedSubstitute;
     if (!suplente) { alert("Selecciona quién entra desde el banco."); return; }
 
@@ -577,8 +710,8 @@ function guardarAccionActual() {
     tiempoJugado[jugadora] = (tiempoJugado[jugadora] || 0) + tiempoJugadoraQueEstuvo;
     tiempoEntrada[suplente] = minutoFormateado;
 
-    accionesRegistradas.push({ jugadora, accion: "Sale", minuto: minutoFormateado, cuarto: cuartoActual });
-    accionesRegistradas.push({ jugadora: suplente, accion: "Entra", minuto: minutoFormateado, cuarto: cuartoActual });
+    accionesRegistradas.push({ jugadora, accion: "Sale", minuto: minutoFormateado, cuarto: cuartoActual, zona: null });
+    accionesRegistradas.push({ jugadora: suplente, accion: "Entra", minuto: minutoFormateado, cuarto: cuartoActual, zona: null });
     agregarLogUI(jugadora, `Sale ⬇️ (por ${suplente})`, "purple", minutoFormateado);
     agregarLogUI(suplente, `Entra ⬆️ (por ${jugadora})`, "green", minutoFormateado);
 
@@ -818,13 +951,19 @@ function agregarLogUI(nombre, accionTexto, colorTheme, minuto = null) {
 
 // --- FASE 3: FINALIZAR PARTIDO (Guardado 100% Client-Side vía Supabase) ---
 
+let isSavingMatch = false;
+let accionesYaInsertadas = false;
+
 async function finalizarPartido() {
+  if (isSavingMatch) return;
   if (!supabaseClient) {
     alert("Sin conexión a Supabase configurada."); return;
   }
   if (!confirm("¿Estás seguro que deseas finalizar el partido? Esto calculará los tiempos y enviará la info a la base de datos.")) {
     return;
   }
+
+  isSavingMatch = true;
 
   // 1. Terminar de calcular tiempo jugado para las que están actualmente en campo
   const minCierre = obtenerMinutoActual();
@@ -836,9 +975,11 @@ async function finalizarPartido() {
     }
   });
 
-  const btn = event.currentTarget;
-  btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Guardando...`;
-  btn.disabled = true;
+  const btn = window.event ? window.event.currentTarget : null;
+  if (btn) {
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Guardando...`;
+    btn.disabled = true;
+  }
 
   try {
 
@@ -858,18 +999,24 @@ async function finalizarPartido() {
     if (errMatch) throw errMatch;
 
     // 3. Format Raw Actions logs History (optional but useful)
-    if (accionesRegistradas.length > 0) {
+    if (accionesRegistradas.length > 0 && !accionesYaInsertadas) {
       const dbActions = accionesRegistradas.map(a => ({
         partido_fecha: fechaActual,
         categoria: categoriaActual,
         jugadora_nombre: a.jugadora,
         accion_tipo: a.accion,
         valor: a.valor || 1,
-        minuto: a.minuto
+        minuto: a.minuto,
+        cuarto: a.cuarto || null,
+        zona: a.zona || null
       }));
 
       const { error: errAct } = await supabaseClient.from('acciones').insert(dbActions);
-      if (errAct) console.warn("Error insertando acciones crudas. Omitido.", errAct);
+      if (errAct) {
+        console.warn("Error insertando acciones crudas. Omitido.", errAct);
+      } else {
+        accionesYaInsertadas = true;
+      }
     }
 
 
@@ -896,11 +1043,7 @@ async function finalizarPartido() {
         quite_positivo: getA("Quite positivo"),
         quite_negativo: getA("Quite negativo"),
         recuperacion: getA("Recuperación"),
-        falta_cometida: getA("Falta cometida"),
         falta_recibida: getA("Falta recibida"),
-        pie: getA("Pie"),
-        perdida: getA("Pérdida"),
-        error_manejo: getA("Error de manejo"),
         corto_a_favor: getA("Corto a Favor"),
         corto_en_contra: getA("Corto en Contra"),
         tiro_al_arco: getA("Tiro al arco")
@@ -914,19 +1057,25 @@ async function finalizarPartido() {
     if (errPData) throw errPData;
 
     // Success UI
-    btn.innerHTML = `<i class="fas fa-check bg-green-500 rounded-full w-6 h-6 inline-flex items-center justify-center text-black mr-2"></i> ¡Guardado Exitoso!`;
-    btn.classList.replace('border-red-500/50', 'border-green-500');
-    btn.classList.replace('text-red-400', 'text-green-400');
+    if (btn) {
+      btn.innerHTML = `<i class="fas fa-check bg-green-500 rounded-full w-6 h-6 inline-flex items-center justify-center text-black mr-2"></i> ¡Guardado Exitoso!`;
+      btn.classList.replace('border-red-500/50', 'border-green-500');
+      btn.classList.replace('text-red-400', 'text-green-400');
+    }
 
     setTimeout(() => {
       alert("El partido fue guardado exitosamente.");
+      isSavingMatch = false; // Just in case, though reload will happen
       location.reload();
     }, 1500);
 
   } catch (e) {
     console.error("Error Guardando en Supabase: ", e);
-    btn.innerHTML = `<i class="fas fa-times mr-2"></i> Error. Revisa consola.`;
-    btn.disabled = false;
+    if (btn) {
+      btn.innerHTML = `<i class="fas fa-times mr-2"></i> Error. Revisa consola.`;
+      btn.disabled = false;
+    }
+    isSavingMatch = false;
     alert("Hubo un error al guardar en la Base de Datos. Detalles en la consola F12.");
   }
 }
@@ -947,4 +1096,5 @@ window.selectPlayer = selectPlayer;
 window.selectSubstitute = selectSubstitute;
 window.selectZone = selectZone;
 window.switchTab = switchTab;
-window.actualizarInsights = actualizarInsights;
+window.editarAlineacion = editarAlineacion;
+window.guardarEdicionAlineacion = guardarEdicionAlineacion;

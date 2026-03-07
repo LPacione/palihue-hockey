@@ -25,8 +25,8 @@ async function connectToDatabase() {
         console.log('Usando cliente de MongoDB cacheado.');
         // Verificar si el cliente cacheado aún está conectado
         if (cachedClient.topology && cachedClient.topology.isConnected()) {
-             console.log('El cliente cacheado está conectado.');
-             return cachedClient;
+            console.log('El cliente cacheado está conectado.');
+            return cachedClient;
         } else {
             console.log('El cliente cacheado no está conectado, intentando reconectar.');
             cachedClient = null; // Limpiar el cliente no conectado
@@ -53,7 +53,7 @@ async function connectToDatabase() {
 }
 
 // Handler principal de la función de Netlify
-exports.handler = async function(event, context) {
+exports.handler = async function (event, context) {
     console.log('saveActions function triggered');
     // Asegúrate de que la petición sea POST
     if (event.httpMethod !== 'POST') {
@@ -116,7 +116,7 @@ exports.handler = async function(event, context) {
         const jugadora_nombre = action[0]?.toString().trim() || '';
         const accion_tipo = action[1]?.toString().trim() || '';
         const valor = action[2] !== undefined && action[2] !== null ? parseFloat(action[2]) : null;
-        
+
         // Determinar si es una acción basada en tiempo (salida/entrada)
         const isTiempoAction = accion_tipo.includes('Sale minuto') || accion_tipo.includes('Entra minuto');
         const minuto = isTiempoAction && valor !== null && !isNaN(valor) ? Math.round(valor) : null;
@@ -132,7 +132,9 @@ exports.handler = async function(event, context) {
             jugadora_nombre,
             accion_tipo,
             valor: isNaN(valor) ? null : valor, // Guarda null si no es un número válido
-            minuto // Incluye minuto solo si es una acción de tiempo
+            minuto, // Incluye minuto solo si es una acción de tiempo
+            cuarto: action[3] || null, // Se espera que 'cuarto' venga en el índice 3 si se provee
+            zona: action[4] || null // Se espera que 'zona' venga en el índice 4 si se provee
         };
     }).filter(Boolean); // Elimina los elementos 'null' resultantes de acciones inválidas
     console.log(`Acciones preparadas para inserción: ${actionsToInsert.length}.`);

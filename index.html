@@ -257,7 +257,13 @@
                 <img src="/icon.jpeg" alt="Palihue Logo" class="w-full h-full object-cover">
             </div>
             <div>
-                <h1 class="text-xl font-bold tracking-tight text-white leading-tight">Palihue Tracker</h1>
+                <h1 class="text-xl font-bold tracking-tight text-white leading-tight flex items-center">
+                    Palihue Tracker
+                    <button id="btn-header-editar" onclick="editarAlineacion()"
+                        class="hidden ml-4 text-[10px] md:text-xs bg-brand-500/20 hover:bg-brand-500/40 text-brand-200 py-1.5 px-3 rounded-xl transition-all font-bold border border-brand-500/30">
+                        <i class="fas fa-edit mr-1"></i> Editar Alineación
+                    </button>
+                </h1>
                 <p class="text-xs text-brand-400 font-medium tracking-wider uppercase" id="current-stage-label">
                     Configuración Inicial</p>
             </div>
@@ -475,35 +481,13 @@
                 <!-- Left/Main Col: Actions Input -->
                 <div class="lg:col-span-2 space-y-6">
 
-                    <!-- Who Menu (Dynamic Grid) -->
-                    <div class="glass-panel rounded-3xl p-5 border-t border-b-0 border-r-0 border-l border-white/10">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-semibold text-lg flex items-center gap-2"><i
-                                    class="fas fa-user-circle text-brand-400"></i> ¿Quién?</h3>
-                            <span id="quien-selected-badge"
-                                class="hidden px-3 py-1 bg-brand-500 text-white text-xs font-bold rounded-full"></span>
-                        </div>
-                        <div id="players-in-field-grid" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-2">
-                            <!-- JS Fills this with ONLY players In_Field as buttons -->
-                            <p class="text-gray-500 text-xs italic">Cargando jugadoras...</p>
-                        </div>
-                    </div>
-
                     <!-- What Action Menu -->
                     <div class="glass-panel rounded-3xl p-5 border-t border-b-0 border-r-0 border-l border-white/10 relative overflow-hidden"
                         id="box-action-panel">
-                        <!-- disabled overlay -->
-                        <div id="action-overlay"
-                            class="absolute inset-0 bg-black/60 backdrop-blur-sm z-20 flex items-center justify-center rounded-3xl transition-opacity duration-300">
-                            <p
-                                class="font-medium text-white/80 bg-black/50 px-4 py-2 rounded-full border border-white/10 shadow-xl">
-                                <i class="fas fa-hand-pointer mr-2"></i>Selecciona una jugadora primero
-                            </p>
-                        </div>
 
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="font-semibold text-lg flex items-center gap-2">
-                                <i class="fas fa-bolt text-yellow-400"></i> ¿Qué Acción?
+                                <i class="fas fa-bolt text-yellow-400"></i> 1. ¿Qué Acción?
                             </h3>
                         </div>
 
@@ -555,22 +539,47 @@
                             </div>
                         </div>
 
-                        <div class="mt-6">
-                            <button id="btn-save-action" onclick="guardarAccionActual()"
-                                class="w-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white py-3 rounded-xl font-bold shadow-lg shadow-brand-500/25 transition-all transform hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 opacity-50 pointer-events-none">
-                                <i class="fas fa-check-circle"></i> Registrar
-                            </button>
-                        </div>
+                    </div>
 
+                    <!-- Who Menu (Dynamic Grid) -->
+                    <div class="glass-panel rounded-3xl p-5 border-t border-b-0 border-r-0 border-l border-white/10 relative"
+                        id="box-player-panel">
+                        <!-- disabled overlay for Player panel -->
+                        <div id="player-overlay"
+                            class="absolute inset-0 bg-black/60 backdrop-blur-sm z-20 flex items-center justify-center rounded-3xl transition-opacity duration-300">
+                            <p
+                                class="font-medium text-white/80 bg-black/50 px-4 py-2 rounded-full border border-white/10 shadow-xl">
+                                <i class="fas fa-hand-pointer mr-2"></i>Selecciona la acción primero
+                            </p>
+                        </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-3">
+                                <h3 class="font-semibold text-lg flex items-center gap-2"><i
+                                        class="fas fa-user-circle text-brand-400"></i> 2. ¿Quién?</h3>
+                            </div>
+                            <span id="quien-selected-badge"
+                                class="hidden px-3 py-1 bg-brand-500 text-white text-xs font-bold rounded-full"></span>
+                        </div>
+                        <div id="players-in-field-grid" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-2">
+                            <!-- JS Fills this with ONLY players In_Field as buttons -->
+                            <p class="text-gray-500 text-xs italic">Cargando jugadoras...</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <button id="btn-save-action" onclick="guardarAccionActual()"
+                            class="w-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white py-3 rounded-xl font-bold shadow-lg shadow-brand-500/25 transition-all transform hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 opacity-50 pointer-events-none">
+                            <i class="fas fa-check-circle"></i> Registrar
+                        </button>
                     </div>
 
                 </div>
 
-                <!-- Right Col: Feed & Finalize -->
-                <div class="space-y-6">
+                <!-- Right Col: Feed & Finalize (Inside grid) -->
+                <div class="space-y-6 lg:col-span-1">
 
                     <!-- Right Column: Tabs (Feed / Estadísticas) -->
-                    <div class="glass-panel rounded-3xl p-5 flex flex-col h-[500px]">
+                    <div class="glass-panel rounded-3xl p-5 flex flex-col h-[650px]">
 
                         <!-- Tab Header -->
                         <div class="flex p-1 bg-black/40 rounded-2xl mb-4 border border-white/5">
