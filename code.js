@@ -1021,16 +1021,17 @@ async function finalizarPartido() {
 
 
     // 4. Transform individual stats to Supabase schema 'resumen_jugadoras'
-    const allPlayersInvolved = Object.keys(playerStatus); // Anyone who was Tit or Sub
+    // Exclude anyone who was checked then fully unchecked during edits.
+    const allPlayersInvolved = Object.keys(playerStatus).filter(j => playerStatus[j] !== "Removed");
 
     const individualStatsBatch = allPlayersInvolved.map(j => {
-      const getA = (accion_exacta) => estadisticasJuego[`${j}_${accion_exacta}`] || 0;
+      const getA = (accion_exacta) => Number(estadisticasJuego[`${j}_${accion_exacta}`]) || 0;
 
       return {
         partido_fecha: fechaActual,
         categoria: categoriaActual,
         jugadora_nombre: j,
-        tiempo_jugado: Math.round(tiempoJugado[j] || 0),
+        tiempo_jugado: Math.round(Number(tiempoJugado[j])) || 0,
         goles: getA("Gol"),
         gesto_bloqueo: getA("Gesto Bloqueo"),
         gesto_flick: getA("Gesto Flick"),
