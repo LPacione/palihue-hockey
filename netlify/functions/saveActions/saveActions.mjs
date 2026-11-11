@@ -241,7 +241,7 @@ exports.handler = async function (event, context) {
         let r = {
             partido_fecha: fecha.toString().trim(),
             jugadora_nombre: j,
-            tiempo_jugado: Math.round(tiempoJugado[j] || 0),
+            tiempo_jugado: Math.min(tiempoTotalPartido, Math.round(tiempoJugado[j] || 0)),
             goles: 0,
             gesto_bloqueo: 0,
             gesto_flick: 0,

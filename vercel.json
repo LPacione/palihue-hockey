@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "vite --port $PORT",
+  "installCommand": "npm install"
+}

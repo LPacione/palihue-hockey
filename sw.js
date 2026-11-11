@@ -49,7 +49,7 @@ self.addEventListener('fetch', event => {
   const { request } = event;
 
   // Para funciones de Netlify (API calls) -> Network first, o manejo offline específico
-  if (request.url.includes('/.netlify/functions/')) {
+  if (request.url.includes('/.netlify/functions/') || request.url.includes('/api/')) {
     event.respondWith(
       fetch(request)
         .catch(error => {

@@ -1,12 +1,17 @@
 {
   "dependencies": {
+    "@google/adk": "^1.2.0",
+    "@supabase/supabase-js": "^2.108.1",
     "dotenv": "^16.5.0",
-    "mongodb": "^6.16.0"
+    "konva": "^10.9.1",
+    "mongodb": "^6.16.0",
+    "zod": "^4.4.3"
   },
   "name": "palihue-hockey",
   "version": "1.0.0",
   "main": "code.js",
   "devDependencies": {
+    "puppeteer-core": "^25.17.0",
     "serve": "^14.2.5",
     "vite": "^7.3.1"
   },
