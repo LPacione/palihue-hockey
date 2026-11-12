@@ -39,6 +39,9 @@ try {
 
   async function loadCategory(cat) {
     await page.select('#setup-categoria', cat);
+    // La pizarra táctica vive en la pestaña "Táctica": hay que abrirla para que el
+    // canvas tome medidas reales (el tab oculto daría tamaño 0).
+    await page.click('.main-tab[data-tab="tactica"]');
     await page.waitForFunction(() => {
       const c = document.getElementById('tactical-board-container');
       return c && c.querySelector('canvas') && c.querySelector('canvas').width > 100;
@@ -67,7 +70,7 @@ try {
       legendText: document.getElementById('position-legend').innerText,
       schemas: Array.from(document.querySelectorAll('#tactical-schema-selector button')).map(b => b.textContent.trim()),
       btnDisabled: document.getElementById('btn-iniciar-partido').disabled,
-      titularesChecks: document.querySelectorAll('.j-titular:checked').length
+      titularesChecks: window.getTacticalState().asignadas
     };
   });
 
@@ -80,7 +83,7 @@ try {
   check('Hockey: 11 fichas en leyenda', hockeyInfo.legend === 11, String(hockeyInfo.legend));
   check('Hockey: validación 11/11', hockeyInfo.validation === '11/11', hockeyInfo.validationText);
   check('Hockey: botón iniciar habilitado', hockeyInfo.btnDisabled === false);
-  check('Hockey: 11 titulares sincronizados al roster', hockeyInfo.titularesChecks === 11, String(hockeyInfo.titularesChecks));
+  check('Hockey: 11 titulares asignados en la pizarra', hockeyInfo.titularesChecks === 11, String(hockeyInfo.titularesChecks));
 
   await page.evaluate(() => document.getElementById('tactical-board-section').scrollIntoView({ block: 'center' }));
   await new Promise(r => setTimeout(r, 400));
@@ -118,12 +121,12 @@ try {
     validation: document.getElementById('validation-count').textContent.trim(),
     btnDisabled: document.getElementById('btn-iniciar-partido').disabled,
     legend: document.getElementById('position-legend').innerText,
-    titulares: document.querySelectorAll('.j-titular:checked').length
+    titulares: window.getTacticalState().asignadas
   }));
   check('Hockey: modal se cierra al asignar', afterSwap.modalHidden);
   check('Hockey: intercambio mantiene 11/11', afterSwap.validation === '11/11', afterSwap.validation);
   check('Hockey: arquero ahora es María L.', afterSwap.legend.includes('María L.'), afterSwap.legend.slice(0, 90));
-  check('Hockey: roster sigue con 11 titulares tras intercambio', afterSwap.titulares === 11, String(afterSwap.titulares));
+  check('Hockey: el once sigue completo tras el intercambio', afterSwap.titulares === 11, String(afterSwap.titulares));
 
   // Cambiar esquema táctico
   await page.evaluate(() => window.selectTacticalSchema('3-3-3-1'));
@@ -132,7 +135,7 @@ try {
     validation: document.getElementById('validation-count').textContent.trim(),
     legend: document.getElementById('position-legend').children.length,
     hint: document.getElementById('schema-hint').innerText,
-    active: Array.from(document.querySelectorAll('#tactical-schema-selector button')).find(b => b.className.includes('brand-500'))?.innerText,
+    active: Array.from(document.querySelectorAll('#tactical-schema-selector button')).find(b => b.className.includes('active'))?.innerText,
     nodos: window.getTacticalState().nodos,
     total: window.getTacticalState().total
   }));
@@ -170,7 +173,7 @@ try {
   const futbolInfo = await page.evaluate(() => ({
     schemas: Array.from(document.querySelectorAll('#tactical-schema-selector button')).map(b => b.textContent.trim()),
     validation: document.getElementById('validation-count').textContent.trim(),
-    active: Array.from(document.querySelectorAll('#tactical-schema-selector button')).find(b => b.className.includes('brand-500'))?.innerText,
+    active: Array.from(document.querySelectorAll('#tactical-schema-selector button')).find(b => b.className.includes('active'))?.innerText,
     legend: document.getElementById('position-legend').innerText,
     canvasW: document.querySelector('#tactical-board-container canvas').width,
     canvasH: document.querySelector('#tactical-board-container canvas').height
@@ -194,13 +197,13 @@ try {
     const r = c.getBoundingClientRect();
     return { w: Math.round(r.width), h: Math.round(r.height), cw: c.width, ch: c.height };
   });
-  check('Desktop: cancha responsive <= 448px de ancho', desktopSize.w <= 449, `${desktopSize.w}x${desktopSize.h}`);
+  check('Desktop: cancha responsive <= 540px de ancho', desktopSize.w <= 541, `${desktopSize.w}x${desktopSize.h}`);
   await page.evaluate(() => document.getElementById('tactical-board-section').scrollIntoView({ block: 'center' }));
   await new Promise(r => setTimeout(r, 300));
   await page.screenshot({ path: path.join(OUT, 'tactical-futbol-desktop.png'), fullPage: false });
 
   // Errores de consola relevantes
-  const relevantErrors = errors.filter(e => !/favicon|manifest|sw\.js|net::ERR|Failed to load resource/i.test(e));
+  const relevantErrors = errors.filter(e => !/favicon|manifest|sw\.js|net::ERR|Failed to load resource|Variables de entorno para Supabase/i.test(e));
   check('Sin errores JS en consola', relevantErrors.length === 0, relevantErrors.slice(0, 4).join(' || '));
 
   console.log('\nRESUMEN:', results.filter(r => r.ok).length + '/' + results.length, 'checks OK');

@@ -1,0 +1,1062 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tracker Pro</title>
+
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#064e3b">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="/icon.jpeg">
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Google Fonts: Outfit (modern, geometric) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16',
+                        },
+                        glass: {
+                            100: 'rgba(255, 255, 255, 0.1)',
+                            200: 'rgba(255, 255, 255, 0.15)',
+                            500: 'rgba(255, 255, 255, 0.3)',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Styling & Background */
+        body {
+            background-color: #064e3b;
+            /* Emerald 900 base */
+            background-image:
+                radial-gradient(at 0% 0%, hsla(150, 100%, 20%, 0.8) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(140, 100%, 15%, 0.6) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(160, 100%, 10%, 0.9) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(130, 100%, 25%, 0.4) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: #f8fafc;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(6, 78, 59, 0.4);
+            /* Matches Emerald theme */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #22c55e;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+        }
+
+        .glass-input option {
+            background-color: #0F172A;
+            color: white;
+        }
+
+        /* Scoreboard Specifics */
+        .score-box {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Animations */
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(34, 197, 94, 0.8);
+            }
+        }
+
+        @keyframes score-update {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3);
+                color: #fff;
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .anim-score {
+            animation: score-update 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Action Grid (Mobile First Dashboard style) */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 12px;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .action-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .action-btn.active {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            color: #4ade80;
+        }
+
+        .action-btn i {
+            font-size: 1.5rem;
+        }
+
+        /* Custom Checkboxes */
+        .custom-checkbox input:checked+div {
+            background-color: #22c55e;
+            border-color: #22c55e;
+        }
+
+        .custom-checkbox input:checked+div svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Hide sections logic handled by JS class toggling instead of heavy CSS */
+        .page-section {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Modals */
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 50;
+        }
+
+        /* Coach Chat Panel */
+        #coach-chat-panel.open {
+            transform: translateX(0);
+        }
+
+        .chat-message-bubble {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            animation: fadeIn 0.2s ease forwards;
+        }
+
+        .chat-message-user {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-message-coach {
+            background: rgba(6, 78, 59, 0.5);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.1);
+        }
+
+        /* Typing indicator animation */
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #4ade80;
+            border-radius: 50%;
+            display: inline-block;
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+    </style>
+</head>
+
+<body class="p-4 md:p-8">
+
+    <!-- Sport Selection Screen -->
+    <div id="sport-selector" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+        <div class="glass-panel rounded-3xl p-8 md:p-12 max-w-md w-full text-center transform-scale-95 transition-transform duration-300">
+            <div class="mb-8">
+                <i class="fas fa-tshirt text-6xl mb-4 opacity-50"></i>
+            </div>
+            <h2 class="text-3xl font-bold mb-4">Tracker Pro</h2>
+            <p class="text-gray-400 mb-8">Selecciona el deporte</p>
+            
+            <div class="space-y-4">
+                <button onclick="selectSport('hockey')" class="w-full bg-brand-600 hover:bg-brand-500 text-white py-3 rounded-xl font-semibold transition-all shadow-lg shadow-brand-500/30 transform hover:scale-[1.05]">
+                    <i class="fas fa-hockey-puck mr-2"></i> Hockey Césped
+                </button>
+                <button onclick="selectSport('futbol')" class="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-xl font-semibold transition-all shadow-lg shadow-green-500/30 transform hover:scale-[1.05]">
+                    <i class="fas fa-futbol mr-2"></i> Fútbol
+                </button>
+            </div>
+            
+            <p class="text-xs text-gray-500 mt-6">Versión 1.0</p>
+        </div>
+    </div>
+
+    
+
+    <!-- Top Bar -->
+    <header class="max-w-4xl mx-auto flex justify-between items-center mb-8">
+        <div class="flex items-center gap-3">
+            <div
+                class="w-12 h-12 rounded-xl overflow-hidden bg-white/10 flex items-center justify-center shadow-lg shadow-brand-500/30 border border-white/20">
+                <img src="/icon.jpeg" alt="Tracker Pro Logo" class="w-full h-full object-cover">
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight text-white leading-tight flex items-center gap-2">
+                    Tracker Pro
+                    <button id="btn-header-cambiar-deporte" onclick="cambiarDeporte()"
+                        class="ml-4 text-[10px] md:text-xs bg-gray-500/20 hover:bg-gray-500/40 text-gray-200 py-1.5 px-3 rounded-xl transition-all font-bold border border-gray-500/30">
+                        <i class="fas fa-exchange-alt mr-1"></i> Cambiar Deporte
+                    </button>
+                    <button id="btn-header-editar" onclick="editarAlineacion()"
+                        class="hidden ml-4 text-[10px] md:text-xs bg-brand-500/20 hover:bg-brand-500/40 text-brand-200 py-1.5 px-3 rounded-xl transition-all font-bold border border-brand-500/30">
+                        <i class="fas fa-edit mr-1"></i> Editar Alineación
+                    </button>
+                </h1>
+                <p class="text-xs text-brand-400 font-medium tracking-wider uppercase" id="current-stage-label">
+                    Configuración Inicial</p>
+            </div>
+        </div>
+
+    </header>
+
+    <main class="max-w-4xl mx-auto">
+
+        <!-- SECTION 1: Configuración de Partido - Reorganizado -->
+        <section id="section-setup" class="page-section active space-y-6">
+            <div class="glass-panel rounded-3xl p-6 md:p-8">
+                <!-- Header del partido -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-semibold mb-4 flex items-center gap-2">
+                        <i class="fas fa-clipboard-list text-brand-500"></i> Nuevo Partido
+                    </h2>
+                    
+                    <!-- Info del partido en tarjetas -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-black/20 rounded-2xl p-5 border border-white/5">
+                            <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                                <i class="fas fa-trophy mr-1"></i> Fecha / Torneo
+                            </label>
+                            <div class="relative">
+                                <select id="setup-fecha"
+                                    class="glass-input w-full rounded-xl py-3 pl-10 pr-4 appearance-none text-white">
+                                    <option value="" disabled selected>Selecciona la fecha...</option>
+                                    <option value="Fecha 1">Fecha 1</option>
+                                    <option value="Fecha 2">Fecha 2</option>
+                                    <option value="Fecha 3">Fecha 3</option>
+                                    <option value="Fecha 4">Fecha 4</option>
+                                    <option value="Fecha 5">Fecha 5</option>
+                                    <option value="Fecha 6">Fecha 6</option>
+                                    <option value="Fecha 7">Fecha 7</option>
+                                    <option value="Fecha 8">Fecha 8</option>
+                                    <option value="Fecha 9">Fecha 9</option>
+                                    <option value="Fecha 10">Fecha 10</option>
+                                    <option value="Fecha 11">Fecha 11</option>
+                                    <option value="Fecha 12">Fecha 12</option>
+                                    <option value="Fecha 13">Fecha 13</option>
+                                    <option value="Fecha 14">Fecha 14</option>
+                                    <option value="Fecha 15">Fecha 15</option>
+                                    <option value="Amistoso">Amistoso</option>
+                                    <option value="Playoffs">Playoffs</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-black/20 rounded-2xl p-5 border border-white/5">
+                            <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                                <i class="fas fa-users mr-1"></i> Categoría
+                            </label>
+                            <div class="relative">
+                                <select id="setup-categoria"
+                                    class="glass-input w-full rounded-xl py-3 pl-10 pr-4 appearance-none text-white"
+                                    onchange="cargarJugadoras()">
+                                    <option value="" disabled selected>Selecciona categoría...</option>
+                                    <option value="7ma_fem">7ma Femenina</option>
+                                    <option value="6ta_fem">6ta Femenina</option>
+                                    <option value="5ta_fem">5ta Femenina</option>
+                                    <option value="1ra_fem">1ra Femenina</option>
+                                    <option value="1ra_masc">1ra Masculina</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PIZARRA TÁCTICA - Sección Konva.js -->
+                <div id="tactical-board-section" class="opacity-50 pointer-events-none transition-opacity duration-300">
+                    <div class="glass-panel rounded-3xl p-4 md:p-8">
+                        <h3 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                            <i class="fas fa-chess-board text-brand-500"></i> Pizarra Táctica - Esquema Inicial
+                        </h3>
+                        
+                        <!-- Selector de Esquema Táctico -->
+                        <div class="mb-6">
+                            <label class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">
+                                <i class="fas fa-sitemap mr-1"></i> Esquema Táctico
+                            </label>
+                            <div class="flex flex-wrap gap-3" id="tactical-schema-selector">
+                                <!-- Se llena dinámicamente según el deporte -->
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2" id="schema-hint">
+                                Selecciona un esquema para posicionar a las 11 titulares en la cancha
+                            </p>
+                        </div>
+                        
+                        <!-- Canvas Konva.js - Cancha Interactiva -->
+                        <div class="mx-auto w-full max-w-md">
+                            <div class="relative rounded-2xl overflow-hidden bg-black/30 border border-white/10">
+                                <div id="tactical-board-container" class="relative w-full select-none touch-none" style="aspect-ratio: 68/100;">
+                                    <!-- Canvas Konva se inyecta aquí -->
+                                </div>
+                            </div>
+                            <p class="text-[11px] text-gray-500 mt-2 text-center">
+                                <i class="fas fa-hand-pointer mr-1"></i> Arrastra las fichas para ajustar la posición · Toca una ficha para asignar jugadora
+                            </p>
+                            <!-- Leyenda de posiciones -->
+                            <div id="position-legend" class="mt-3 flex flex-wrap gap-2 justify-center">
+                                <!-- Se llena dinámicamente -->
+                            </div>
+                        </div>
+                        
+                        <!-- Validación visual -->
+                        <div id="tactical-validation" class="mt-4 p-4 bg-black/20 rounded-2xl border border-white/5 hidden">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-3 h-3 rounded-full bg-green-500" id="validation-green"></div>
+                                    <span class="text-sm font-medium text-green-400" id="validation-text">Esquema completo: 11/11 posiciones asignadas</span>
+                                </div>
+                                <span class="text-xs text-gray-500" id="validation-count">0/11</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selección de Plantilla - Pestañas Titulares/Suplentes -->
+                <div id="roster-container" class="opacity-50 pointer-events-none transition-opacity duration-300">
+                    <div class="bg-black/20 rounded-2xl border border-white/5 overflow-hidden">
+                        <!-- Tabs para Titulares/Suplentes -->
+                        <div class="flex bg-white/5 border-b border-white/10">
+                            <button type="button" onclick="switchRosterTab('titulares')" 
+                                id="tab-titulares"
+                                class="flex-1 py-4 px-6 text-center font-semibold text-sm transition-colors 
+                                    bg-brand-500/20 text-brand-300 border-b-2 border-brand-500">
+                                <i class="fas fa-play-circle mr-2"></i>Titulares <span id="count-titulares-badge" class="ml-2 bg-brand-500 text-white text-xs px-2 py-0.5 rounded-full">0</span>
+                            </button>
+                            <button type="button" onclick="switchRosterTab('suplentes')" 
+                                id="tab-suplentes"
+                                class="flex-1 py-4 px-6 text-center font-semibold text-sm transition-colors 
+                                    text-gray-400 hover:text-white hover:bg-white/10">
+                                <i class="fas fa-chair mr-2"></i>Suplentes <span id="count-suplentes-badge" class="ml-2 bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded-full">0</span>
+                            </button>
+                        </div>
+
+                        <!-- Contenido de las pestañas -->
+                        <div class="p-6">
+                            <!-- Panel Titulares -->
+                            <div id="panel-titulares" class="roster-panel">
+                                <p class="text-sm text-gray-500 italic text-center py-8" id="msg-titulares">
+                                    Selecciona una categoría para cargar jugadoras
+                                </p>
+                                <div id="list-titulares" class="space-y-2 max-h-80 overflow-y-auto pr-2 hidden">
+                                    <!-- Se llena dinámicamente -->
+                                </div>
+                            </div>
+
+                            <!-- Panel Suplentes -->
+                            <div id="panel-suplentes" class="roster-panel hidden">
+                                <p class="text-sm text-gray-500 italic text-center py-8" id="msg-suplentes">
+                                    Selecciona una categoría para cargar jugadoras
+                                </p>
+                                <div id="list-suplentes" class="space-y-2 max-h-80 overflow-y-auto pr-2 hidden">
+                                    <!-- Se llena dinámicamente -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumen rápido -->
+                <div id="roster-summary" class="mt-6 p-4 bg-black/20 rounded-2xl border border-white/5 hidden">
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div>
+                            <p class="text-2xl font-bold text-brand-400" id="summary-titulares">0</p>
+                            <p class="text-xs text-gray-400 uppercase">Titulares</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold text-blue-400" id="summary-suplentes">0</p>
+                            <p class="text-xs text-gray-400 uppercase">Suplentes</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 text-center mt-2">Máx. 11 titulares • Sin límite de suplentes</p>
+                </div>
+
+                <!-- Botón de acción principal -->
+                <div class="mt-8 pt-6 border-t border-white/10">
+                    <button id="btn-iniciar-partido" onclick="iniciarPartido()"
+                        class="w-full bg-brand-500 hover:bg-brand-600 text-white py-4 rounded-xl font-semibold text-lg shadow-lg shadow-brand-500/20 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-3"
+                        disabled>
+                        <i class="fas fa-check-circle"></i>
+                        <span>Guardar e Iniciar Partido</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Tablero Principal (En Partido) -->
+        <section id="section-match" class="page-section">
+
+            <!-- Scoreboard & Timer Header -->
+            <div class="flex flex-col md:flex-row gap-6 mb-6">
+
+                <!-- Timer -->
+                <div
+                    class="glass-panel w-full md:w-1/3 rounded-3xl p-6 flex flex-col items-center justify-center relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10">
+                    </div>
+
+                    <div class="flex items-center gap-4 mb-2 z-10 w-full justify-between">
+                        <p id="period-selector-label" class="text-xs text-gray-400 uppercase tracking-widest font-semibold">Tiempos</p>
+                        <div class="flex bg-black/40 rounded-lg p-1 border border-white/5" id="quarter-selector">
+                            <button onclick="setQuarter('Q1')"
+                                class="px-2 py-0.5 rounded text-[10px] font-bold transition-all bg-brand-500 text-white"
+                                data-q="Q1">Q1</button>
+                            <button onclick="setQuarter('Q2')"
+                                class="px-2 py-0.5 rounded text-[10px] font-bold transition-all text-gray-500 hover:text-white"
+                                data-q="Q2">Q2</button>
+                            <button onclick="setQuarter('Q3')"
+                                class="px-2 py-0.5 rounded text-[10px] font-bold transition-all text-gray-500 hover:text-white"
+                                data-q="Q3">Q3</button>
+                            <button onclick="setQuarter('Q4')"
+                                class="px-2 py-0.5 rounded text-[10px] font-bold transition-all text-gray-500 hover:text-white"
+                                data-q="Q4">Q4</button>
+                        </div>
+                    </div>
+                    <div id="stopwatchDisplay"
+                        class="text-5xl md:text-6xl font-mono font-bold tracking-tighter mb-1 z-10 text-white drop-shadow-md">
+                        00:00</div>
+                    <p id="period-duration-label" class="text-[10px] text-gray-400 mb-4 z-10"></p>
+
+                    <div class="flex gap-3 w-full z-10">
+                        <button id="startStopBtn"
+                            class="flex-1 bg-white/10 hover:bg-white/20 border border-white/10 py-2 rounded-xl font-medium transition-colors flex items-center justify-center gap-2">
+                            <i class="fas fa-play text-brand-400" id="icon-play-pause"></i> <span
+                                id="text-play-pause">Iniciar</span>
+                        </button>
+                        <button id="resetBtn"
+                            class="w-12 bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/50 hover:text-red-400 py-2 rounded-xl transition-colors flex items-center justify-center">
+                            <i class="fas fa-stop"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Big Scoreboard -->
+                <div
+                    class="glass-panel w-full md:w-2/3 rounded-3xl p-6 grid grid-cols-3 items-center relative overflow-hidden">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-brand-900/40 via-transparent to-red-900/40 pointer-events-none">
+                    </div>
+
+                    <!-- Local -->
+                    <div class="flex flex-col items-center z-10">
+                        <span
+                            class="px-3 py-1 bg-brand-500/20 text-brand-400 rounded-full text-xs font-bold tracking-widest uppercase mb-2">Local</span>
+                        <h3 class="text-xl font-bold mb-1">Palihue</h3>
+                        <div class="relative">
+                            <button onclick="cambiarGol('propios', -1)"
+                                class="absolute -left-8 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white"><i
+                                    class="fas fa-minus text-sm"></i></button>
+                            <span id="golesPropios"
+                                class="text-6xl font-bold text-brand-400 tabular-nums tracking-tighter drop-shadow-[0_0_15px_rgba(34,197,94,0.3)]">0</span>
+                            <button onclick="cambiarGol('propios', 1)"
+                                class="absolute -right-8 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-brand-400 hover:text-brand-300"><i
+                                    class="fas fa-plus text-sm"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="flex flex-col items-center justify-center z-10">
+                        <span class="text-gray-500 font-bold mb-2">VS</span>
+                        <div class="h-16 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+                    </div>
+
+                    <!-- Rival -->
+                    <div class="flex flex-col items-center z-10">
+                        <span
+                            class="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-bold tracking-widest uppercase mb-2">Visitante</span>
+                        <h3 class="text-xl font-bold mb-1">Rival</h3>
+                        <div class="relative">
+                            <button onclick="cambiarGol('rival', -1)"
+                                class="absolute -left-8 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white"><i
+                                    class="fas fa-minus text-sm"></i></button>
+                            <span id="golesRival"
+                                class="text-6xl font-bold text-red-400 tabular-nums tracking-tighter drop-shadow-[0_0_15px_rgba(239,68,68,0.3)]">0</span>
+                            <button onclick="cambiarGol('rival', 1)"
+                                class="absolute -right-8 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-red-400 hover:text-red-300"><i
+                                    class="fas fa-plus text-sm"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Dashboard Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- Left/Main Col: Actions Input -->
+                <div class="lg:col-span-2 space-y-6">
+
+                    <!-- What Action Menu -->
+                    <div class="glass-panel rounded-3xl p-5 border-t border-b-0 border-r-0 border-l border-white/10 relative overflow-hidden"
+                        id="box-action-panel">
+
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-lg flex items-center gap-2">
+                                <i class="fas fa-bolt text-yellow-400"></i> 1. ¿Qué Acción?
+                            </h3>
+                        </div>
+
+
+
+                        <!-- Categories Wrap (No Scroll) -->
+                        <div class="flex flex-wrap gap-2 mb-6 border-b border-white/10 pb-4" id="action-categories">
+                            <!-- Filled by JS -->
+                        </div>
+
+                        <!-- Specific Actions Grid -->
+                        <div id="action-buttons-grid" class="action-grid min-h-[140px] mb-6">
+                            <!-- Filled by JS -->
+                        </div>
+
+                        <!-- Zone Selector (Dynamic - Moved Below) -->
+                        <div id="zone-selector"
+                            class="hidden mb-6 p-4 bg-white/5 rounded-2xl border border-white/10 animate-[fadeIn_0.3s_ease]">
+                            <p class="text-[10px] font-bold text-gray-400 mb-3 uppercase tracking-widest text-center">
+                                Zona de la Acción</p>
+                            <div class="flex gap-2">
+                                <button onclick="selectZone('Defensa')" id="zone-defensa"
+                                    class="flex-1 py-3 bg-black/40 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-brand-500/50">Defensa</button>
+                                <button onclick="selectZone('Medio')" id="zone-medio"
+                                    class="flex-1 py-3 bg-black/40 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-brand-500/50">Medio</button>
+                                <button onclick="selectZone('Ataque')" id="zone-ataque"
+                                    class="flex-1 py-3 bg-black/40 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-brand-500/50">Ataque</button>
+                            </div>
+                        </div>
+
+                        <!-- Extra fields for Subs (Bench Grid) -->
+                        <div id="extra-sub-fields"
+                            class="hidden mt-6 pt-6 border-t border-white/10 animate-[fadeIn_0.3s_ease]">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="text-sm font-semibold text-purple-400 italic">¿Quién entra desde el Banco?
+                                </h4>
+                                <span
+                                    class="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full font-bold">SUSTIDUCIÓN</span>
+                            </div>
+                            <div id="players-on-bench-grid" class="flex flex-wrap gap-2 mb-4">
+                                <!-- JS Fills this with ONLY players On_Bench as buttons -->
+                            </div>
+
+                            <div class="flex items-center gap-3 bg-black/20 p-3 rounded-xl border border-white/5">
+                                <label class="text-xs text-gray-500 uppercase font-bold">Min:</label>
+                                <input type="number" id="action-minuto"
+                                    class="bg-transparent text-white w-full focus:outline-none font-mono"
+                                    placeholder="Minuto actual...">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Who Menu (Dynamic Grid) -->
+                    <div class="glass-panel rounded-3xl p-5 border-t border-b-0 border-r-0 border-l border-white/10 relative"
+                        id="box-player-panel">
+                        <!-- disabled overlay for Player panel -->
+                        <div id="player-overlay"
+                            class="absolute inset-0 bg-black/60 backdrop-blur-sm z-20 flex items-center justify-center rounded-3xl transition-opacity duration-300">
+                            <p
+                                class="font-medium text-white/80 bg-black/50 px-4 py-2 rounded-full border border-white/10 shadow-xl">
+                                <i class="fas fa-hand-pointer mr-2"></i>Selecciona la acción primero
+                            </p>
+                        </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-3">
+                                <h3 class="font-semibold text-lg flex items-center gap-2"><i
+                                        class="fas fa-user-circle text-brand-400"></i> 2. ¿Quién?</h3>
+                            </div>
+                            <span id="quien-selected-badge"
+                                class="hidden px-3 py-1 bg-brand-500 text-white text-xs font-bold rounded-full"></span>
+                        </div>
+                        <div id="players-in-field-grid" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-2">
+                            <!-- JS Fills this with ONLY players In_Field as buttons -->
+                            <p class="text-gray-500 text-xs italic">Cargando jugadoras...</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <button id="btn-save-action" onclick="guardarAccionActual()"
+                            class="w-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white py-3 rounded-xl font-bold shadow-lg shadow-brand-500/25 transition-all transform hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 opacity-50 pointer-events-none">
+                            <i class="fas fa-check-circle"></i> Registrar
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Right Col: Feed & Finalize (Inside grid) -->
+                <div class="space-y-6 lg:col-span-1">
+
+                    <!-- Right Column: Tabs (Feed / Estadísticas) -->
+                    <div class="glass-panel rounded-3xl p-5 flex flex-col h-[650px]">
+
+                        <!-- Tab Header -->
+                        <div class="flex p-1 bg-black/40 rounded-2xl mb-4 border border-white/5">
+                            <button onclick="switchTab('feed')" id="tab-btn-feed"
+                                class="flex-1 py-2 text-xs font-bold rounded-xl transition-all bg-brand-500 text-white shadow-lg">HISTORIAL</button>
+                            <button onclick="switchTab('insights')" id="tab-btn-insights"
+                                class="flex-1 py-2 text-xs font-bold rounded-xl transition-all text-gray-400 hover:text-white">ESTADÍSTICAS</button>
+                        </div>
+
+                        <!-- Content Area -->
+                        <div class="flex-1 overflow-y-auto pr-1">
+
+                            <!-- TAB 1: FEED -->
+                            <div id="tab-content-feed" class="space-y-3">
+                                <p class="text-sm text-gray-500 italic text-center py-10">No hay acciones registradas
+                                    aún</p>
+                            </div>
+
+                            <!-- TAB 2: INSIGHTS -->
+                            <div id="tab-content-insights" class="hidden space-y-6">
+
+                                <!-- Quick Stats Cards -->
+                                <div class="grid grid-cols-2 gap-3">
+                                    <!-- Ratio Card (solo hockey: usa Pérdidas) -->
+                                    <div id="ratio-card" data-sport-only="hockey"
+                                        class="bg-white/5 p-3 rounded-2xl border border-white/10 col-span-2">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <p class="text-[10px] text-gray-500 uppercase font-black">Ratio Recup. /
+                                                Pérdidas</p>
+                                            <i class="fas fa-balance-scale text-[10px] text-brand-500/50"></i>
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span id="stat-ratio-rp" class="text-2xl font-black text-white">0.0</span>
+                                            <div
+                                                class="flex-1 h-3 bg-white/5 rounded-full overflow-hidden flex border border-white/5">
+                                                <div id="bar-ratio-recup"
+                                                    class="h-full bg-teal-500 transition-all duration-1000"
+                                                    style="width: 50%"></div>
+                                                <div id="bar-ratio-perd"
+                                                    class="h-full bg-red-500 transition-all duration-1000"
+                                                    style="width: 50%"></div>
+                                            </div>
+                                        </div>
+                                        <p id="stat-ratio-desc" class="text-[9px] text-gray-500 mt-2 italic">Calculado
+                                            como Robos totales vs Pérdidas totales</p>
+                                    </div>
+                                </div>
+
+                                <!-- Exit Distribution Section (solo hockey) -->
+                                <div id="exit-distribution-section" data-sport-only="hockey">
+                                    <h4
+                                        class="text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                                        <i class="fas fa-exchange-alt text-blue-400"></i> Distribución de Salidas
+                                    </h4>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div class="bg-white/5 p-2 rounded-xl border border-white/5 text-center">
+                                            <p class="text-[9px] text-gray-500 font-bold mb-1">LINEA</p>
+                                            <p id="val-salida-linea" class="text-base font-black text-white">0</p>
+                                        </div>
+                                        <div class="bg-white/5 p-2 rounded-xl border border-white/5 text-center">
+                                            <p class="text-[9px] text-gray-500 font-bold mb-1">X</p>
+                                            <p id="val-salida-x" class="text-base font-black text-white">0</p>
+                                        </div>
+                                        <div class="bg-white/5 p-2 rounded-xl border border-white/5 text-center">
+                                            <p class="text-[9px] text-gray-500 font-bold mb-1">MEDIO</p>
+                                            <p id="val-salida-medio" class="text-base font-black text-white">0</p>
+                                        </div>
+                                    </div>
+                                    <!-- Progress multi-bar for exits -->
+                                    <div class="mt-3 h-2 bg-white/10 rounded-full overflow-hidden flex">
+                                        <div id="bar-salida-linea" class="h-full bg-blue-500 transition-all"
+                                            style="width: 33%"></div>
+                                        <div id="bar-salida-x" class="h-full bg-purple-500 transition-all"
+                                            style="width: 33%"></div>
+                                        <div id="bar-salida-medio" class="h-full bg-indigo-500 transition-all"
+                                            style="width: 34%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Zones Breakdown (Pérdidas, solo hockey) -->
+                                <div id="loss-zones-section" data-sport-only="hockey">
+                                    <h4
+                                        class="text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                                        <i class="fas fa-minus-circle text-red-400"></i> Pérdidas por Zona
+                                    </h4>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="text-[10px] w-12 text-gray-500 font-bold uppercase">Defensa</span>
+                                            <div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div id="bar-zona-defensa"
+                                                    class="h-full bg-red-500 transition-all duration-1000"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                            <span id="val-zona-defensa"
+                                                class="text-[10px] text-white font-mono">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="text-[10px] w-12 text-gray-500 font-bold uppercase">Medio</span>
+                                            <div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div id="bar-zona-medio"
+                                                    class="h-full bg-yellow-500 transition-all duration-1000"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                            <span id="val-zona-medio" class="text-[10px] text-white font-mono">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="text-[10px] w-12 text-gray-500 font-bold uppercase">Ataque</span>
+                                            <div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div id="bar-zona-ataque"
+                                                    class="h-full bg-red-400 transition-all duration-1000"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                            <span id="val-zona-ataque" class="text-[10px] text-white font-mono">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Zones Breakdown (Robos) -->
+                                <div>
+                                    <h4
+                                        class="text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                                        <i class="fas fa-plus-circle text-teal-400"></i>
+                                        <span id="zones-recovery-title">Robos por Zona</span>
+                                    </h4>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="text-[10px] w-12 text-gray-500 font-bold uppercase">Defensa</span>
+                                            <div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div id="bar-robo-defensa"
+                                                    class="h-full bg-teal-600 transition-all duration-1000"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                            <span id="val-robo-defensa"
+                                                class="text-[10px] text-white font-mono">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="text-[10px] w-12 text-gray-500 font-bold uppercase">Medio</span>
+                                            <div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div id="bar-robo-medio"
+                                                    class="h-full bg-teal-500 transition-all duration-1000"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                            <span id="val-robo-medio" class="text-[10px] text-white font-mono">0</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="text-[10px] w-12 text-gray-500 font-bold uppercase">Ataque</span>
+                                            <div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div id="bar-robo-ataque"
+                                                    class="h-full bg-brand-400 transition-all duration-1000"
+                                                    style="width: 0%"></div>
+                                            </div>
+                                            <span id="val-robo-ataque" class="text-[10px] text-white font-mono">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quarter Comparison -->
+                                <div>
+                                    <h4 id="period-comparison-title"
+                                        class="text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                                        <i class="fas fa-columns text-blue-400"></i> Comparativa Cuartos
+                                    </h4>
+                                    <div id="quarter-comparison-list" class="space-y-2">
+                                        <!-- JS Fills -->
+                                        <div
+                                            class="grid grid-cols-4 gap-1 text-[9px] font-black text-gray-600 uppercase pb-1 border-b border-white/5">
+                                            <span></span>
+                                            <span class="text-center">GOLES</span>
+                                            <span id="period-stat-label" class="text-center">CORTOS</span>
+                                            <span id="period-third-label" class="text-center">PÉRD.</span>
+                                        </div>
+                                        <div id="q-stats-rows">
+                                            <!-- Q1 row example -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Finalize -->
+                    <button onclick="finalizarPartido()"
+                        class="w-full relative overflow-hidden group bg-transparent border border-red-500/50 hover:border-red-500 text-red-400 hover:text-white py-4 rounded-2xl font-bold transition-all">
+                        <div
+                            class="absolute inset-0 bg-red-600 translate-y-[100%] group-hover:translate-y-[0%] transition-transform duration-300 ease-in-out z-0">
+                        </div>
+                        <span class="relative z-10 flex items-center justify-center gap-2">
+                            <i class="fas fa-flag-checkered"></i> Finalizar Partido
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+
+
+    <!-- Floating Action Button for Coach IA -->
+    <button id="fab-coach-ia" onclick="toggleCoachChat()"
+        class="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-brand-600 hover:bg-brand-500 text-white flex items-center justify-center shadow-lg shadow-brand-500/30 border border-white/20 z-40 transition-all transform hover:scale-110 active:scale-95 animate-[pulse-glow_3s_infinite]">
+        <i class="fas fa-robot text-xl"></i>
+    </button>
+
+    <!-- Side Chat Panel (Slide-out) -->
+    <div id="coach-chat-panel"
+        class="fixed top-0 right-0 h-full w-[400px] max-w-full glass-panel z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col shadow-2xl border-l border-white/10">
+        
+        <!-- Panel Header -->
+        <div class="p-4 border-b border-white/10 flex justify-between items-center bg-black/20">
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <h3 class="font-bold text-sm tracking-tight text-white">Coach IA Palihue</h3>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleSessionsList()" id="btn-chat-history"
+                    class="text-[10px] bg-white/5 hover:bg-white/15 text-gray-300 px-2 py-1.5 rounded-lg border border-white/10 transition-all font-semibold">
+                    <i class="fas fa-history mr-1"></i> Historial
+                </button>
+                <button onclick="startNewSession()"
+                    class="text-[10px] bg-brand-500/20 hover:bg-brand-500/40 text-brand-200 px-2 py-1.5 rounded-lg border border-brand-500/30 transition-all font-semibold">
+                    <i class="fas fa-plus mr-1"></i> Nuevo
+                </button>
+                <button onclick="toggleCoachChat()" class="text-gray-400 hover:text-white ml-2">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Session List Overlay (View 2) -->
+        <div id="sessions-list-container" class="hidden flex-1 overflow-y-auto p-4 bg-black/40 space-y-2">
+            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Conversaciones Guardadas</h4>
+            <div id="sessions-list" class="space-y-2">
+                <!-- Loaded by JS -->
+            </div>
+        </div>
+
+        <!-- Chat Area (View 1) -->
+        <div id="chat-active-container" class="flex-1 flex flex-col min-h-0">
+            <!-- Messages List -->
+            <div id="coach-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col min-h-0">
+                <!-- Loaded by JS -->
+            </div>
+
+            <!-- Typing Indicator (Loader) -->
+            <div id="chat-typing-indicator" class="hidden px-4 py-2 text-xs text-gray-400 flex items-center gap-2">
+                <span>El Coach está pensando</span>
+                <span class="flex gap-1 items-center">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                </span>
+            </div>
+
+            <!-- Suggestions pills -->
+            <div class="px-4 py-2 flex gap-1.5 overflow-x-auto whitespace-nowrap scrollbar-none border-t border-white/5 bg-black/10">
+                <button onclick="sendQuickPrompt('Analizar el rendimiento del último partido')" 
+                    class="text-[10px] bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-3 py-1 text-gray-300 transition-all">
+                    Analizar último partido
+                </button>
+                <button onclick="sendQuickPrompt('Dame consejos para mejorar la salida de fondo')" 
+                    class="text-[10px] bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-3 py-1 text-gray-300 transition-all">
+                    Salida de fondo
+                </button>
+                <button onclick="sendQuickPrompt('¿Cómo entrenar para reducir pérdidas en defensa?')" 
+                    class="text-[10px] bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-3 py-1 text-gray-300 transition-all">
+                    Reducir pérdidas
+                </button>
+            </div>
+
+            <!-- Input area -->
+            <form id="coach-chat-form" onsubmit="handleSendChat(event)" class="p-3 border-t border-white/10 bg-black/20 flex gap-2">
+                <input type="text" id="coach-chat-input" required placeholder="Pregúntale al Coach IA..." 
+                    class="glass-input flex-1 rounded-xl px-4 py-2.5 text-sm focus:outline-none">
+                <button type="submit" class="bg-brand-500 hover:bg-brand-600 text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20 transition-all">
+                    <i class="fas fa-paper-plane text-sm"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Selección Jugadora para Pizarra Táctica -->
+    <div id="tactical-player-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80" onclick="closeTacticalPlayerModal()">
+        <div class="glass-panel rounded-3xl p-6 max-w-md w-full mx-4 transform transition-all" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-white" id="modal-position-title">
+                    <i class="fas fa-user-plus mr-2 text-brand-500"></i> Asignar Jugadora
+                </h3>
+                <button onclick="closeTacticalPlayerModal()" class="text-gray-400 hover:text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <p class="text-sm text-gray-400 mb-4" id="modal-position-desc">Selecciona una jugadora para la posición</p>
+            
+            <!-- Lista de jugadoras disponibles -->
+            <div id="modal-player-list" class="max-h-64 overflow-y-auto space-y-2 mb-4">
+                <!-- Se llena dinámicamente -->
+            </div>
+            
+            <!-- Opción para dejar vacía / quitar asignación -->
+            <button onclick="clearTacticalPosition()" 
+                class="w-full text-center py-3 text-red-400 hover:text-red-300 text-sm font-medium border border-red-500/50 rounded-xl transition-colors">
+                <i class="fas fa-trash-alt mr-2"></i> Quitar asignación / Dejar vacía
+            </button>
+        </div>
+    </div>
+
+    <!-- Pass Vite ENV to Global Scope safely for deferred usage -->
+    <script type="module">
+        window.ENV = {
+            SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
+            SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY
+        };
+    </script>
+
+    <!-- JS Logic -->
+    <script type="module" src="code.js"></script>
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hockey-app-cache-v2'; // Incrementa la versión para actualizar el caché
+const CACHE_NAME = 'hockey-app-cache-v3'; // Incrementa la versión para actualizar el caché
 const URLS_TO_CACHE = [
   './', // Si tu index.html es la raíz
   'index.html',

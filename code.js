@@ -30,6 +30,9 @@ let selectedPlayer = null;
 let selectedSubstitute = null;
 let selectedZone = null;
 
+// --- NAVEGACIÓN PRINCIPAL (dashboard a una pantalla, pestañas fijas) ---
+let matchStarted = false;
+
 // --- PIZARRA TÁCTICA (Konva.js) ---
 let tacticalStage = null;
 let tacticalLayer = null;
@@ -38,6 +41,7 @@ let tacticalPositions = {}; // { positionId: { x, y, playerName, group, circle, 
 let selectedTacticalPosition = null; // positionId actualmente seleccionado en modal
 let currentSchema = null; // Esquema actual seleccionado
 let tacticalTokenNodes = []; // Nodos Konva de las fichas (para limpiarlos al redibujar)
+let suplentesBench = []; // Jugadoras en el banco (seleccionadas desde la pizarra táctica)
 
 // --- DEPORTE Y CONFIGURACIÓN (inicializado en DOMContentLoaded) ---
 let deporteActual = 'hockey'; // Default: hockey
@@ -67,19 +71,19 @@ const CONFIG_DEPORTES = {
       { id: 'Gesto Salida X', categoria: 'Gestos', color: 'blue', zona: false, icon: 'fa-times-circle' },
       { id: 'Gesto Salida al medio', categoria: 'Gestos', color: 'blue', zona: false, icon: 'fa-arrows-alt-h' },
       { id: 'Pérdida', categoria: 'Pérdidas', color: 'red', zona: true, icon: 'fa-arrow-down' },
-      { id: 'Quite positivo', categoria: 'Defensiva', color: 'teal', zona: true, icon: 'fa-hand-rock' },
+      { id: 'Quite positivo', categoria: 'Defensiva', color: 'cyan', zona: true, icon: 'fa-hand-rock' },
       { id: 'Quite negativo', categoria: 'Defensiva', color: 'red', zona: true, icon: 'fa-hand-paper' },
-      { id: 'Recuperación', categoria: 'Defensiva', color: 'teal', zona: true, icon: 'fa-redo-alt' },
+      { id: 'Recuperación', categoria: 'Defensiva', color: 'cyan', zona: true, icon: 'fa-redo-alt' },
       { id: 'Falta recibida', categoria: 'Infracciones', color: 'orange', zona: true, icon: 'fa-handshake' },
       { id: 'Falta cometida', categoria: 'Infracciones', color: 'red', zona: true, icon: 'fa-exclamation-triangle' },
       { id: 'Pie', categoria: 'Infracciones', color: 'orange', zona: true, icon: 'fa-shoe-prints' },
       { id: 'Tarjeta verde', categoria: 'Tarjetas', color: 'green', zona: false, icon: 'fa-square', solid: true },
       { id: 'Tarjeta amarilla', categoria: 'Tarjetas', color: 'yellow', zona: false, icon: 'fa-square', solid: true },
       { id: 'Tarjeta roja', categoria: 'Tarjetas', color: 'red', zona: false, icon: 'fa-square', solid: true },
-      { id: 'Corto a Favor', categoria: 'Ofensiva', color: 'green', zona: false, icon: 'fa-plus-circle' },
+      { id: 'Corto a Favor', categoria: 'Ofensiva', color: 'cyan', zona: false, icon: 'fa-plus-circle' },
       { id: 'Corto en Contra', categoria: 'Ofensiva', color: 'red', zona: false, icon: 'fa-minus-circle' },
-      { id: 'Tiro al arco', categoria: 'Ofensiva', color: 'green', zona: false, icon: 'fa-bullseye' },
-      { id: 'Salida', categoria: 'Sustitución', color: 'purple', zona: false, icon: 'fa-exchange-alt' }
+      { id: 'Tiro al arco', categoria: 'Ofensiva', color: 'cyan', zona: false, icon: 'fa-bullseye' },
+      { id: 'Salida', categoria: 'Sustitución', color: 'sky', zona: false, icon: 'fa-exchange-alt' }
     ],
     estadisticasPorDefecto: {
       tiempo_jugado: 0,
@@ -116,21 +120,21 @@ const CONFIG_DEPORTES = {
     esMitad: true,
     acciones: [
       { id: 'Gol', categoria: 'Ofensiva', color: 'brand', zona: false, icon: 'fa-futbol' },
-      { id: 'Asistencia', categoria: 'Ofensiva', color: 'teal', zona: false, icon: 'fa-hands-helping' },
-      { id: 'Tiro al arco', categoria: 'Ofensiva', color: 'green', zona: false, icon: 'fa-bullseye' },
+      { id: 'Asistencia', categoria: 'Ofensiva', color: 'cyan', zona: false, icon: 'fa-hands-helping' },
+      { id: 'Tiro al arco', categoria: 'Ofensiva', color: 'cyan', zona: false, icon: 'fa-bullseye' },
       { id: 'Fuera de arco', categoria: 'Ofensiva', color: 'gray', zona: false, icon: 'fa-arrow-up' },
       { id: 'Falta', categoria: 'Infracciones', color: 'red', zona: true, icon: 'fa-exclamation-triangle' },
       { id: 'Tarjeta amarilla', categoria: 'Tarjetas', color: 'yellow', zona: false, icon: 'fa-square', solid: true },
       { id: 'Tarjeta roja', categoria: 'Tarjetas', color: 'red', zona: false, icon: 'fa-square', solid: true },
       { id: 'Penalti convertido', categoria: 'Set-piece', color: 'brand', zona: false, icon: 'fa-bullseye' },
       { id: 'Penalti fallado', categoria: 'Set-piece', color: 'red', zona: false, icon: 'fa-times-circle' },
-      { id: 'Corner a favor', categoria: 'Set-piece', color: 'teal', zona: false, icon: 'fa-flag' },
+      { id: 'Corner a favor', categoria: 'Set-piece', color: 'cyan', zona: false, icon: 'fa-flag' },
       { id: 'Corner en contra', categoria: 'Set-piece', color: 'orange', zona: false, icon: 'fa-flag' },
-      { id: 'Contra', categoria: 'Transición', color: 'purple', zona: true, icon: 'fa-bolt' },
-      { id: 'Recuperación', categoria: 'Transición', color: 'teal', zona: true, icon: 'fa-redo-alt' },
+      { id: 'Contra', categoria: 'Transición', color: 'sky', zona: true, icon: 'fa-bolt' },
+      { id: 'Recuperación', categoria: 'Transición', color: 'cyan', zona: true, icon: 'fa-redo-alt' },
       { id: 'Interceptación', categoria: 'Transición', color: 'blue', zona: true, icon: 'fa-hand-paper' },
       { id: 'Balón parado', categoria: 'Set-piece', color: 'orange', zona: false, icon: 'fa-stopwatch' },
-      { id: 'Salida', categoria: 'Sustitución', color: 'purple', zona: false, icon: 'fa-exchange-alt' }
+      { id: 'Salida', categoria: 'Sustitución', color: 'sky', zona: false, icon: 'fa-exchange-alt' }
     ],
     estadisticasPorDefecto: {
       tiempo_jugado: 0,
@@ -428,10 +432,10 @@ function renderPeriodSelector() {
 
   selector.innerHTML = periodos.map(p => {
     const active = p.id === cuartoActual;
-    const base = 'px-2 py-0.5 rounded text-[10px] font-bold transition-all';
+    const base = 'px-2.5 py-1 rounded-md text-[11px] font-bold transition-all';
     const cls = active
-      ? `${base} bg-brand-500 text-white`
-      : `${base} text-gray-500 hover:text-white`;
+      ? `${base} bg-blue-600 text-white shadow-md shadow-blue-600/30`
+      : `${base} text-slate-400 hover:text-white`;
     return `<button type="button" onclick="setQuarter('${p.id}')" data-q="${p.id}" class="${cls}">${p.label}</button>`;
   }).join('');
 
@@ -471,6 +475,8 @@ function renderPeriodLabels() {
   if (recoveryTitle) {
     recoveryTitle.innerText = esFutbol ? 'Recuperaciones por Zona' : 'Robos por Zona';
   }
+
+  renderKpiLabels();
 
   aplicarVisibilidadPorDeporte();
 }
@@ -554,6 +560,85 @@ function cambiarDeporte() {
   window.location.reload();
 }
 
+// Cambia la sección principal del dashboard (Configuración | Táctica | Partido | Estadísticas)
+function switchMainTab(tab) {
+  const panels = {
+    config: 'tab-config',
+    tactica: 'tab-tactica',
+    partido: 'tab-partido',
+    stats: 'tab-stats'
+  };
+  const panel = panels[tab];
+  if (!panel) return;
+
+  Object.values(panels).forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('hidden', id !== panel);
+  });
+
+  document.querySelectorAll('.main-tab').forEach(btn => {
+    const active = btn.dataset.tab === tab;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+
+  // Estado del partido en vivo: bloqueado hasta iniciar
+  const empty = document.getElementById('partido-empty');
+  const content = document.getElementById('partido-content');
+  if (empty && content) {
+    empty.classList.toggle('hidden', matchStarted);
+    content.classList.toggle('hidden', !matchStarted);
+    content.classList.toggle('flex', matchStarted);
+  }
+
+  // La pestaña "Partido" se marca como bloqueada mientras no hay partido en curso
+  const partidoTab = document.querySelector('.main-tab[data-tab="partido"]');
+  if (partidoTab) {
+    partidoTab.classList.toggle('is-locked', !matchStarted);
+    partidoTab.title = matchStarted ? 'Partido en vivo' : 'Todavía no hay un partido en curso';
+  }
+
+  // La insignia "EN VIVO" de Estadísticas solo se enciende con partido en curso
+  const liveBadge = document.getElementById('stats-live-badge');
+  if (liveBadge) {
+    liveBadge.classList.toggle('bg-blue-600/15', matchStarted);
+    liveBadge.classList.toggle('border-blue-500/30', matchStarted);
+    liveBadge.classList.toggle('text-blue-300', matchStarted);
+    liveBadge.classList.toggle('bg-slate-800/60', !matchStarted);
+    liveBadge.classList.toggle('border-slate-700', !matchStarted);
+    liveBadge.classList.toggle('text-slate-400', !matchStarted);
+    liveBadge.querySelector('.live-dot')?.classList.toggle('hidden', !matchStarted);
+  }
+
+  // Etapa actual en la barra superior
+  const stage = document.getElementById('current-stage-label');
+  if (stage) {
+    const labels = {
+      config: 'Configuración',
+      tactica: 'Cancha / Táctica',
+      partido: matchStarted ? 'Partido en Curso' : 'Sin Iniciar',
+      stats: 'Estadísticas'
+    };
+    stage.innerText = labels[tab] || '';
+    // El azul queda reservado a "lo vivo": sin partido en curso, la etapa es neutra.
+    const enCurso = tab === 'partido' && matchStarted;
+    stage.classList.toggle('text-blue-400', enCurso);
+    stage.classList.toggle('text-slate-400', !enCurso);
+  }
+
+  if (tab === 'tactica') {
+    // La cancha estaba oculta: recalcular tamaño y redibujar
+    setTimeout(() => {
+      ensureTacticalStage();
+      resizeTacticalBoard();
+    }, 40);
+  }
+  if (tab === 'stats') {
+    actualizarEstadisticas();
+  }
+}
+
 // ============================================================
 // PIZARRA TÁCTICA 2D (KONVA.JS)
 // ============================================================
@@ -629,7 +714,7 @@ function initTacticalBoard({ resetAssignments = false } = {}) {
   }
 
   selectTacticalSchema(currentSchema);
-  syncRosterFromTactical();
+  actualizarContadoresSeleccion();
 }
 
 function renderTacticalSchemaSelector() {
@@ -639,10 +724,7 @@ function renderTacticalSchemaSelector() {
 
   wrap.innerHTML = Object.entries(schemas).map(([id, schema]) => {
     const active = id === currentSchema;
-    const base = 'px-4 py-2 rounded-xl text-sm font-semibold border transition-all';
-    const cls = active
-      ? `${base} bg-brand-500/20 text-brand-200 border-brand-500/50 shadow-lg shadow-brand-500/10`
-      : `${base} bg-white/5 text-gray-300 border-white/10 hover:bg-white/10 hover:text-white`;
+    const cls = active ? 'schema-chip active' : 'schema-chip';
     return `<button type="button" onclick="selectTacticalSchema('${id}')" class="${cls}">${escapeHtml(schema.nombre)}</button>`;
   }).join('');
 }
@@ -679,17 +761,19 @@ function selectTacticalSchema(schemaId) {
   updateTacticalValidation();
 }
 
-// Completa huecos con titulares marcados y luego con la plantilla cargada
+// Completa huecos con jugadoras de la plantilla que todavía no están en el banco
 function fillEmptyTacticalPositions() {
   const assigned = new Set(
     Object.values(tacticalPositions).map(p => p.playerName).filter(Boolean)
   );
-  const checked = Array.from(document.querySelectorAll('.j-titular:checked')).map(cb => cb.value);
-  const pool = [...checked, ...jugadorasData.map(j => j.nombre)];
+  const enBanco = new Set(suplentesBench);
+  const pool = jugadorasData
+    .map(j => j.nombre)
+    .filter(nombre => nombre && !enBanco.has(nombre));
 
   Object.values(tacticalPositions).forEach(pos => {
     if (pos.playerName) return;
-    const candidate = pool.find(nombre => nombre && !assigned.has(nombre));
+    const candidate = pool.find(nombre => !assigned.has(nombre));
     if (candidate) {
       pos.playerName = candidate;
       assigned.add(candidate);
@@ -765,20 +849,20 @@ function drawTacticalField(w, h) {
 
   const isFutbol = deporteActual === 'futbol';
   const g = tacticalFieldGroup;
-  const lineColor = isFutbol ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.72)';
-  const softLine = isFutbol ? 'rgba(255,255,255,0.32)' : 'rgba(255,255,255,0.42)';
+  const lineColor = isFutbol ? 'rgba(147,197,253,0.58)' : 'rgba(147,197,253,0.74)';
+  const softLine = isFutbol ? 'rgba(147,197,253,0.32)' : 'rgba(147,197,253,0.44)';
   const lw = Math.max(1.5, w * 0.0045);
   const pad = Math.max(8, w * 0.032);
 
-  // Fondo con gradiente
+  // Fondo con gradiente (cancha nocturna: azul profundo, sin verde)
   g.add(new Konva.Rect({
     x: 0, y: 0, width: w, height: h,
     cornerRadius: 14,
     fillLinearGradientStartPoint: { x: 0, y: 0 },
     fillLinearGradientEndPoint: { x: 0, y: h },
     fillLinearGradientColorStops: isFutbol
-      ? [0, '#0f5f37', 0.5, '#0b4a2b', 1, '#06301c']
-      : [0, '#117a4f', 0.5, '#0c633f', 1, '#074a2e']
+      ? [0, '#16294a', 0.5, '#112140', 1, '#0a1830']
+      : [0, '#153a72', 0.5, '#102c5b', 1, '#0a1e42']
   }));
 
   // Franjas sutiles de césped
@@ -789,7 +873,7 @@ function drawTacticalField(w, h) {
       y: (h / stripes) * i,
       width: w,
       height: h / stripes,
-      fill: 'rgba(255,255,255,0.028)'
+      fill: 'rgba(255,255,255,0.03)'
     }));
   }
 
@@ -886,7 +970,7 @@ function drawFootballMarkings(g, w, h, fieldW, fieldH, pad, lineColor, softLine,
       y: side === 0 ? pad - goalH : h - pad,
       width: goalW,
       height: goalH,
-      fill: 'rgba(255,255,255,0.18)',
+      fill: 'rgba(147, 197, 253, 0.18)',
       stroke: lineColor,
       strokeWidth: lw
     }));
@@ -1039,7 +1123,7 @@ function drawHockeyMarkings(g, w, h, fieldW, fieldH, pad, lineColor, softLine, l
       y: side === 0 ? pad - goalDepth : h - pad,
       width: goalW,
       height: goalDepth,
-      fill: 'rgba(255,255,255,0.22)',
+      fill: 'rgba(147, 197, 253, 0.22)',
       stroke: lineColor,
       strokeWidth: lw
     }));
@@ -1050,7 +1134,7 @@ function drawHockeyMarkings(g, w, h, fieldW, fieldH, pad, lineColor, softLine, l
 function tacticalRoleColors(pos) {
   if (pos.id === 'GK') return ['#fbbf24', '#b45309'];
   if (pos.id.startsWith('DEF')) return ['#38bdf8', '#0369a1'];
-  if (pos.id.startsWith('MED')) return ['#34d399', '#047857'];
+  if (pos.id.startsWith('MED')) return ['#22d3ee', '#0e7490'];
   return ['#fb7185', '#be123c'];
 }
 
@@ -1085,7 +1169,7 @@ function renderTacticalTokens(w, h) {
     // Sombra
     group.add(new Konva.Circle({
       x: 1, y: radius * 0.18, radius: radius + 1,
-      fill: 'rgba(0,0,0,0.35)', listening: false
+      fill: 'rgba(2, 6, 23, 0.45)', listening: false
     }));
 
     // Ficha
@@ -1095,8 +1179,8 @@ function renderTacticalTokens(w, h) {
       fillLinearGradientEndPoint: { x: 0, y: radius },
       fillLinearGradientColorStops: assigned
         ? [0, c1, 1, c2]
-        : [0, 'rgba(255,255,255,0.22)', 1, 'rgba(255,255,255,0.08)'],
-      stroke: assigned ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.5)',
+        : [0, 'rgba(241, 245, 249, 0.22)', 1, 'rgba(241, 245, 249, 0.08)'],
+      stroke: assigned ? 'rgba(241, 245, 249, 0.85)' : 'rgba(241, 245, 249, 0.5)',
       strokeWidth: Math.max(1.5, radius * 0.085),
       shadowColor: assigned ? c2 : '#000000',
       shadowBlur: assigned ? 14 : 0,
@@ -1113,8 +1197,8 @@ function renderTacticalTokens(w, h) {
       text: assigned ? getInitials(pos.playerName) : pos.label,
       fontSize: assigned ? fontSize : Math.max(8, fontSize * 0.9),
       fontStyle: 'bold',
-      fontFamily: 'Inter, system-ui, sans-serif',
-      fill: '#ffffff',
+      fontFamily: 'Outfit, system-ui, sans-serif',
+      fill: '#f1f5f9',
       shadowColor: '#000000',
       shadowBlur: 3,
       shadowOpacity: 0.65,
@@ -1130,8 +1214,8 @@ function renderTacticalTokens(w, h) {
       text: assigned ? getShortName(pos.playerName) : 'Libre',
       fontSize: Math.max(7, radius * 0.42),
       fontStyle: assigned ? 'bold' : 'normal',
-      fontFamily: 'Inter, system-ui, sans-serif',
-      fill: assigned ? '#ecfdf5' : 'rgba(255,255,255,0.5)',
+      fontFamily: 'Outfit, system-ui, sans-serif',
+      fill: assigned ? '#eff6ff' : 'rgba(241, 245, 249, 0.5)',
       shadowColor: '#000000',
       shadowBlur: 4,
       shadowOpacity: 0.9,
@@ -1147,8 +1231,8 @@ function renderTacticalTokens(w, h) {
       text: pos.label,
       fontSize: Math.max(7, radius * 0.4),
       fontStyle: 'bold',
-      fontFamily: 'Inter, system-ui, sans-serif',
-      fill: 'rgba(255,255,255,0.75)',
+      fontFamily: 'Outfit, system-ui, sans-serif',
+      fill: 'rgba(241, 245, 249, 0.75)',
       shadowColor: '#000000',
       shadowBlur: 3,
       shadowOpacity: 0.8,
@@ -1203,9 +1287,9 @@ function renderTacticalLegend() {
   legend.innerHTML = Object.values(tacticalPositions).map(pos => {
     const assigned = !!pos.playerName;
     const cls = assigned
-      ? 'border-brand-500/40 bg-brand-500/10 text-brand-200'
-      : 'border-white/10 bg-white/5 text-gray-400';
-    return `<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full border ${cls} text-[10px] font-medium">
+      ? 'border-blue-500/40 bg-blue-500/10 text-blue-200'
+      : 'border-slate-700 bg-slate-800/40 text-slate-400';
+    return `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full border ${cls} text-[10px] font-medium">
       <span class="font-bold">${escapeHtml(pos.label)}</span>
       <span class="opacity-80">${assigned ? escapeHtml(getShortName(pos.playerName)) : 'libre'}</span>
     </span>`;
@@ -1227,69 +1311,21 @@ function updateTacticalValidation() {
   if (countEl) countEl.innerText = `${count}/${total || 11}`;
 
   if (total > 0 && count === total) {
-    if (dot) dot.className = 'w-3 h-3 rounded-full bg-green-500 animate-pulse';
+    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-blue-500';
     if (text) {
-      text.className = 'text-sm font-medium text-green-400';
+      text.className = 'text-xs font-medium text-blue-300';
       text.innerText = `Esquema completo: ${count}/${total} posiciones asignadas`;
     }
   } else {
-    if (dot) dot.className = 'w-3 h-3 rounded-full bg-yellow-400';
+    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400';
     if (text) {
-      text.className = 'text-sm font-medium text-yellow-300';
+      text.className = 'text-xs font-medium text-amber-300';
       text.innerText = `Faltan ${Math.max(0, total - count)} posiciones por asignar (toca una ficha)`;
     }
   }
 
   const btn = document.getElementById('btn-iniciar-partido');
   if (btn) btn.disabled = !tacticalReady();
-}
-
-// Board -> checkboxes del roster
-function syncRosterFromTactical() {
-  if (tacticalTotalSlots() === 0) return;
-
-  const assigned = new Set(
-    Object.values(tacticalPositions).map(p => p.playerName).filter(Boolean)
-  );
-
-  document.querySelectorAll('.j-titular').forEach(cb => {
-    const should = assigned.has(cb.value);
-    if (cb.checked !== should) cb.checked = should;
-  });
-  document.querySelectorAll('.j-suplente').forEach(cb => {
-    if (assigned.has(cb.value)) cb.checked = false;
-  });
-
-  actualizarContadoresSeleccion({ skipTacticalSync: true });
-}
-
-// Checkboxes del roster -> board
-function syncTacticalFromRoster() {
-  if (tacticalTotalSlots() === 0) return;
-
-  const titularesMarcados = Array.from(document.querySelectorAll('.j-titular:checked')).map(cb => cb.value);
-  const set = new Set(titularesMarcados);
-
-  Object.values(tacticalPositions).forEach(pos => {
-    if (pos.playerName && !set.has(pos.playerName)) {
-      pos.playerName = null;
-    }
-  });
-
-  const assigned = new Set(
-    Object.values(tacticalPositions).map(p => p.playerName).filter(Boolean)
-  );
-  titularesMarcados.forEach(nombre => {
-    if (assigned.has(nombre)) return;
-    const empty = Object.values(tacticalPositions).find(p => !p.playerName);
-    if (empty) {
-      empty.playerName = nombre;
-      assigned.add(nombre);
-    }
-  });
-
-  drawTacticalBoard();
-  updateTacticalValidation();
 }
 
 // --- Modal de selección de jugadora ---
@@ -1303,26 +1339,28 @@ function openTacticalPlayerModal(positionId) {
   const desc = document.getElementById('modal-position-desc');
   const list = document.getElementById('modal-player-list');
 
-  if (title) title.innerHTML = `<i class="fas fa-user-plus mr-2 text-brand-500"></i> ${escapeHtml(pos.role || pos.id)}`;
+  if (title) title.innerHTML = `<i class="fas fa-user-plus mr-2 text-blue-400"></i> ${escapeHtml(pos.role || pos.id)}`;
   if (desc) desc.innerText = `Esquema ${currentSchema} · ${pos.label} — elige una jugadora para esta posición`;
 
   if (list) {
     list.innerHTML = '';
 
     if (jugadorasData.length === 0) {
-      list.innerHTML = '<p class="text-sm text-gray-400 italic text-center py-4">No hay jugadoras cargadas. Selecciona una categoría primero.</p>';
+      list.innerHTML = '<p class="text-sm text-slate-400 italic text-center py-4">No hay jugadoras cargadas. Selecciona una categoría primero.</p>';
     }
 
     const assignedElsewhere = new Map();
     Object.values(tacticalPositions).forEach(p => {
       if (p.playerName) assignedElsewhere.set(p.playerName, p.id);
     });
+    const enBanco = new Set(suplentesBench);
 
     jugadorasData.forEach(j => {
       const nombre = j.nombre;
       const isCurrent = pos.playerName === nombre;
       const otherId = assignedElsewhere.get(nombre);
       const isTaken = otherId && otherId !== positionId;
+      const isBench = !isCurrent && !isTaken && enBanco.has(nombre);
       const otherPos = isTaken ? tacticalPositions[otherId] : null;
 
       const btn = document.createElement('button');
@@ -1330,11 +1368,13 @@ function openTacticalPlayerModal(positionId) {
       btn.className = isTaken
         ? 'w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-100 hover:bg-amber-500/20 transition-colors'
         : isCurrent
-          ? 'w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-brand-500/60 bg-brand-500/20 text-white'
-          : 'w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-white/10 bg-black/20 text-gray-200 hover:bg-white/10 hover:border-white/25 transition-colors';
+          ? 'w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-blue-500/60 bg-blue-500/20 text-white'
+          : isBench
+            ? 'w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-sky-500/40 bg-sky-500/10 text-sky-100 hover:bg-sky-500/20 transition-colors'
+            : 'w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-slate-700 bg-slate-950/40 text-slate-200 hover:bg-slate-800 hover:border-slate-600 transition-colors';
       btn.innerHTML = `<span class="text-sm font-medium">${escapeHtml(nombre)}</span>
-        <span class="text-[10px] uppercase tracking-wider ${isCurrent ? 'text-brand-300' : isTaken ? 'text-amber-300' : 'text-gray-500'}">
-          ${isCurrent ? 'Actual' : isTaken ? `Ocupa ${escapeHtml(otherPos.label)} · intercambiar` : 'Disponible'}
+        <span class="text-[11px] uppercase tracking-wider ${isCurrent ? 'text-blue-300' : isTaken ? 'text-amber-300' : isBench ? 'text-sky-300' : 'text-slate-400'}">
+          ${isCurrent ? 'Actual' : isTaken ? `Ocupa ${escapeHtml(otherPos.label)} · intercambiar` : isBench ? 'En el banco · al once' : 'Disponible'}
         </span>`;
       btn.onclick = () => assignTacticalPlayer(positionId, nombre);
       list.appendChild(btn);
@@ -1371,13 +1411,14 @@ function assignTacticalPlayer(positionId, nombre) {
 
   pos.playerName = nombre;
 
-  // Al asignarla, deja de ser suplente
-  document.querySelectorAll(`.j-suplente[value="${CSS.escape(nombre)}"]`).forEach(cb => { cb.checked = false; });
+  // Al pasar al once, deja de estar en el banco
+  suplentesBench = suplentesBench.filter(n => n !== nombre);
 
   closeTacticalPlayerModal();
-  syncRosterFromTactical();
+  renderBancoSuplentes();
   drawTacticalBoard();
   updateTacticalValidation();
+  actualizarContadoresSeleccion();
 }
 
 function clearTacticalPosition() {
@@ -1385,9 +1426,10 @@ function clearTacticalPosition() {
   const pos = tacticalPositions[selectedTacticalPosition];
   if (pos) pos.playerName = null;
   closeTacticalPlayerModal();
-  syncRosterFromTactical();
+  renderBancoSuplentes();
   drawTacticalBoard();
   updateTacticalValidation();
+  actualizarContadoresSeleccion();
 }
 
 // --- Persistencia de la formación en Supabase ---
@@ -1426,26 +1468,6 @@ async function persistirFormacion() {
 
   console.log(`📋 Formación guardada: ${rows.length} posiciones (${currentSchema})`);
   return { saved: rows.length };
-}
-
-// Función para cambiar pestaña de roster (Titulares/Suplentes)
-function switchRosterTab(tab) {
-  const tabTitulares = document.getElementById('tab-titulares');
-  const tabSuplentes = document.getElementById('tab-suplentes');
-  const panelTitulares = document.getElementById('panel-titulares');
-  const panelSuplentes = document.getElementById('panel-suplentes');
-  
-  if (tab === 'titulares') {
-    tabTitulares.className = 'flex-1 py-4 px-6 text-center font-semibold text-sm transition-colors bg-brand-500/20 text-brand-300 border-b-2 border-brand-500';
-    tabSuplentes.className = 'flex-1 py-4 px-6 text-center font-semibold text-sm transition-colors text-gray-400 hover:text-white hover:bg-white/10';
-    panelTitulares.classList.remove('hidden');
-    panelSuplentes.classList.add('hidden');
-  } else {
-    tabSuplentes.className = 'flex-1 py-4 px-6 text-center font-semibold text-sm transition-colors bg-blue-500/20 text-blue-300 border-b-2 border-blue-500';
-    tabTitulares.className = 'flex-1 py-4 px-6 text-center font-semibold text-sm transition-colors text-gray-400 hover:text-white hover:bg-white/10';
-    panelSuplentes.classList.remove('hidden');
-    panelTitulares.classList.add('hidden');
-  }
 }
 
 // --- INICIALIZACIÓN ---
@@ -1499,8 +1521,21 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // 4. Render Action Categories
   renderActionCategories();
-  
-  // 5. Additional initialization for sport
+
+  // 5. Navegación principal por pestañas fijas
+  document.querySelectorAll('.main-tab').forEach(btn => {
+    btn.addEventListener('click', () => switchMainTab(btn.dataset.tab));
+  });
+  switchMainTab('config');
+
+  // 6. Cerrar modales con Escape (teclado)
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    closeTacticalPlayerModal();
+    cerrarModalSuplentes();
+  });
+
+  // 7. Additional initialization for sport
   console.log(`🎯 Modo deporte inicial: ${config.nombre}`);
 });
 
@@ -1521,23 +1556,10 @@ async function cargarJugadoras() {
   categoriaActual = document.getElementById('setup-categoria').value;
   if (!categoriaActual) return;
 
-  // Show loading
-  const listTitulares = document.getElementById('list-titulares');
-  const listSuplentes = document.getElementById('list-suplentes');
-  const msgTitulares = document.getElementById('msg-titulares');
-  const msgSuplentes = document.getElementById('msg-suplentes');
-
-  listTitulares.innerHTML = '';
-  listSuplentes.innerHTML = '';
-  listTitulares.classList.add('hidden');
-  listSuplentes.classList.add('hidden');
-  
-  if (msgTitulares) msgTitulares.innerHTML = '<p class="text-sm text-gray-400 italic text-center py-4"><i class="fas fa-spinner fa-spin mr-2"></i>Cargando...</p>';
-  if (msgSuplentes) msgSuplentes.innerHTML = '<p class="text-sm text-gray-400 italic text-center py-4"><i class="fas fa-spinner fa-spin mr-2"></i>Cargando...</p>';
-
-  // Enable roster container
-  document.getElementById('roster-container').classList.remove('opacity-50', 'pointer-events-none');
-  document.getElementById('roster-summary').classList.remove('hidden');
+  // Estado vacío de la tarjeta de alineación
+  const vacio = document.getElementById('alineacion-vacio');
+  const contadores = document.getElementById('alineacion-counters');
+  if (vacio) vacio.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Cargando plantilla...';
 
   // Intentar cargar de Supabase primero, si falla usar MOCK
   try {
@@ -1551,7 +1573,7 @@ async function cargarJugadoras() {
       if (error) throw error;
 
       jugadorasData = data || [];
-      
+
       // Si Supabase no devuelve datos, usar MOCK
       if (jugadorasData.length === 0) {
         console.log('📦 Supabase vacío, usando MOCK_JUGADORAS');
@@ -1562,93 +1584,133 @@ async function cargarJugadoras() {
       console.log('📦 Sin Supabase, usando MOCK_JUGADORAS');
       jugadorasData = MOCK_JUGADORAS[categoriaActual] || [];
     }
-    
-    renderRosterSelection(jugadorasData);
-
   } catch (err) {
     console.warn("Supabase no disponible, usando MOCK_JUGADORAS:", err?.message || err);
     // Fallback a MOCK
     jugadorasData = MOCK_JUGADORAS[categoriaActual] || [];
-    renderRosterSelection(jugadorasData);
+  }
+
+  // La alineación vive en la pizarra táctica: banco limpio y once reiniciado
+  suplentesBench = [];
+  renderBancoSuplentes();
+
+  if (jugadorasData.length === 0 && vacio) {
+    vacio.innerHTML = 'No hay jugadoras en esta categoría.';
+    vacio.classList.remove('hidden');
+    contadores?.classList.add('hidden');
+  } else if (vacio && contadores) {
+    vacio.classList.add('hidden');
+    contadores.classList.remove('hidden');
   }
 
   // Inicializar / refrescar la pizarra táctica con la plantilla cargada
   initTacticalBoard({ resetAssignments: true });
+
+  // La pizarra vive en su propia pestaña: hay que abrirla para que mida bien
+  setTimeout(() => {
+    ensureTacticalStage();
+    resizeTacticalBoard();
+  }, 80);
 }
 
-function renderRosterSelection(jugadoras) {
-  const listTitulares = document.getElementById('list-titulares');
-  const listSuplentes = document.getElementById('list-suplentes');
-  const msgTitulares = document.getElementById('msg-titulares');
-  const msgSuplentes = document.getElementById('msg-suplentes');
-
-  listTitulares.innerHTML = '';
-  listSuplentes.innerHTML = '';
-  listTitulares.classList.remove('hidden');
-  listSuplentes.classList.remove('hidden');
-  
-  if (msgTitulares) msgTitulares.classList.add('hidden');
-  if (msgSuplentes) msgSuplentes.classList.add('hidden');
-
-  if (jugadoras.length === 0) {
-    listTitulares.innerHTML = '<p class="text-sm text-orange-400 italic text-center py-4">No hay jugadoras en esta categoría.</p>';
-    return;
-  }
-
-  jugadoras.forEach((j, i) => {
-    const htmlTitular = `
-            <label class="custom-checkbox flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors">
-                <input type="checkbox" value="${j.nombre}" class="hidden j-titular" onchange="validateRosterSelection(this, 'titular')">
-                <div class="w-5 h-5 rounded border border-white/20 flex items-center justify-center bg-black/20 transition-all">
-                    <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                </div>
-                <span class="text-sm select-none">${j.nombre}</span>
-            </label>`;
-    listTitulares.insertAdjacentHTML('beforeend', htmlTitular);
-
-    const htmlSuplente = `
-            <label class="custom-checkbox flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors">
-                <input type="checkbox" value="${j.nombre}" class="hidden j-suplente" onchange="validateRosterSelection(this, 'suplente')">
-                <div class="w-5 h-5 rounded border border-white/20 flex items-center justify-center bg-black/20 transition-all">
-                    <svg class="w-3 h-3 text-white opacity-0 transform scale-50 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                </div>
-                <span class="text-sm select-none">${j.nombre}</span>
-            </label>`;
-    listSuplentes.insertAdjacentHTML('beforeend', htmlSuplente);
-  });
-  
-  actualizarContadoresSeleccion();
-}
-
-function validateRosterSelection(checkbox, tipo) {
-  const nombre = checkbox.value;
-
-  // Si se marca titular, desmarcar suplente y viceversa
-  if (checkbox.checked) {
-    if (tipo === 'titular') {
-      const opp = document.querySelector(`.j-suplente[value="${nombre}"]`);
-      if (opp) opp.checked = false;
+// Banco de suplentes (se gestiona desde la pestaña de Táctica)
+function renderBancoSuplentes() {
+  const grid = document.getElementById('bench-grid');
+  if (grid) {
+    grid.innerHTML = '';
+    if (suplentesBench.length === 0) {
+      grid.innerHTML = '<p class="text-[11px] text-slate-400 italic w-full">Sin suplentes cargados</p>';
     } else {
-      const opp = document.querySelector(`.j-titular[value="${nombre}"]`);
-      if (opp) opp.checked = false;
+      suplentesBench.forEach(nombre => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'player-chip bench';
+        btn.title = 'Quitar del banco';
+        btn.innerHTML = `<span class="truncate">${escapeHtml(nombre)}</span><i
+                    class="fas fa-xmark ml-2 text-[10px] opacity-60"></i>`;
+        btn.onclick = () => quitarSuplente(nombre);
+        grid.appendChild(btn);
+      });
     }
   }
 
+  const counter = document.getElementById('bench-count');
+  if (counter) counter.innerText = suplentesBench.length;
+
   actualizarContadoresSeleccion();
-  syncTacticalFromRoster();
 }
 
-function actualizarContadoresSeleccion({ skipTacticalSync = false } = {}) {
-  const countTit = document.querySelectorAll('.j-titular:checked').length;
-  const countSup = document.querySelectorAll('.j-suplente:checked').length;
+function agregarSuplente(nombre) {
+  if (!nombre) return;
+  const enOnce = Object.values(tacticalPositions).some(p => p.playerName === nombre);
+  if (enOnce) return;
+  if (!suplentesBench.includes(nombre)) suplentesBench.push(nombre);
+  renderBancoSuplentes();
+  drawTacticalBoard();
+}
 
-  // Actualizar badges en tabs
-  const badgeTit = document.getElementById('count-titulares-badge');
-  const badgeSup = document.getElementById('count-suplentes-badge');
-  if (badgeTit) badgeTit.innerText = countTit;
-  if (badgeSup) badgeSup.innerText = countSup;
+function quitarSuplente(nombre) {
+  suplentesBench = suplentesBench.filter(n => n !== nombre);
+  renderBancoSuplentes();
+}
 
-  // Actualizar resumen
+// Modal para elegir qué jugadoras van al banco
+function abrirModalSuplentes() {
+  const list = document.getElementById('bench-player-list');
+  const modal = document.getElementById('bench-player-modal');
+  if (!list) return;
+
+  const enOnce = new Set(Object.values(tacticalPositions).map(p => p.playerName).filter(Boolean));
+  const enBanco = new Set(suplentesBench);
+  const disponibles = jugadorasData.filter(j => !enOnce.has(j.nombre) && !enBanco.has(j.nombre));
+
+  list.innerHTML = '';
+  if (disponibles.length === 0) {
+    list.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-6">No quedan jugadoras disponibles en esta categoría.</p>';
+  }
+
+  disponibles.forEach(j => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-slate-700 bg-slate-950/40 text-slate-200 hover:bg-slate-800 hover:border-sky-500/60 transition-colors text-left';
+    btn.innerHTML = `<span class="text-sm font-medium">${escapeHtml(j.nombre)}</span>
+        <span class="text-[11px] uppercase tracking-wider text-sky-400">Al banco</span>`;
+    btn.onclick = () => {
+      agregarSuplente(j.nombre);
+      cerrarModalSuplentes();
+    };
+    list.appendChild(btn);
+  });
+
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+}
+
+function cerrarModalSuplentes() {
+  const modal = document.getElementById('bench-player-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+// Vaciar el once (dejar las posiciones libres para armar el equipo a mano)
+function limpiarOnce() {
+  Object.values(tacticalPositions).forEach(pos => { pos.playerName = null; });
+  renderTacticalLegend();
+  updateTacticalValidation();
+  drawTacticalBoard();
+  actualizarContadoresSeleccion();
+}
+
+// Contadores derivados de la pizarra táctica (no de checkboxes)
+function actualizarContadoresSeleccion() {
+  const countTit = tacticalAssignedCount();
+  const countSup = suplentesBench.length;
+
+  // Resumen en la pestaña de Configuración
   const summaryTit = document.getElementById('summary-titulares');
   const summarySup = document.getElementById('summary-suplentes');
   if (summaryTit) summaryTit.innerText = countTit;
@@ -1656,29 +1718,15 @@ function actualizarContadoresSeleccion({ skipTacticalSync = false } = {}) {
 
   const btn = document.getElementById('btn-iniciar-partido');
   if (btn) {
-    // Si la pizarra táctica está activa, exigimos las 11 posiciones asignadas
+    // Con pizarra táctica activa exigimos el once completo
     if (tacticalTotalSlots() > 0) {
       btn.disabled = !tacticalReady();
     } else {
       btn.disabled = !(countTit > 0 || countSup > 0);
     }
   }
-  
-  // Validar máximo 11 titulares
-  const titularesCheckboxes = document.querySelectorAll('.j-titular');
-  titularesCheckboxes.forEach(cb => {
-    if (!cb.checked && countTit >= 11) {
-      cb.disabled = true;
-      cb.parentElement.classList.add('opacity-40');
-    } else {
-      cb.disabled = false;
-      cb.parentElement.classList.remove('opacity-40');
-    }
-  });
 
-  if (!skipTacticalSync) {
-    updateTacticalValidation();
-  }
+  updateTacticalValidation();
 }
 
 function iniciarPartido() {
@@ -1694,17 +1742,15 @@ function iniciarPartido() {
 
   if (tacticalTotalSlots() > 0) {
     if (!tacticalReady()) {
-      alert(`Completa el 11 inicial en la pizarra táctica (${new Set(boardTitulares).size}/${tacticalTotalSlots()} posiciones asignadas). Toca una ficha para asignar jugadora.`);
+      alert(`Completa el 11 inicial en la pizarra táctica (${new Set(boardTitulares).size}/${tacticalTotalSlots()} posiciones asignadas). Tocá una ficha en la cancha para asignar la jugadora.`);
       return;
     }
     titulares = boardTitulares;
   } else {
-    titulares = Array.from(document.querySelectorAll('.j-titular:checked')).map(cb => cb.value);
+    titulares = [];
   }
 
-  suplentes = Array.from(document.querySelectorAll('.j-suplente:checked'))
-    .map(cb => cb.value)
-    .filter(nombre => !titulares.includes(nombre));
+  suplentes = suplentesBench.filter(nombre => !titulares.includes(nombre));
 
   // Safety Check: Roster size
   if (titulares.length > 11) {
@@ -1747,16 +1793,15 @@ function iniciarPartido() {
   // Populate Grids
   actualizarGrillaJugadoras();
 
-  // Hide Setup, Show Match
-  document.getElementById('section-setup').classList.remove('active');
-  document.getElementById('section-match').classList.add('active');
-  document.getElementById('current-stage-label').innerText = "Partido en Curso";
-  document.getElementById('current-stage-label').classList.replace('text-brand-400', 'text-yellow-400');
+  // Activar el partido en vivo y saltar a su pestaña
+  matchStarted = true;
+  switchMainTab('partido');
 
   // Revert button just in case we were editing
   const btn = document.getElementById('btn-iniciar-partido');
-  btn.innerText = "Iniciar Partido";
-  btn.onclick = iniciarPartido;
+  const btnLabel = document.getElementById('btn-iniciar-label');
+  if (btnLabel) btnLabel.innerText = "Iniciar Partido";
+  if (btn) btn.onclick = iniciarPartido;
 
   // Show header edit button
   const headerEditBtn = document.getElementById('btn-header-editar');
@@ -1764,9 +1809,8 @@ function iniciarPartido() {
 }
 
 function editarAlineacion() {
-  document.getElementById('section-match').classList.remove('active');
-  document.getElementById('section-setup').classList.add('active');
-  document.getElementById('current-stage-label').innerText = "Editando Alineación...";
+  // Volver a la pizarra táctica para editar el once
+  switchMainTab('tactica');
 
   // La cancha estaba oculta: recalcular tamaño y redibujar
   setTimeout(() => {
@@ -1776,8 +1820,9 @@ function editarAlineacion() {
   }, 60);
 
   const btn = document.getElementById('btn-iniciar-partido');
-  btn.innerText = "Guardar Cambios";
-  btn.onclick = guardarEdicionAlineacion;
+  const btnLabel = document.getElementById('btn-iniciar-label');
+  if (btnLabel) btnLabel.innerText = "Guardar Cambios";
+  if (btn) btn.onclick = guardarEdicionAlineacion;
 
   // Hide header edit button
   const headerEditBtn = document.getElementById('btn-header-editar');
@@ -1791,10 +1836,8 @@ function guardarEdicionAlineacion() {
 
   const nuevosTitulares = tacticalTotalSlots() > 0 && tacticalReady()
     ? boardTitulares
-    : Array.from(document.querySelectorAll('.j-titular:checked')).map(cb => cb.value);
-  const nuevosSuplentes = Array.from(document.querySelectorAll('.j-suplente:checked'))
-    .map(cb => cb.value)
-    .filter(nombre => !nuevosTitulares.includes(nombre));
+    : [];
+  const nuevosSuplentes = suplentesBench.filter(nombre => !nuevosTitulares.includes(nombre));
 
   if (nuevosTitulares.length > 11) {
     alert(`Has seleccionado ${nuevosTitulares.length} titulares. El máximo es 11.`);
@@ -1851,9 +1894,9 @@ function guardarEdicionAlineacion() {
 
   actualizarGrillaJugadoras();
 
-  document.getElementById('section-setup').classList.remove('active');
-  document.getElementById('section-match').classList.add('active');
-  document.getElementById('current-stage-label').innerText = "Partido en Curso";
+  // Volver al partido en vivo
+  matchStarted = true;
+  switchMainTab('partido');
 
   // Clean up
   selectedPlayer = null;
@@ -1873,16 +1916,16 @@ function actualizarGrillaJugadoras() {
   if (inFieldGrid) {
     inFieldGrid.innerHTML = `
         <button onclick="selectPlayer(this, 'No identificada')" 
-            class="px-4 py-2 rounded-xl text-sm font-semibold transition-all border border-dashed border-gray-500 bg-transparent text-gray-400 hover:text-white hover:border-gray-300">
+            class="player-chip bench">
             <i class="fas fa-question-circle mr-1"></i> No id
         </button>
     `;
     Object.keys(playerStatus).forEach(j => {
       if (playerStatus[j] === "In_Field") {
         const btn = document.createElement('button');
-        btn.className = "px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-medium hover:bg-white/10 transition-all text-gray-300";
+        btn.className = "player-chip";
         if (j === selectedPlayer) {
-          btn.className = "px-3 py-2 bg-brand-500 border border-brand-400 rounded-xl text-sm font-medium text-white shadow-lg shadow-brand-500/20";
+          btn.classList.add('active');
         }
         btn.innerText = j;
         btn.onclick = () => selectPlayer(btn, j);
@@ -1896,9 +1939,10 @@ function actualizarGrillaJugadoras() {
     Object.keys(playerStatus).forEach(j => {
       if (playerStatus[j] === "On_Bench") {
         const btn = document.createElement('button');
-        btn.className = "px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-medium hover:bg-white/10 transition-all text-gray-400";
+        btn.className = "player-chip bench";
         if (j === selectedSubstitute) {
-          btn.className = "px-3 py-2 bg-purple-600 border border-purple-400 rounded-xl text-xs font-medium text-white shadow-lg shadow-purple-500/20";
+          btn.classList.remove('bench');
+          btn.classList.add('active');
         }
         btn.innerText = j;
         btn.onclick = () => selectSubstitute(btn, j);
@@ -1936,16 +1980,13 @@ function selectZone(zona) {
 
   // UI Update
   document.querySelectorAll('#zone-selector button').forEach(b => {
-    b.classList.remove('bg-brand-500', 'text-white', 'border-brand-400');
-    b.classList.add('bg-black/30', 'text-gray-400', 'border-white/10');
+    b.classList.remove('active');
   });
 
   const btnId = `zone-${zona.toLowerCase()}`;
   const btn = document.getElementById(btnId);
   if (btn) {
-    btn.classList.replace('bg-black/30', 'bg-brand-500');
-    btn.classList.replace('text-gray-400', 'text-white');
-    btn.classList.replace('border-white/10', 'border-brand-400');
+    btn.classList.add('active');
   }
 }
 
@@ -2006,7 +2047,7 @@ function pauseTimer() {
   if (isRunning) {
     clearInterval(timerInterval);
     elapsedTime += Date.now() - startTime;
-    document.getElementById('icon-play-pause').className = "fas fa-play text-brand-400";
+    document.getElementById('icon-play-pause').className = "fas fa-play text-blue-400";
     document.getElementById('text-play-pause').innerText = "Reanudar";
     isRunning = false;
   }
@@ -2052,7 +2093,7 @@ startStopBtn.addEventListener('click', () => {
   if (isRunning) {
     clearInterval(timerInterval);
     elapsedTime += Date.now() - startTime;
-    document.getElementById('icon-play-pause').className = "fas fa-play text-brand-400";
+    document.getElementById('icon-play-pause').className = "fas fa-play text-blue-400";
     document.getElementById('text-play-pause').innerText = "Reanudar";
   } else {
     startTime = Date.now();
@@ -2070,7 +2111,7 @@ resetBtn.addEventListener('click', () => {
     elapsedTime = 0;
     startTime = 0;
     updateStopwatchDisplay();
-    document.getElementById('icon-play-pause').className = "fas fa-play text-brand-400";
+    document.getElementById('icon-play-pause').className = "fas fa-play text-blue-400";
     document.getElementById('text-play-pause').innerText = "Iniciar";
   }
 });
@@ -2119,14 +2160,15 @@ function renderActionCategories() {
 
   grupos.forEach((cat, index) => {
     const btn = document.createElement('button');
-    btn.className = `px-4 py-2 rounded-full text-sm font-semibold transition-colors whitespace-nowrap ${index === 0 ? 'bg-white/20 text-white' : 'bg-transparent text-gray-400 hover:text-white hover:bg-white/10'}`;
+    btn.type = 'button';
+    btn.className = `chip ${index === 0 ? 'active' : ''}`;
     btn.innerText = cat.cat;
     btn.onclick = () => {
       // Unify styles
       Array.from(catContainer.children).forEach(c => {
-        c.className = 'px-4 py-2 rounded-full text-sm font-semibold transition-colors whitespace-nowrap bg-transparent text-gray-400 hover:text-white hover:bg-white/10';
+        c.className = 'chip';
       });
-      btn.className = 'px-4 py-2 rounded-full text-sm font-semibold transition-colors whitespace-nowrap bg-white/20 text-white';
+      btn.className = 'chip active';
       renderActionsGrid(index);
     };
     catContainer.appendChild(btn);
@@ -2147,34 +2189,53 @@ function renderActionsGrid(catIndex) {
 
   const items = grupo.items;
 
-  // UX Shortcut: if only one item, select it automatically
+  // Tile de una acción (se usa también para categorías de un solo elemento)
+  const crearTile = (item) => {
+    const btn = document.createElement('div');
+    // Paleta semántica de la botonera: azul = positivo/atractivo, rojo = negativo,
+    // ámbar = disciplina/atención, esmeralda solo para la tarjeta verde (objeto literal).
+    let colorClass = 'text-blue-400';
+    if (item.color === 'brand') colorClass = 'text-blue-300';
+    if (item.color === 'blue') colorClass = 'text-blue-400';
+    if (item.color === 'cyan') colorClass = 'text-blue-400';
+    if (item.color === 'sky') colorClass = 'text-sky-400';
+    if (item.color === 'green') colorClass = 'text-emerald-400';
+    if (item.color === 'red') colorClass = 'text-red-400';
+    if (item.color === 'orange') colorClass = 'text-amber-400';
+    if (item.color === 'yellow') colorClass = 'text-amber-400';
+    if (item.color === 'teal') colorClass = 'text-blue-400';
+    if (item.color === 'purple') colorClass = 'text-sky-400';
+    if (item.color === 'gray') colorClass = 'text-slate-400';
+
+    btn.className = `action-btn items-center text-center group ${colorClass}`;
+    btn.setAttribute('role', 'button');
+    btn.setAttribute('tabindex', '0');
+    btn.setAttribute('aria-label', `Acción ${item.id}`);
+    btn.innerHTML = `
+            <i class="fas ${item.icon} mb-0.5"></i>
+            <span>${item.id}</span>
+        `;
+
+    btn.onclick = () => selectAction(btn, item);
+    btn.onkeydown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectAction(btn, item);
+      }
+    };
+    return btn;
+  };
+
+  // UX Shortcut: si la categoría tiene una sola acción, se muestra su tile y se auto-selecciona
   if (items.length === 1) {
-    grid.innerHTML = `<p class="col-span-full text-center text-gray-400 text-xs py-10 italic">Acción "${items[0].id}" seleccionada automáticamente.</p>`;
-    // We call selectAction but with a dummy element or we refactor selectAction to accept null for element
-    selectAction(null, items[0]);
+    const btn = crearTile(items[0]);
+    grid.appendChild(btn);
+    selectAction(btn, items[0]);
     return;
   }
 
   items.forEach(item => {
-    const btn = document.createElement('div');
-    // Handle Tailwind dynamic colors properly via safe classes
-    let colorClass = 'text-blue-400';
-    if (item.color === 'green') colorClass = 'text-green-400';
-    if (item.color === 'red') colorClass = 'text-red-400';
-    if (item.color === 'orange') colorClass = 'text-orange-400';
-    if (item.color === 'teal') colorClass = 'text-teal-400';
-    if (item.color === 'brand') colorClass = 'text-brand-400';
-    if (item.color === 'yellow') colorClass = 'text-yellow-400';
-    if (item.color === 'purple') colorClass = 'text-purple-400';
-
-    btn.className = `action-btn items-center text-center group ${colorClass}`;
-    btn.innerHTML = `
-            <i class="fas ${item.icon} text-2xl mb-1 opacity-70 group-hover:opacity-100 transition-opacity"></i>
-            <span class="text-xs font-medium text-gray-300 leading-tight">${item.id}</span>
-        `;
-
-    btn.onclick = () => selectAction(btn, item);
-    grid.appendChild(btn);
+    grid.appendChild(crearTile(item));
   });
 }
 
@@ -2210,14 +2271,14 @@ function selectAction(btnElement, action) {
   }
 
   const zoneSel = document.getElementById('zone-selector');
-  if (action.zone) {
+  // La configuración de acciones usa la propiedad `zona` (no `zone`).
+  if (action.zona) {
     zoneSel.classList.remove('hidden');
   } else {
     zoneSel.classList.add('hidden');
     selectedZone = null;
     document.querySelectorAll('#zone-selector button').forEach(b => {
-      b.classList.remove('bg-brand-500', 'text-white', 'border-brand-400', 'shadow-lg', 'shadow-brand-500/20');
-      b.classList.add('bg-black/40', 'text-gray-400', 'border-white/10');
+      b.classList.remove('active');
     });
   }
 }
@@ -2254,8 +2315,8 @@ function guardarAccionActual() {
 
     accionesRegistradas.push({ jugadora, accion: "Sale", minuto: minutoFormateado, cuarto: cuartoActual, zona: null });
     accionesRegistradas.push({ jugadora: suplente, accion: "Entra", minuto: minutoFormateado, cuarto: cuartoActual, zona: null });
-    agregarLogUI(jugadora, `Sale ⬇️ (por ${suplente})`, "purple", minutoFormateado);
-    agregarLogUI(suplente, `Entra ⬆️ (por ${jugadora})`, "green", minutoFormateado);
+    agregarLogUI(jugadora, `Sale <i class="fas fa-arrow-down"></i> (por ${suplente})`, "sky", minutoFormateado);
+    agregarLogUI(suplente, `Entra <i class="fas fa-arrow-up"></i> (por ${jugadora})`, "sky", minutoFormateado);
 
     selectedSubstitute = null;
     actualizarGrillaJugadoras();
@@ -2263,7 +2324,7 @@ function guardarAccionActual() {
   } else {
     // 2. Normal Actions Engine (Check Zone)
     const actionConfig = obtenerAccionesDeporte().find(i => i.id === currentActionId);
-    if (actionConfig && actionConfig.zone && !selectedZone) {
+    if (actionConfig && actionConfig.zona && !selectedZone) {
       alert("Esta acción requiere seleccionar una ZONA (Defensa, Medio o Ataque).");
       return;
     }
@@ -2304,8 +2365,7 @@ function guardarAccionActual() {
 
   // UI Zone Reset
   document.querySelectorAll('#zone-selector button').forEach(b => {
-    b.classList.remove('bg-brand-500', 'text-white', 'border-brand-400', 'shadow-lg', 'shadow-brand-500/20');
-    b.classList.add('bg-black/40', 'text-gray-400', 'border-white/10');
+    b.classList.remove('active');
   });
 
   actualizarGrillaJugadoras();
@@ -2322,21 +2382,76 @@ function switchTab(tab) {
   const contentFeed = document.getElementById('tab-content-feed');
   const contentInsights = document.getElementById('tab-content-insights');
 
+  // El historial y las estadísticas viven ahora en pestañas separadas del dashboard.
+  if (!btnFeed || !btnInsights || !contentFeed || !contentInsights) return;
+
   if (tab === 'feed') {
     btnFeed.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all bg-brand-500 text-white shadow-lg";
-    btnInsights.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all text-gray-400 hover:text-white";
+    btnInsights.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all text-slate-400 hover:text-white";
     contentFeed.classList.remove('hidden');
     contentInsights.classList.add('hidden');
   } else {
     btnInsights.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all bg-brand-500 text-white shadow-lg";
-    btnFeed.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all text-gray-400 hover:text-white";
+    btnFeed.className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all text-slate-400 hover:text-white";
     contentInsights.classList.remove('hidden');
     contentFeed.classList.add('hidden');
     actualizarEstadisticas();
   }
 }
 
+// Agregados en vivo para la franja de KPIs de la pestaña Estadísticas
+function obtenerResumenVivo() {
+  const cuenta = (regex) => accionesRegistradas.filter(a => regex.test(a.accion || '')).length;
+  const esFutbol = deporteActual === 'futbol';
+  return {
+    goles: cuenta(/^gol$/i),
+    oportunidades: esFutbol
+      ? cuenta(/tiro al arco|corner a favor|penalti convertido/i)
+      : cuenta(/corto a favor|tiro al arco/i),
+    perdidas: esFutbol
+      ? cuenta(/^contra$|penalti fallado|falta cometida/i)
+      : cuenta(/p[eé]rdida|quite negativo|corto en contra|falta cometida/i),
+    recuperaciones: esFutbol
+      ? cuenta(/recuperaci[oó]n|interceptaci[oó]n/i)
+      : cuenta(/quite positivo|recuperaci[oó]n/i),
+    disciplina: cuenta(/falta|tarjeta/i)
+  };
+}
+
+// Etiquetas de los KPIs según el deporte activo
+function renderKpiLabels() {
+  const esFutbol = deporteActual === 'futbol';
+  const set = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = text;
+  };
+  set('kpi-perdidas-label', esFutbol ? 'Contras' : 'Pérdidas');
+  set('kpi-recuperaciones-label', esFutbol ? 'Recuperaciones' : 'Robos');
+  set('zones-recovery-title', esFutbol ? 'Recuperaciones por Zona' : 'Robos por Zona');
+}
+
 function actualizarEstadisticas() {
+  // 0. Contexto del partido en la cabecera de la pestaña
+  const info = document.getElementById('stats-match-info');
+  if (info) {
+    info.innerText = fechaActual
+      ? `${fechaActual} · ${categoriaActual} · ${golesPropios} - ${golesRival}`
+      : 'Sin partido configurado';
+  }
+
+  // 0b. Agregados en vivo (franja de KPIs)
+  renderKpiLabels();
+  const resumen = obtenerResumenVivo();
+  const setKpi = (id, valor) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = valor;
+  };
+  setKpi('kpi-goles', resumen.goles);
+  setKpi('kpi-oportunidades', resumen.oportunidades);
+  setKpi('kpi-perdidas', resumen.perdidas);
+  setKpi('kpi-recuperaciones', resumen.recuperaciones);
+  setKpi('kpi-disciplina', resumen.disciplina);
+
   // 1. Efficiency / Ratios
   let recuperaciones = 0;
   let perdidas = 0;
@@ -2395,6 +2510,10 @@ function actualizarEstadisticas() {
     const pctP = 100 - pctR;
     document.getElementById('bar-ratio-recup').style.width = `${pctR}%`;
     document.getElementById('bar-ratio-perd').style.width = `${pctP}%`;
+  } else {
+    // Sin datos no hay reparto: barras en cero (un 50/50 azul-rojo sería una lectura falsa)
+    document.getElementById('bar-ratio-recup').style.width = '0%';
+    document.getElementById('bar-ratio-perd').style.width = '0%';
   }
 
   // Update UI - Exits Distribution
@@ -2410,7 +2529,8 @@ function actualizarEstadisticas() {
       document.getElementById(`bar-salida-${t}`).style.width = `${pct}%`;
     });
   } else {
-    sTypes.forEach(t => document.getElementById(`bar-salida-${t}`).style.width = `33%`);
+    // Sin salidas registradas no se reparte la barra entre tipos
+    sTypes.forEach(t => document.getElementById(`bar-salida-${t}`).style.width = '0%');
   }
 
   // Update UI - Zones (Pérdidas)
@@ -2433,6 +2553,19 @@ function actualizarEstadisticas() {
     if (span) span.innerText = val;
   });
 
+  // Update UI - Infracciones y tarjetas
+  const tarjetas = {
+    amarilla: accionesRegistradas.filter(a => /tarjeta amarilla/i.test(a.accion || '')).length,
+    roja: accionesRegistradas.filter(a => /tarjeta roja/i.test(a.accion || '')).length,
+    faltas: accionesRegistradas.filter(a => /falta/i.test(a.accion || '')).length
+  };
+  ['amarilla', 'roja'].forEach(t => {
+    const el = document.getElementById(`val-tarjeta-${t}`);
+    if (el) el.innerText = tarjetas[t];
+  });
+  const elFaltas = document.getElementById('val-faltas');
+  if (elFaltas) elFaltas.innerText = tarjetas.faltas;
+
   // Update UI - Estadísticas por período
   const qRows = document.getElementById('q-stats-rows');
   qRows.innerHTML = '';
@@ -2441,7 +2574,7 @@ function actualizarEstadisticas() {
     const isCurrent = cuartoActual === p.id;
     qRows.innerHTML += `
       <div class="grid grid-cols-4 gap-1 py-1 border-b border-white/5 items-center ${isCurrent ? 'bg-white/5 rounded-lg -mx-1 px-1' : ''}">
-        <span class="text-[10px] font-bold ${isCurrent ? 'text-brand-400' : 'text-gray-500'}">${p.label}</span>
+        <span class="text-[11px] font-bold ${isCurrent ? 'text-blue-400' : 'text-slate-400'}">${p.label}</span>
         <span class="text-center text-xs font-mono text-white">${s.goles}</span>
         <span class="text-center text-xs font-mono text-white">${s.cortos}</span>
         <span class="text-center text-xs font-mono text-white">${s.perdidas}</span>
@@ -2454,46 +2587,56 @@ function determineColorForFeed(act) {
   const a = String(act || '').toLowerCase();
   if (a.includes('gol')) return 'brand';
   if (a.includes('gesto')) return 'blue';
+  if (a.includes('tarjeta verde')) return 'emerald';
   if (a.includes('tarjeta roja') || a.includes('negativ') || a.includes('pérdida') || a.includes('perdida')
     || a.includes('en contra') || a === 'contra' || a.includes('penalti fallado')) return 'red';
-  if (a.includes('positiv') || a.includes('verde') || a.includes('a favor') || a.includes('recuperación')
-    || a.includes('asistencia') || a.includes('interceptación')) return 'green';
+  if (a.includes('positiv') || a.includes('a favor') || a.includes('recuperación')
+    || a.includes('asistencia') || a.includes('interceptación')) return 'cyan';
   return 'gray';
 }
 
 function agregarLogUI(nombre, accionTexto, colorTheme, minuto = null) {
   const feed = document.getElementById('tab-content-feed');
+  if (!feed) return;
   // Remove "empty" message if exists
   if (feed.children.length === 1 && feed.children[0].tagName === 'P') {
     feed.innerHTML = '';
   }
 
-  let tailwindBorderColor = 'border-gray-500';
-  let tailwindTextColor = 'text-gray-300';
+  let dotColor = '#64748b';
+  let labelColor = 'text-slate-300';
 
-  if (colorTheme === 'brand') { tailwindBorderColor = 'border-brand-500'; tailwindTextColor = 'text-brand-300'; }
-  if (colorTheme === 'blue') { tailwindBorderColor = 'border-blue-500'; tailwindTextColor = 'text-blue-300'; }
-  if (colorTheme === 'red') { tailwindBorderColor = 'border-red-500'; tailwindTextColor = 'text-red-300'; }
-  if (colorTheme === 'green') { tailwindBorderColor = 'border-green-500'; tailwindTextColor = 'text-green-300'; }
-  if (colorTheme === 'purple') { tailwindBorderColor = 'border-purple-500'; tailwindTextColor = 'text-purple-400'; }
+  if (colorTheme === 'brand') { dotColor = '#3b82f6'; labelColor = 'text-blue-300'; }
+  if (colorTheme === 'blue') { dotColor = '#3b82f6'; labelColor = 'text-blue-300'; }
+  if (colorTheme === 'cyan') { dotColor = '#60a5fa'; labelColor = 'text-blue-300'; }
+  if (colorTheme === 'emerald') { dotColor = '#34d399'; labelColor = 'text-emerald-300'; }
+  if (colorTheme === 'red') { dotColor = '#ef4444'; labelColor = 'text-red-300'; }
+  if (colorTheme === 'sky') { dotColor = '#38bdf8'; labelColor = 'text-sky-300'; }
 
   const timeStr = minuto ? `${minuto}'` : obtenerMinutoActual() + "'";
   const quarterStr = getPeriodoLabel(cuartoActual);
 
+  // Jerarquía del feed: el evento es el dato dominante, la jugadora el secundario.
   const logHTML = `
-        <div class="bg-black/20 p-3 rounded-xl border-l-4 ${tailwindBorderColor} shadow-sm animate-[fadeIn_0.3s_ease]">
-            <div class="flex justify-between items-start mb-1">
-                <span class="font-bold text-white text-sm">${nombre}</span>
-                <div class="flex gap-2">
-                    <span class="text-[10px] bg-brand-500/20 text-brand-300 px-1.5 rounded font-bold">${quarterStr}</span>
-                    <span class="text-xs bg-white/10 px-2 rounded font-mono text-gray-300"><i class="far fa-clock mr-1"></i>${timeStr}</span>
+        <div class="bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/70 shadow-sm animate-[fadeIn_0.3s_ease]">
+            <div class="flex justify-between items-start gap-2 mb-1.5">
+                <span class="font-mono text-sm font-extrabold uppercase tracking-wide ${labelColor}">${accionTexto}</span>
+                <div class="flex gap-1.5 shrink-0">
+                    <span class="text-[11px] bg-blue-500/15 text-blue-300 px-1.5 py-0.5 rounded font-bold">${quarterStr}</span>
+                    <span class="text-[11px] bg-slate-800 px-1.5 py-0.5 rounded font-mono text-slate-300">${timeStr}</span>
                 </div>
             </div>
-            <span class="text-xs font-semibold uppercase tracking-wider ${tailwindTextColor}">${accionTexto}</span>
+            <div class="flex items-center gap-2">
+                <span class="feed-dot" style="background:${dotColor}"></span>
+                <span class="text-[11px] text-slate-400 truncate">${nombre}</span>
+            </div>
         </div>
     `;
 
   feed.insertAdjacentHTML('afterbegin', logHTML);
+
+  const counter = document.getElementById('feed-count');
+  if (counter) counter.innerText = feed.children.length;
 }
 
 // --- FASE 3: FINALIZAR PARTIDO (Guardado 100% Client-Side vía Supabase) ---
@@ -2631,9 +2774,9 @@ async function finalizarPartido() {
 
     // Success UI
     if (btn) {
-      btn.innerHTML = `<i class="fas fa-check bg-green-500 rounded-full w-6 h-6 inline-flex items-center justify-center text-black mr-2"></i> ¡Guardado Exitoso!`;
-      btn.classList.replace('border-red-500/50', 'border-green-500');
-      btn.classList.replace('text-red-400', 'text-green-400');
+      btn.innerHTML = `<i class="fas fa-check bg-blue-500 rounded-full w-6 h-6 inline-flex items-center justify-center text-white mr-2"></i> ¡Guardado Exitoso!`;
+      btn.classList.replace('border-red-500/40', 'border-blue-500');
+      btn.classList.replace('text-red-400', 'text-blue-400');
     }
 
     setTimeout(() => {
@@ -2766,7 +2909,7 @@ function renderSessionsListUI() {
   
   const keys = Object.keys(sessions);
   if (keys.length === 0) {
-    listEl.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-10">No hay conversaciones guardadas.</p>`;
+    listEl.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-10">No hay conversaciones guardadas.</p>`;
     return;
   }
   
@@ -2777,7 +2920,9 @@ function renderSessionsListUI() {
     const isCurrent = key === currentChatSessionId;
     
     const div = document.createElement('div');
-    div.className = `flex justify-between items-center p-3 rounded-xl border transition-all cursor-pointer ${isCurrent ? 'bg-brand-500/20 border-brand-500 text-brand-300' : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10'}`;
+    const isCurrentCls = 'bg-blue-500/20 border-blue-500 text-white';
+    const isIdleCls = 'bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-800';
+    div.className = `flex justify-between items-center p-3 rounded-xl border transition-all cursor-pointer ${isCurrent ? isCurrentCls : isIdleCls}`;
     div.onclick = () => loadSession(key);
     
     const titleSpan = document.createElement('span');
@@ -2786,7 +2931,7 @@ function renderSessionsListUI() {
     div.appendChild(titleSpan);
     
     const delBtn = document.createElement('button');
-    delBtn.className = 'text-gray-500 hover:text-red-400 p-1.5 ml-2 transition-colors';
+    delBtn.className = 'text-slate-400 hover:text-red-400 p-1.5 ml-2 transition-colors';
     delBtn.innerHTML = '<i class="fas fa-trash-alt text-xs"></i>';
     delBtn.onclick = (e) => {
       e.stopPropagation();
@@ -2901,7 +3046,6 @@ function sendQuickPrompt(text) {
 
 // --- EXPORTAR A WINDOW (Para Vite Modules) ---
 window.cargarJugadoras = cargarJugadoras;
-window.validateRosterSelection = validateRosterSelection;
 window.iniciarPartido = iniciarPartido;
 window.cambiarGol = cambiarGol;
 window.selectAction = selectAction;
@@ -2924,7 +3068,14 @@ window.toggleSessionsList = toggleSessionsList;
 window.deleteSession = deleteSession;
 window.handleSendChat = handleSendChat;
 window.sendQuickPrompt = sendQuickPrompt;
-window.switchRosterTab = switchRosterTab;
+window.switchMainTab = switchMainTab;
+window.renderBancoSuplentes = renderBancoSuplentes;
+window.abrirModalSuplentes = abrirModalSuplentes;
+window.cerrarModalSuplentes = cerrarModalSuplentes;
+window.agregarSuplente = agregarSuplente;
+window.quitarSuplente = quitarSuplente;
+window.limpiarOnce = limpiarOnce;
+window.renderKpiLabels = renderKpiLabels;
 window.initTacticalBoard = initTacticalBoard;
 window.selectTacticalSchema = selectTacticalSchema;
 window.openTacticalPlayerModal = openTacticalPlayerModal;

@@ -1,0 +1,483 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-11T19:28:38Z",
+  "title": "Design System: Tracker Pro",
+  "extensions": {
+    "colorMeta": {
+      "carbon-void": {
+        "role": "neutral",
+        "displayName": "Carbon Void",
+        "canonical": "#020617",
+        "tonalRamp": ["#020617", "#0f172a", "#1e293b", "#334155", "#475569", "#64748b", "#94a3b8", "#cbd5e1"]
+      },
+      "panel-glass": {
+        "role": "neutral",
+        "displayName": "Slate Glass 72",
+        "canonical": "rgba(15, 23, 42, 0.72)",
+        "tonalRamp": ["rgba(2, 6, 23, 0.72)", "rgba(15, 23, 42, 0.72)", "rgba(30, 41, 59, 0.72)", "rgba(51, 65, 85, 0.72)", "rgba(71, 85, 105, 0.72)", "rgba(100, 116, 139, 0.72)", "rgba(148, 163, 184, 0.72)", "rgba(203, 213, 225, 0.72)"]
+      },
+      "panel-solid": {
+        "role": "neutral",
+        "displayName": "Opaque Slate",
+        "canonical": "#0f172a",
+        "tonalRamp": ["#020617", "#0f172a", "#1e293b", "#334155", "#475569", "#64748b", "#94a3b8", "#cbd5e1"]
+      },
+      "panel-inset": {
+        "role": "neutral",
+        "displayName": "Recessed Ink",
+        "canonical": "rgba(2, 6, 23, 0.45)",
+        "tonalRamp": ["rgba(2, 6, 23, 0.9)", "rgba(15, 23, 42, 0.8)", "rgba(30, 41, 59, 0.7)", "rgba(51, 65, 85, 0.6)", "rgba(71, 85, 105, 0.55)", "rgba(100, 116, 139, 0.5)", "rgba(148, 163, 184, 0.45)", "rgba(203, 213, 225, 0.4)"]
+      },
+      "panel-overlay": {
+        "role": "neutral",
+        "displayName": "Scrim Ink",
+        "canonical": "rgba(2, 6, 23, 0.72)",
+        "tonalRamp": ["rgba(2, 6, 23, 0.9)", "rgba(15, 23, 42, 0.82)", "rgba(30, 41, 59, 0.76)", "rgba(51, 65, 85, 0.7)", "rgba(71, 85, 105, 0.62)", "rgba(100, 116, 139, 0.55)", "rgba(148, 163, 184, 0.48)", "rgba(203, 213, 225, 0.4)"]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Slate Hairline",
+        "canonical": "rgba(30, 41, 59, 0.85)",
+        "tonalRamp": ["rgba(2, 6, 23, 0.85)", "rgba(15, 23, 42, 0.85)", "rgba(30, 41, 59, 0.85)", "rgba(51, 65, 85, 0.85)", "rgba(71, 85, 105, 0.85)", "rgba(100, 116, 139, 0.85)", "rgba(148, 163, 184, 0.85)", "rgba(203, 213, 225, 0.85)"]
+      },
+      "hairline-soft": {
+        "role": "neutral",
+        "displayName": "Soft Slate Hairline",
+        "canonical": "rgba(51, 65, 85, 0.55)",
+        "tonalRamp": ["rgba(2, 6, 23, 0.55)", "rgba(15, 23, 42, 0.55)", "rgba(30, 41, 59, 0.55)", "rgba(51, 65, 85, 0.55)", "rgba(71, 85, 105, 0.55)", "rgba(100, 116, 139, 0.55)", "rgba(148, 163, 184, 0.55)", "rgba(203, 213, 225, 0.55)"]
+      },
+      "electric-blue": {
+        "role": "primary",
+        "displayName": "Electric Blue",
+        "canonical": "#2563eb",
+        "tonalRamp": ["#172554", "#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#dbeafe"]
+      },
+      "electric-blue-bright": {
+        "role": "primary",
+        "displayName": "Bright Blue",
+        "canonical": "#3b82f6",
+        "tonalRamp": ["#172554", "#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#dbeafe"]
+      },
+      "electric-blue-wash": {
+        "role": "primary",
+        "displayName": "Blue Wash",
+        "canonical": "rgba(59, 130, 246, 0.14)",
+        "tonalRamp": ["rgba(37, 99, 235, 0.06)", "rgba(59, 130, 246, 0.09)", "rgba(59, 130, 246, 0.12)", "rgba(59, 130, 246, 0.14)", "rgba(96, 165, 250, 0.18)", "rgba(147, 197, 253, 0.24)", "rgba(191, 219, 254, 0.32)", "rgba(219, 234, 254, 0.42)"]
+      },
+      "text-primary": {
+        "role": "neutral",
+        "displayName": "Signal White",
+        "canonical": "#f1f5f9",
+        "tonalRamp": ["#020617", "#1e293b", "#334155", "#475569", "#64748b", "#94a3b8", "#cbd5e1", "#f1f5f9"]
+      },
+      "text-secondary": {
+        "role": "neutral",
+        "displayName": "Readout Grey",
+        "canonical": "#94a3b8",
+        "tonalRamp": ["#0f172a", "#1e293b", "#334155", "#475569", "#64748b", "#94a3b8", "#cbd5e1", "#f1f5f9"]
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "Dim Slate",
+        "canonical": "#64748b",
+        "tonalRamp": ["#020617", "#0f172a", "#1e293b", "#334155", "#475569", "#64748b", "#94a3b8", "#cbd5e1"]
+      },
+      "signal-beacon": {
+        "role": "secondary",
+        "displayName": "Beacon Blue",
+        "canonical": "#93c5fd",
+        "tonalRamp": ["#172554", "#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#dbeafe"]
+      },
+      "signal-positive": {
+        "role": "secondary",
+        "displayName": "Positive Blue (feed + action pad)",
+        "canonical": "#60a5fa",
+        "tonalRamp": ["#172554", "#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#dbeafe"]
+      },
+      "signal-negative": {
+        "role": "secondary",
+        "displayName": "Negative Red",
+        "canonical": "#f87171",
+        "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fca5a5"]
+      },
+      "signal-negative-strong": {
+        "role": "secondary",
+        "displayName": "Negative Red Deep",
+        "canonical": "#ef4444",
+        "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fca5a5"]
+      },
+      "signal-discipline": {
+        "role": "secondary",
+        "displayName": "Discipline Amber",
+        "canonical": "#fbbf24",
+        "tonalRamp": ["#451a03", "#78350f", "#92400e", "#b45309", "#d97706", "#f59e0b", "#fbbf24", "#fcd34d"]
+      },
+      "signal-neutral": {
+        "role": "secondary",
+        "displayName": "Neutral Slate",
+        "canonical": "#94a3b8",
+        "tonalRamp": ["#0f172a", "#1e293b", "#334155", "#475569", "#64748b", "#94a3b8", "#cbd5e1", "#f1f5f9"]
+      },
+      "signal-transition": {
+        "role": "secondary",
+        "displayName": "Transition Sky (substitution / lineup change)",
+        "canonical": "#38bdf8",
+        "tonalRamp": ["#082f49", "#0c4a6e", "#075985", "#0369a1", "#0284c7", "#0ea5e9", "#38bdf8", "#7dd3fc"]
+      },
+      "signal-green-card": {
+        "role": "tertiary",
+        "displayName": "Green Card (literal object)",
+        "canonical": "#34d399",
+        "tonalRamp": ["#022c22", "#064e3b", "#065f46", "#047857", "#059669", "#10b981", "#34d399", "#6ee7b7"]
+      },
+      "highlight-yellow": {
+        "role": "tertiary",
+        "displayName": "Step Plate Yellow",
+        "canonical": "#facc15",
+        "tonalRamp": ["#422006", "#713f12", "#854d0e", "#a16207", "#ca8a04", "#eab308", "#facc15", "#fde047"]
+      },
+      "pitch-night": {
+        "role": "tertiary",
+        "displayName": "Night Pitch Navy",
+        "canonical": "#153a72",
+        "tonalRamp": ["#0a1e42", "#102c5b", "#153a72", "#1d4a8a", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd"]
+      },
+      "pitch-deep": {
+        "role": "tertiary",
+        "displayName": "Deep Pitch Navy",
+        "canonical": "#102c5b",
+        "tonalRamp": ["#061026", "#0a1e42", "#102c5b", "#153a72", "#1d4a8a", "#2563eb", "#3b82f6", "#60a5fa"]
+      },
+      "pitch-abyss": {
+        "role": "tertiary",
+        "displayName": "Abyss Pitch Navy",
+        "canonical": "#0a1e42",
+        "tonalRamp": ["#040c1b", "#061026", "#0a1e42", "#102c5b", "#153a72", "#1d4a8a", "#2563eb", "#3b82f6"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Score & Clock",
+        "purpose": "Monospaced readout for the score and the stopwatch. Largest type in the product; nothing competes with it."
+      },
+      "headline": {
+        "displayName": "Section Headline",
+        "purpose": "Modal and page titles only."
+      },
+      "title": {
+        "displayName": "Panel Title",
+        "purpose": "Titles of the three live panels and the tactical control panels."
+      },
+      "body": {
+        "displayName": "Running Copy",
+        "purpose": "Explanatory text, feed player names, chat bubbles. Lines under ~75 characters."
+      },
+      "label": {
+        "displayName": "Field Label",
+        "purpose": "Uppercase 11px labels, card titles and KPI captions. Always uppercase."
+      },
+      "micro": {
+        "displayName": "Micro Chip",
+        "purpose": "Non-numeric micro chrome only (crests, badges). Never a value."
+      },
+      "data": {
+        "displayName": "KPI Value",
+        "purpose": "The five headline numbers of the Estadísticas strip."
+      },
+      "data-small": {
+        "displayName": "Inline Data",
+        "purpose": "Counters, minutes, per-quarter rows and feed stamps."
+      },
+      "icon": {
+        "displayName": "Icon Glyph",
+        "purpose": "Single-character glyphs inside action tiles, score buttons and the Coach IA button. Never data."
+      }
+    },
+    "shadows": [
+      {
+        "name": "panel-lift",
+        "value": "0 10px 30px rgba(2, 6, 23, 0.45)",
+        "purpose": "Resting shadow of every glass panel. Stat cards carry the same glass and blur but no shadow, so they sit one level flatter than a panel."
+      },
+      {
+        "name": "control-lift",
+        "value": "0 6px 18px rgba(2, 6, 23, 0.6)",
+        "purpose": "Primary buttons and other raised commit controls."
+      },
+      {
+        "name": "active-tab",
+        "value": "0 4px 14px rgba(2, 6, 23, 0.55)",
+        "purpose": "Selected top tab and selected player chip: the shadow tightens as the element becomes a solid blue plate."
+      },
+      {
+        "name": "chip-press",
+        "value": "0 3px 10px rgba(2, 6, 23, 0.5)",
+        "purpose": "Selected category chip, zone button and selected schema chip."
+      },
+      {
+        "name": "input-ring",
+        "value": "0 0 0 3px rgba(59, 130, 246, 0.18)",
+        "purpose": "Focus ring of glass inputs. A ring, never a glow."
+      },
+      {
+        "name": "score-pop",
+        "value": "0 0 0 rgba(0, 0, 0, 0)",
+        "purpose": "The score animation uses transform scale 1 → 1.22 → 1 over 400ms with cubic-bezier(0.16, 1, 0.3, 1); no shadow is involved."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-state",
+        "value": "0.15s ease",
+        "purpose": "Default transition for every control: hover, focus, active and selection changes."
+      },
+      {
+        "name": "ease-panel",
+        "value": "0.2s ease",
+        "purpose": "Slower transitions for glass surfaces and input fields."
+      },
+      {
+        "name": "ease-score",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The score pop. The one expressive easing in the system; everything else is mechanical."
+      },
+      {
+        "name": "ease-slide",
+        "value": "0.3s ease-in-out",
+        "purpose": "The Coach IA side panel entering from the right, and the tactical board fade-in."
+      },
+      {
+        "name": "ease-bar",
+        "value": "0.7s ease",
+        "purpose": "Width transitions of the statistics progress bars."
+      },
+      {
+        "name": "feed-enter",
+        "value": "fadeIn 0.3s ease",
+        "purpose": "New feed rows fade in and rise 8px into place."
+      },
+      {
+        "name": "live-pulse",
+        "value": "livePulse 2s infinite ease-in-out",
+        "purpose": "The 8px live dot on the Estadísticas badge and the Coach IA panel header: opacity 1 → 0.4 → 1. Only rendered while a match is running."
+      },
+      {
+        "name": "typing-pulse",
+        "value": "typingPulse 1.4s infinite ease-in-out",
+        "purpose": "The three-dot typing indicator of the Coach IA panel."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ],
+    "rules": {
+      "zero-green": "There is no green in the chrome — no teal, emerald, purple, or indigo anywhere in the shell, panels, tabs, buttons, chips, or charts. The only green permitted is the literal hockey green card.",
+      "blue-means-live": "Electric blue is a state, not a brand. Before a match starts every live signal stays grey: the Partido tab is dimmed and dotted, the stage label reads Sin Iniciar, and the Estadísticas badge stays off.",
+      "no-vertical-scroll": "The live view must fit in 100vh with no page-level vertical scroll; overflow is delegated to the action pad, the player grid and the feed.",
+      "touch-targets": "Minimum 44px of touch height everywhere (56px+ recommended); action tiles are 92px.",
+      "mono-data": "Every number the user reads as data is set in JetBrains Mono at heavy weight, never below 11px, never below 4.5:1 contrast.",
+      "board-is-the-roster": "The lineup exists in exactly one place: the Konva pitch. Touch a token, pick a player in the modal; the bench is a chip list, not a second checklist.",
+      "zero-data": "With no records, bars stay at 0% and empty states say so in muted text. A bar that redistributes itself to fill the rail is a false reading."
+    }
+  },
+  "components": [
+    {
+      "name": "Glass Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "The base surface of every reading in the app: translucent slate glass on carbon, with a hairline border and a neutral lift.",
+      "html": "<section class=\"ds-panel\"><header class=\"ds-panel-head\"><span class=\"ds-panel-icon\"><svg viewBox=\"0 0 16 16\" width=\"12\" height=\"12\" fill=\"currentColor\"><path d=\"M2 3h12v1.5H2zM2 7.25h12v1.5H2zM2 11.5h8v1.5H2z\"/></svg></span><h3 class=\"ds-panel-title\">Historial</h3><span class=\"ds-panel-count\">0</span></header><div class=\"ds-panel-body\"><p class=\"ds-empty\">No hay acciones registradas aún</p></div></section>",
+      "css": ".ds-panel { background: rgba(15, 23, 42, 0.72); border: 1px solid rgba(30, 41, 59, 0.85); border-radius: 16px; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 10px 30px rgba(2, 6, 23, 0.45); padding: 12px; color: #f1f5f9; font-family: Outfit, system-ui, sans-serif; } .ds-panel-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; } .ds-panel-icon { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 6px; background: rgba(37, 99, 235, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; } .ds-panel-title { margin: 0; font-size: 0.875rem; font-weight: 700; line-height: 1.3; } .ds-panel-count { margin-left: auto; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.6875rem; font-weight: 700; color: #94a3b8; } .ds-panel-body { display: flex; flex-direction: column; gap: 8px; } .ds-empty { margin: 0; padding: 32px 0; text-align: center; font-size: 0.875rem; font-style: italic; color: #64748b; }"
+    },
+    {
+      "name": "Main Tab (Navigation)",
+      "kind": "nav",
+      "refersTo": "main-tab",
+      "description": "One of the four fixed top tabs. Inactive is transparent with grey text; active is a solid electric-blue plate; locked is dimmed with a status dot.",
+      "html": "<div class=\"ds-tabrail\"><button type=\"button\" class=\"ds-tab ds-tab--active\"><svg viewBox=\"0 0 16 16\" width=\"13\" height=\"13\" fill=\"currentColor\"><circle cx=\"8\" cy=\"8\" r=\"5.5\"/></svg><span>Partido</span></button><button type=\"button\" class=\"ds-tab ds-tab--locked\" title=\"Todavía no hay un partido en curso\"><svg viewBox=\"0 0 16 16\" width=\"13\" height=\"13\" fill=\"currentColor\"><path d=\"M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.6V14.4A5.4 5.4 0 013.6 8H8z\"/></svg><span>Estadísticas</span></button></div>",
+      "css": ".ds-tabrail { display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: rgba(2, 6, 23, 0.7); border: 1px solid rgba(30, 41, 59, 0.85); font-family: Outfit, system-ui, sans-serif; } .ds-tab { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9.6px 11.2px; border: 1px solid transparent; border-radius: 10.4px; background: transparent; color: #94a3b8; font-size: 0.8rem; font-weight: 600; white-space: nowrap; cursor: pointer; transition: all 0.15s ease; } .ds-tab:hover { color: #f1f5f9; background: rgba(51, 65, 85, 0.5); } .ds-tab:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 6px; } .ds-tab:active { transform: translateY(0) scale(0.99); } .ds-tab--active { background: #2563eb; color: #ffffff; border-color: rgba(96, 165, 250, 0.55); box-shadow: 0 4px 14px rgba(2, 6, 23, 0.55); } .ds-tab--locked { opacity: 0.55; } .ds-tab--locked::after { content: ''; width: 5px; height: 5px; border-radius: 9999px; background: currentColor; opacity: 0.7; }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The commit action: Iniciar Partido, Registrar, Iniciar. Blue gradient, white heavy label, disabled at 40% opacity.",
+      "html": "<button type=\"button\" class=\"ds-btn-primary\"><svg viewBox=\"0 0 16 16\" width=\"13\" height=\"13\" fill=\"currentColor\"><path d=\"M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zm3.6 4.6l-4.4 4.7a.8.8 0 01-1.2 0L3.9 8.6a.8.8 0 011.2-1l1.4 1.5 3.9-4.2a.8.8 0 011.2 1z\"/></svg><span>Registrar</span></button>",
+      "css": ".ds-btn-primary { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 0.8rem 1rem; border-radius: 12px; background: linear-gradient(180deg, #3b82f6, #2563eb); color: #ffffff; font-family: Outfit, system-ui, sans-serif; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(96, 165, 250, 0.5); box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6); cursor: pointer; transition: all 0.15s ease; } .ds-btn-primary:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); } .ds-btn-primary:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 6px; } .ds-btn-primary:active:not(:disabled) { transform: translateY(0) scale(0.99); } .ds-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }"
+    },
+    {
+      "name": "Bottom Action Bar",
+      "kind": "custom",
+      "refersTo": "action-bar",
+      "description": "The full-width commit bar pinned below the dashboard grid: shrink-0 px-3 pb-3 wrapping a max-w-3xl centered column. Carries Registrar in the live view and Iniciar Partido in Táctica.",
+      "html": "<div class=\"ds-actionbar\"><div class=\"ds-actionbar__inner\"><button type=\"button\" class=\"ds-btn-primary\" disabled><svg viewBox=\"0 0 16 16\" width=\"13\" height=\"13\" fill=\"currentColor\"><path d=\"M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zm3.6 4.6l-4.4 4.7a.8.8 0 01-1.2 0L3.9 8.6a.8.8 0 011.2-1l1.4 1.5 3.9-4.2a.8.8 0 011.2 1z\"/></svg><span>Registrar</span></button></div></div>",
+      "css": ".ds-actionbar { flex-shrink: 0; width: 100%; padding: 0 12px 12px; font-family: Outfit, system-ui, sans-serif; } .ds-actionbar__inner { max-width: 48rem; margin: 0 auto; } .ds-actionbar .ds-btn-primary { opacity: 0.5; pointer-events: none; } .ds-actionbar .ds-btn-primary:not([disabled]) { opacity: 1; pointer-events: auto; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Utility action on a translucent slate fill: Deporte, Vaciar el once, Añadir suplente.",
+      "html": "<button type=\"button\" class=\"ds-btn-ghost\"><svg viewBox=\"0 0 16 16\" width=\"12\" height=\"12\" fill=\"currentColor\"><path d=\"M8 1.6l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.4 4.2 13.4l.7-4.3-3.1-3 4.3-.6z\"/></svg><span>Vaciar el once</span></button>",
+      "css": ".ds-btn-ghost { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0.5rem 0.7rem; border-radius: 10.4px; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(30, 41, 59, 0.85); color: #94a3b8; font-family: Outfit, system-ui, sans-serif; font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; } .ds-btn-ghost:hover:not(:disabled) { color: #ffffff; border-color: rgba(148, 163, 184, 0.4); background: rgba(51, 65, 85, 0.6); } .ds-btn-ghost:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 6px; } .ds-btn-ghost:active:not(:disabled) { transform: scale(0.99); } .ds-btn-ghost:disabled { opacity: 0.4; cursor: not-allowed; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive commit — used once in the live view, on Finalizar Partido. Low-alpha red with a red hairline.",
+      "html": "<button type=\"button\" class=\"ds-btn-danger\"><svg viewBox=\"0 0 16 16\" width=\"13\" height=\"13\" fill=\"currentColor\"><path d=\"M2 3.2h12v1.6H2zM3 6h10v6.2a.8.8 0 01-.8.8H3.8a.8.8 0 01-.8-.8zM6.4 7.4v4h1.2v-4zm3.2 0v4h1.2v-4z\"/></svg><span>Finalizar Partido</span></button>",
+      "css": ".ds-btn-danger { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 0.7rem 1rem; border-radius: 12px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; font-family: Outfit, system-ui, sans-serif; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.15s ease; } .ds-btn-danger:hover { background: rgba(239, 68, 68, 0.18); border-color: rgba(239, 68, 68, 0.7); color: #ffffff; } .ds-btn-danger:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 6px; } .ds-btn-danger:active { transform: scale(0.99); }"
+    },
+    {
+      "name": "Category Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Pill filter used for the action categories and tactical schemas. Active chip fills electric blue.",
+      "html": "<div class=\"ds-chiprow\"><button type=\"button\" class=\"ds-chip ds-chip--active\">Ofensiva</button><button type=\"button\" class=\"ds-chip\">Gestos</button><button type=\"button\" class=\"ds-chip\">Pérdidas</button><button type=\"button\" class=\"ds-chip\">Defensiva</button></div>",
+      "css": ".ds-chiprow { display: flex; flex-wrap: wrap; gap: 6px; font-family: Outfit, system-ui, sans-serif; } .ds-chip { display: inline-flex; align-items: center; min-height: 44px; padding: 0.45rem 0.8rem; border-radius: 9999px; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(30, 41, 59, 0.85); color: #94a3b8; font-size: 0.78rem; font-weight: 600; white-space: nowrap; cursor: pointer; transition: all 0.15s ease; } .ds-chip:hover { color: #ffffff; border-color: rgba(148, 163, 184, 0.4); } .ds-chip:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 9999px; } .ds-chip:active { transform: scale(0.98); } .ds-chip--active { background: #2563eb; border-color: #3b82f6; color: #ffffff; box-shadow: 0 3px 10px rgba(2, 6, 23, 0.5); }"
+    },
+    {
+      "name": "Action Tile (semantic pad)",
+      "kind": "custom",
+      "refersTo": "action-button",
+      "description": "The 92px event pad in the live view. Every action gets a real tile, even in single-action categories. Keyboard-operable via role, tabindex, aria-label, Enter and Space.",
+      "html": "<div class=\"ds-actiongrid\"><div role=\"button\" tabindex=\"0\" aria-label=\"Acción Gol\" class=\"ds-action ds-action--beacon\"><svg viewBox=\"0 0 20 20\" width=\"21\" height=\"21\" fill=\"currentColor\"><circle cx=\"10\" cy=\"10\" r=\"7\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M10 5.5v9M5.5 10h9\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg><span>Gol</span></div><div role=\"button\" tabindex=\"0\" aria-label=\"Acción Tiro al arco\" class=\"ds-action ds-action--positive\"><svg viewBox=\"0 0 20 20\" width=\"21\" height=\"21\" fill=\"currentColor\"><circle cx=\"10\" cy=\"10\" r=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><circle cx=\"10\" cy=\"10\" r=\"3.2\"/></svg><span>Tiro al arco</span></div><div role=\"button\" tabindex=\"0\" aria-label=\"Acción Corto en Contra\" class=\"ds-action ds-action--negative\"><svg viewBox=\"0 0 20 20\" width=\"21\" height=\"21\" fill=\"currentColor\"><circle cx=\"10\" cy=\"10\" r=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M6.8 6.8l6.4 6.4M13.2 6.8l-6.4 6.4\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg><span>Corto en Contra</span></div><div role=\"button\" tabindex=\"0\" aria-label=\"Acción Tarjeta amarilla\" class=\"ds-action ds-action--discipline\"><svg viewBox=\"0 0 20 20\" width=\"21\" height=\"21\" fill=\"currentColor\"><path d=\"M5 3h10v14H5z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/></svg><span>Tarjeta amarilla</span></div><div role=\"button\" tabindex=\"0\" aria-label=\"Acción Salida\" class=\"ds-action ds-action--transition\"><svg viewBox=\"0 0 20 20\" width=\"21\" height=\"21\" fill=\"currentColor\"><path d=\"M4 8h9l-3-3 1.4-1.4L17 10l-5.6 6.4L10 15l3-3H4z\"/></svg><span>Salida</span></div><div role=\"button\" tabindex=\"0\" aria-label=\"Acción Recuperación\" class=\"ds-action ds-action--selected\"><svg viewBox=\"0 0 20 20\" width=\"21\" height=\"21\" fill=\"currentColor\"><path d=\"M10 2l2.4 5 5.6.8-4 3.9 1 5.5L10 14.6 5 17.2l1-5.5-4-3.9 5.6-.8z\"/></svg><span>Recuperación</span></div></div>",
+      "css": ".ds-actiongrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; font-family: Outfit, system-ui, sans-serif; } .ds-action { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 92px; padding: 8px 6px; border-radius: 12px; background: rgba(30, 41, 59, 0.45); border: 1px solid rgba(51, 65, 85, 0.7); color: #94a3b8; cursor: pointer; user-select: none; transition: all 0.15s ease; } .ds-action span { font-size: 0.72rem; line-height: 1.15; font-weight: 600; text-align: center; color: #94a3b8; } .ds-action:hover { background: rgba(51, 65, 85, 0.6); border-color: rgba(148, 163, 184, 0.35); } .ds-action:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 6px; } .ds-action:active { transform: scale(0.97); } .ds-action--beacon { color: #93c5fd; } .ds-action--positive { color: #60a5fa; } .ds-action--negative { color: #f87171; } .ds-action--discipline { color: #fbbf24; } .ds-action--transition { color: #38bdf8; } .ds-action--neutral { color: #94a3b8; } .ds-action--selected { background: rgba(59, 130, 246, 0.14); border-color: #3b82f6; outline: 1px solid #3b82f6; outline-offset: -1px; } .ds-action--selected span { color: #ffffff; }"
+    },
+    {
+      "name": "Player Chip & Bench Chip",
+      "kind": "chip",
+      "refersTo": "player-chip",
+      "description": "A pickable player token. Bench players are dashed; the selected player becomes a solid blue plate. The bench list is the only place substitutes live.",
+      "html": "<div class=\"ds-playerrow\"><button type=\"button\" class=\"ds-player ds-player--active\">Sofía M.</button><button type=\"button\" class=\"ds-player\">María L.</button><button type=\"button\" class=\"ds-player\">Valentina R.</button><button type=\"button\" class=\"ds-player ds-player--bench\" title=\"Quitar del banco\">Julia M.<svg viewBox=\"0 0 16 16\" width=\"10\" height=\"10\" fill=\"currentColor\" style=\"margin-left:8px;opacity:0.6\"><path d=\"M4 4l8 8M12 4l-8 8\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg></button></div>",
+      "css": ".ds-playerrow { display: flex; flex-wrap: wrap; gap: 6px; font-family: Outfit, system-ui, sans-serif; } .ds-player { display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; padding: 0.5rem 0.7rem; border-radius: 10.4px; background: rgba(30, 41, 59, 0.45); border: 1px solid rgba(51, 65, 85, 0.7); color: #94a3b8; font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: all 0.15s ease; } .ds-player:hover { color: #ffffff; border-color: rgba(148, 163, 184, 0.4); } .ds-player:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 6px; } .ds-player:active { transform: scale(0.98); } .ds-player--bench { border-style: dashed; } .ds-player--active { background: #2563eb; border-color: #3b82f6; color: #ffffff; box-shadow: 0 4px 12px rgba(2, 6, 23, 0.55); }"
+    },
+    {
+      "name": "Glass Input",
+      "kind": "input",
+      "refersTo": "glass-input",
+      "description": "Select and text fields. Near-black translucent fill with a hairline; focus adds a blue border and a soft ring.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-cat\">Categoría</label><div class=\"ds-select\"><select id=\"ds-cat\" class=\"ds-glass-input\"><option>7ma Femenina</option><option>6ta Femenina</option><option>5ta Femenina</option></select><svg viewBox=\"0 0 16 16\" width=\"11\" height=\"11\" fill=\"currentColor\"><path d=\"M3 6l5 5 5-5z\"/></svg></div></div>",
+      "css": ".ds-field { font-family: Outfit, system-ui, sans-serif; } .ds-field-label { display: block; margin-bottom: 6px; font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: #94a3b8; } .ds-select { position: relative; display: flex; align-items: center; } .ds-select svg { position: absolute; right: 12px; pointer-events: none; color: #64748b; } .ds-glass-input { width: 100%; padding: 0.65rem 0.8rem; padding-right: 36px; border-radius: 10.4px; background: rgba(2, 6, 23, 0.5); border: 1px solid rgba(30, 41, 59, 0.85); color: #ffffff; font-family: Outfit, system-ui, sans-serif; font-size: 0.8rem; appearance: none; transition: all 0.2s ease; } .ds-glass-input:focus { background: rgba(15, 23, 42, 0.7); border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18); } .ds-glass-input:focus-visible { outline: none; } .ds-glass-input option { background-color: #0f172a; color: #ffffff; }"
+    },
+    {
+      "name": "KPI Card & Stat Tile",
+      "kind": "card",
+      "refersTo": "stat-card",
+      "description": "The Estadísticas readout: an uppercase label over a large mono value, plus the inset mini-tile used for grouped counters. Bars stay at 0% when there is no data.",
+      "html": "<div class=\"ds-kpirow\"><div class=\"ds-statcard\"><p class=\"ds-kpi-label\">Goles</p><p class=\"ds-kpi-value\">1</p></div><div class=\"ds-statcard\"><p class=\"ds-kpi-label\">Pérdidas</p><p class=\"ds-kpi-value\">0</p></div><div class=\"ds-statcard\"><h4 class=\"ds-card-title\"><svg viewBox=\"0 0 16 16\" width=\"12\" height=\"12\" fill=\"currentColor\"><path d=\"M2 3h12v1.6H2zM3 6h10v6.2a.8.8 0 01-.8.8H3.8a.8.8 0 01-.8-.8z\"/></svg>Infracciones y Tarjetas</h4><div class=\"ds-minirow\"><div class=\"ds-mini\"><p>AMARILLAS</p><p class=\"ds-mini-num\">2</p></div><div class=\"ds-mini\"><p>ROJAS</p><p class=\"ds-mini-num\">0</p></div><div class=\"ds-mini\"><p>FALTAS</p><p class=\"ds-mini-num\">5</p></div></div></div></div><div class=\"ds-rail\"><div class=\"ds-rail__fill ds-rail__fill--red\" style=\"width:0%\"></div><div class=\"ds-rail__fill ds-rail__fill--red\" style=\"width:0%\"></div><div class=\"ds-rail__fill ds-rail__fill--red\" style=\"width:0%\"></div></div>",
+      "css": ".ds-kpirow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; font-family: Outfit, system-ui, sans-serif; } .ds-statcard { padding: 0.85rem; border-radius: 14.4px; background: rgba(15, 23, 42, 0.72); border: 1px solid rgba(30, 41, 59, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); } .ds-kpi-label { margin: 0; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: #94a3b8; } .ds-kpi-value { margin: 0.35rem 0 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 2rem; font-weight: 800; line-height: 1; color: #ffffff; } .ds-card-title { display: flex; align-items: center; gap: 6px; margin: 0 0 0.6rem; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: #94a3b8; } .ds-card-title svg { color: #fbbf24; } .ds-minirow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; } .ds-mini { padding: 0.5rem 0.375rem; text-align: center; border-radius: 10.4px; background: rgba(2, 6, 23, 0.45); border: 1px solid rgba(51, 65, 85, 0.55); } .ds-mini p:first-child { margin: 0 0 0.15rem; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.05em; color: #94a3b8; } .ds-mini-num { margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 1.05rem; font-weight: 800; color: #ffffff; } .ds-rail { display: flex; height: 10px; margin-top: 12px; border-radius: 9999px; overflow: hidden; background: rgba(30, 41, 59, 0.85); } .ds-rail__fill { height: 100%; transition: width 0.7s ease; } .ds-rail__fill--red { background: #ef4444; } .ds-rail__fill--blue { background: #3b82f6; }"
+    },
+    {
+      "name": "Live Badge",
+      "kind": "chip",
+      "refersTo": "live-badge",
+      "description": "The EN VIVO badge of Estadísticas. Ships off (grey, no dot) and only lights up blue with a pulsing live dot while a match is running.",
+      "html": "<span class=\"ds-badge ds-badge--off\"><span class=\"ds-badge__dot\" hidden></span> EN VIVO</span> <span class=\"ds-badge ds-badge--live\"><span class=\"ds-badge__dot\"></span> EN VIVO</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6.4px 8px; border-radius: 8px; font-family: Outfit, system-ui, sans-serif; font-size: 0.6875rem; font-weight: 700; transition: all 0.15s ease; } .ds-badge--off { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(51, 65, 85, 0.85); color: #94a3b8; } .ds-badge--live { background: rgba(37, 99, 235, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd; } .ds-badge__dot { width: 8px; height: 8px; border-radius: 9999px; background: #3b82f6; animation: ds-live-pulse 2s infinite ease-in-out; } @keyframes ds-live-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }"
+    },
+    {
+      "name": "Tactical Assignment Modal",
+      "kind": "custom",
+      "refersTo": "modal",
+      "description": "The board's assignment dialog: tapping a token lists every player with a state tag — Actual, Ocupa X · intercambiar, En el banco · al once, Disponible. role=dialog, aria-modal, Escape closes.",
+      "html": "<div class=\"ds-scrim\"><div class=\"ds-modal\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"ds-modal-title\"><div class=\"ds-modal__head\"><h3 class=\"ds-modal__title\" id=\"ds-modal-title\">Defensa</h3><button type=\"button\" class=\"ds-modal__close\" aria-label=\"Cerrar\"><svg viewBox=\"0 0 16 16\" width=\"14\" height=\"14\" fill=\"currentColor\"><path d=\"M4 4l8 8M12 4l-8 8\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg></button></div><p class=\"ds-modal__desc\">Esquema 4-3-3 ·.Defensa — elige una jugadora para esta posición</p><div class=\"ds-modal__list\"><button type=\"button\" class=\"ds-pick ds-pick--current\"><span>Sofía M.</span><span>Actual</span></button><button type=\"button\" class=\"ds-pick ds-pick--taken\"><span>María L.</span><span>Ocupa Medio · intercambiar</span></button><button type=\"button\" class=\"ds-pick ds-pick--bench\"><span>Julia M.</span><span>En el banco · al once</span></button><button type=\"button\" class=\"ds-pick\"><span>Valentina R.</span><span>Disponible</span></button></div></div></div>",
+      "css": ".ds-scrim { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); } .ds-modal { width: 100%; max-width: 28rem; padding: 20px; border-radius: 16px; background: rgba(15, 23, 42, 0.72); border: 1px solid rgba(30, 41, 59, 0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); color: #f1f5f9; font-family: Outfit, system-ui, sans-serif; } .ds-modal__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; } .ds-modal__title { margin: 0; font-size: 1rem; font-weight: 600; } .ds-modal__close { background: transparent; border: 0; color: #94a3b8; cursor: pointer; padding: 4px; border-radius: 6px; } .ds-modal__close:hover { color: #ffffff; } .ds-modal__close:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; } .ds-modal__desc { margin: 0 0 12px; font-size: 0.75rem; color: #94a3b8; } .ds-modal__list { display: flex; flex-direction: column; gap: 8px; max-height: 18rem; overflow-y: auto; } .ds-pick { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 12px 16px; border-radius: 12px; font-family: inherit; font-size: 0.875rem; text-align: left; cursor: pointer; border: 1px solid rgba(51, 65, 85, 0.85); background: rgba(2, 6, 23, 0.4); color: #e2e8f0; transition: background 0.15s ease, border-color 0.15s ease; } .ds-pick:hover { background: rgba(30, 41, 59, 0.8); border-color: rgba(71, 85, 105, 0.9); } .ds-pick:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; } .ds-pick span:last-child { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: #94a3b8; } .ds-pick--current { border-color: rgba(59, 130, 246, 0.6); background: rgba(59, 130, 246, 0.2); color: #ffffff; } .ds-pick--current span:last-child { color: #93c5fd; } .ds-pick--taken { border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.1); color: #fef3c7; } .ds-pick--taken span:last-child { color: #fcd34d; } .ds-pick--bench { border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.1); color: #e0f2fe; } .ds-pick--bench span:last-child { color: #7dd3fc; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Pit-Wall Match Operations Board",
+    "overview": "Tracker Pro is not a stats app that happens to run during a match; it is an operations console that a coach reads at a glance from the bench of a stadium. The visual world is the pit wall at night: carbon-dark glass panels floating over a deep charcoal ground, hairline borders the way instrument housings have them, and one electric-blue accent that only ever lights up when something is live — the running clock, the active tab, the selected action, the open period. Everything else is a reading, not a decoration.\n\nThe system rejects the field-app green outright. Institutional green was the previous identity and it was cut entirely: there is no teal, no emerald, no purple, no indigo anywhere in the chrome. The only green left in the product is the literal green card of hockey (a physical object in the sport, therefore a literal object color, not a brand color). Because that exception exists, every other hue has to earn its place by meaning: blue is live and positive, red is negative, amber is discipline and attention, sky is transition and substitution, slate is neutral data.\n\nDensity is a feature and a constraint at once: the live view has to fit in 100vh with zero vertical scroll, on a tablet held in one hand under stadium light. That single rule drives most of the geometry — 44px minimum touch targets, 92px action tiles, a two-and-a-half second path from \"event happened\" to \"event recorded\". Numbers are always monospaced and always heavy, because a scoreboard is read at distance, not parsed.",
+    "keyCharacteristics": [
+      "Carbon ground (slate-950) with translucent glass panels and slate-800 hairlines — depth from translucency, never from colored glow.",
+      "One accent color, electric blue, reserved for live state and primary actions.",
+      "Every figure in JetBrains Mono; every label in Outfit.",
+      "A single screen, no vertical scroll, in the live view.",
+      "Touch targets sized for fingers in motion: 44px floor, 92px for the action pad.",
+      "The lineup is drawn on the pitch, not checked off in a list.",
+      "Commit actions live in a full-width bottom bar, not inside a column."
+    ],
+    "rules": [
+      {
+        "name": "The Zero-Green Rule",
+        "body": "There is no green in the chrome — no teal, emerald, purple, or indigo anywhere in the shell, panels, tabs, buttons, chips, or charts. The only green permitted is the literal hockey green card. If a new surface wants color, it must come from the blue/red/amber/sky signal set.",
+        "section": "colors"
+      },
+      {
+        "name": "The Blue Means Live Rule",
+        "body": "Electric blue is a state, not a brand. It appears on the active tab, the active chip, the running clock context, the primary CTA, the Partido en Curso stage label, and the live badge — nowhere else. A screen that is blue everywhere is a screen where blue means nothing. Before a match starts, every live signal stays grey: the Partido tab is dimmed and dotted, the stage label reads Sin Iniciar, and the Estadísticas badge stays off.",
+        "section": "colors"
+      },
+      {
+        "name": "The Signal Color Rule",
+        "body": "A hue may only be used where it carries the event's polarity (positive / negative / discipline / transition / neutral). Decorative colorization of a control that carries no event meaning is out of bounds.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono Data Rule",
+        "body": "Every number the user reads as data — score, clock, KPI values, counters, minutes, zone values, ratio — is set in JetBrains Mono. Proportional digits in a live readout are a bug, not a style choice.",
+        "section": "typography"
+      },
+      {
+        "name": "The 11px Floor",
+        "body": "No data text may render below 11px. The 10px micro tier exists for uppercase non-numeric chrome only; the 9px tier that appears on the zone-selector caption is the single exception in the built app and must not be extended to any value-bearing surface.",
+        "section": "typography"
+      },
+      {
+        "name": "The 4.5:1 Rule",
+        "body": "No text ships below 4.5:1 contrast against its actual background. text-muted on the carbon ground is the darkest legal text; muted-on-muted is not.",
+        "section": "typography"
+      },
+      {
+        "name": "The Neutral Shadow Rule",
+        "body": "Shadows are tinted with the ground color, never with the accent. A blue shadow on a blue button is a glow; this system has no glows.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Two-Level Depth Rule",
+        "body": "There are exactly two surface levels: glass panel and inset. A third level of nesting means a new element is competing with the data.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Board Is The Roster Rule",
+        "body": "The lineup exists in exactly one place: the Konva pitch. Touch a token, pick a player in the modal; the bench is a chip list, not a second checklist. If a screen needs to show the eleven, it reads the board.",
+        "section": "components"
+      },
+      {
+        "name": "The Zero-Data Rule",
+        "body": "With no records, bars stay at 0% and empty states say so in muted text. A bar that redistributes itself to fill the rail, or a KPI that renders as a placeholder, is a false reading — the absence of data must look like absence.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do reserve electric blue for live state and the primary commit action, so the color keeps meaning \"now\".",
+      "Do set every number in JetBrains Mono at heavy weight, and keep the score and clock as the two largest elements on screen.",
+      "Do keep the live view inside 100vh with no page-level vertical scroll — push overflow into the action pad, the player grid, or the feed, never the shell.",
+      "Do hold every touch target to at least 44px of height (56px+ when the layout allows) and keep action tiles at 92px.",
+      "Do express lineup and formation on the pitch, positioning tokens by touch and drag, with the bench as chips plus a modal — the board is the source of truth for alignment.",
+      "Do tint a control by the polarity of the data it carries (positive, negative, discipline, transition, neutral), using the signal palette — blue for positive, sky for substitution and transition.",
+      "Do keep the header at h-14 with the four tabs always visible, so navigation never costs a scroll or a back gesture.",
+      "Do keep text at or above 4.5:1 contrast and never let data fall below 11px.",
+      "Do put the commit CTA in the full-width bottom action bar (shrink-0 px-3 pb-3 → max-w-3xl mx-auto), so it is reachable from every column.",
+      "Do render a real tile for every action, even in a single-action category, and keep the tile keyboard-operable with role, tabindex, aria-label, Enter and Space.",
+      "Do keep the live signals honest: grey badge, Sin Iniciar, and a dimmed Partido tab until a match is actually running.",
+      "Do let empty states say so in muted text and leave ratio and distribution bars at 0% when there is nothing to show."
+    ],
+    "donts": [
+      "Don't introduce green, teal, emerald, purple, or indigo into the chrome — the only green allowed is the literal green card.",
+      "Don't use colored shadows, glows, or neon bloom; every shadow is neutral.",
+      "Don't let the live view scroll vertically, and don't let any panel's content push the shell past 100vh.",
+      "Don't add colored gradients, illustrations, or decorative hues to the shell; the only gradient in the product is the primary button and the pitch canvas.",
+      "Don't set data in the proportional sans font, and don't animate the score with anything other than the sharp cubic-bezier(0.16, 1, 0.3, 1) scale.",
+      "Don't build alignment or formation as a list of checkboxes; it is set by placing tokens on the tactical board.",
+      "Don't shrink a control below the 44px floor or drop the label from an action tile to save space.",
+      "Don't reuse the semantic signal hues for generic decoration — a red chip that isn't a negative event is a bug.",
+      "Don't paint positive feed events sky, or paint the Pérdidas por Zona and Robos por Zona cards with different tones for the same metric.",
+      "Don't light the live badge, the stage label, or the Partido tab blue before a match is in progress."
+    ]
+  }
+}
